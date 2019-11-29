@@ -7,4 +7,4 @@ eslint:
   stage: Lint
   script:
     - npm ci
-    - eslint .
+    - node_modules/eslint/bin/eslint.js .
