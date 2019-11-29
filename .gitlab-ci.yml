@@ -1,0 +1,10 @@
+image: node:13.2.0
+
+stages:
+  - Lint
+
+eslint:
+  stage: Lint
+  script:
+    - npm ci
+    - eslint .
