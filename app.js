@@ -44,8 +44,16 @@ const optionDefinitions = [
 
 const options = commandLineArgs(optionDefinitions)
 
-console.log(options)
-process.exit()
+settingsDefault = {
+  db: {
+    host: options['db-host'] || 'localhost',
+    port: options['db-port'] || 27017,
+    name: options['db-name'] || 'wAVdioDB'
+  },
+  server: {
+    port: options['port'] || 3000
+  }
+};
 
 //////////////////////////////////////////////////////////////
 //                Captive Portal Rederictions               //
@@ -176,17 +184,6 @@ server.on('listening', onListening);
 /**
  * Export functios to start and stop the server
  */
-
-settingsDefault = {
-  db: {
-    host: 'localhost',
-    port: 27017,
-    name: 'wAVdioDB'
-  },
-  server: {
-    port: 3000
-  }
-};
 
 module.exports.listen = async function (settings = settingsDefault) {
   try {
