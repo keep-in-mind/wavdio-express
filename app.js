@@ -36,8 +36,10 @@ app.use('/api/v2', userRouter);
 //////////////////////////////////////////////////////////////
 
 const optionDefinitions = [
-  { name: 'verbose', alias: 'v', type: Boolean },
-  { name: 'timeout', alias: 't', type: Number }
+  { name: 'db-host', type: String },
+  { name: 'db-port', type: Number },
+  { name: 'db-name', type: String },
+  { name: 'port', type: Number }
 ]
 
 const options = commandLineArgs(optionDefinitions)
