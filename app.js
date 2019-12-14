@@ -40,10 +40,51 @@ const optionDefinitions = [
   { name: 'db-host', type: String },
   { name: 'db-port', type: Number },
   { name: 'db-name', type: String },
-  { name: 'port', type: Number }
+  { name: 'port', type: Number },
+  { name: 'help', type: Boolean },
 ]
 
 const options = commandLineArgs(optionDefinitions)
+
+if (options['help']) {
+  const sections = [
+    {
+      header: 'Options',
+      optionList: [
+        {
+          name: 'db-host',
+          typeLabel: '{underline string}',
+          description: 'MongoDB host, default: localhost'
+        },
+        {
+          name: 'db-port',
+          typeLabel: '{underline number}',
+          description: 'MongoDB port, default: 27017'
+        },
+        {
+          name: 'db-name',
+          typeLabel: '{underline string}',
+          description: 'MongoDB host, default: wavdio'
+        },
+        {
+          name: 'port',
+          typeLabel: '{underline number}',
+          description: 'Express host, default: 3000'
+        },
+        {
+          name: 'help',
+          typeLabel: ' ',
+          description: 'Print this usage guide'
+        }
+      ]
+    }
+  ]
+
+  const usage = commandLineUsage(sections)
+  console.log(usage)
+
+  process.exit()
+}
 
 settingsDefault = {
   db: {
