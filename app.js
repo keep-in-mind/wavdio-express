@@ -9,6 +9,7 @@ const favicon = require('serve-favicon');
 const morganLogger = require('morgan');
 const xss = require('xss-clean');
 const commandLineArgs = require('command-line-args');
+const commandLineUsage = require('command-line-usage');
 
 const museumRouter = require('./routes/museum');
 const expositionRouter = require('./routes/exposition');
