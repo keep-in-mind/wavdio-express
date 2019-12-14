@@ -8,6 +8,8 @@ const rfs = require('rotating-file-stream');
 const favicon = require('serve-favicon');
 const morganLogger = require('morgan');
 const xss = require('xss-clean');
+const commandLineArgs = require('command-line-args');
+
 const museumRouter = require('./routes/museum');
 const expositionRouter = require('./routes/exposition');
 const exhibitRouter = require('./routes/exhibit');
@@ -28,6 +30,20 @@ app.use('/api/v2', exhibitRouter);
 app.use('/api/v2', infopageRouter);
 app.use('/upload', uploadRouter);
 app.use('/api/v2', userRouter);
+
+//////////////////////////////////////////////////////////////
+//                Parse comand line args                    //
+//////////////////////////////////////////////////////////////
+
+const optionDefinitions = [
+  { name: 'verbose', alias: 'v', type: Boolean },
+  { name: 'timeout', alias: 't', type: Number }
+]
+
+const options = commandLineArgs(optionDefinitions)
+
+console.log(options)
+process.exit()
 
 //////////////////////////////////////////////////////////////
 //                Captive Portal Rederictions               //
