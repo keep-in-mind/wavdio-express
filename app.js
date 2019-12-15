@@ -17,11 +17,8 @@ const loggingRouter = require('./routes/logging');
 const userRouter = require('./routes/user');
 const userSchema = require('./models/user');
 const museumSchema = require('./models/museum');
-const cors = require('cors');
-
 
 const app = express();
-app.use(cors());
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
 // app.use(xss());
