@@ -8,6 +8,9 @@ const rfs = require('rotating-file-stream');
 const favicon = require('serve-favicon');
 const morganLogger = require('morgan');
 const xss = require('xss-clean');
+const commandLineArgs = require('command-line-args');
+const commandLineUsage = require('command-line-usage');
+
 const museumRouter = require('./routes/museum');
 const expositionRouter = require('./routes/exposition');
 const exhibitRouter = require('./routes/exhibit');
@@ -28,6 +31,71 @@ app.use('/api/v2', exhibitRouter);
 app.use('/api/v2', infopageRouter);
 app.use('/upload', uploadRouter);
 app.use('/api/v2', userRouter);
+
+//////////////////////////////////////////////////////////////
+//                Parse comand line args                    //
+//////////////////////////////////////////////////////////////
+
+const optionDefinitions = [
+  { name: 'db-host', type: String },
+  { name: 'db-port', type: Number },
+  { name: 'db-name', type: String },
+  { name: 'port', type: Number },
+  { name: 'help', type: Boolean },
+]
+
+const options = commandLineArgs(optionDefinitions)
+
+if (options['help']) {
+  const sections = [
+    {
+      header: 'Options',
+      optionList: [
+        {
+          name: 'db-host',
+          typeLabel: '{underline string}',
+          description: 'MongoDB host, default: localhost'
+        },
+        {
+          name: 'db-port',
+          typeLabel: '{underline number}',
+          description: 'MongoDB port, default: 27017'
+        },
+        {
+          name: 'db-name',
+          typeLabel: '{underline string}',
+          description: 'MongoDB host, default: wavdio'
+        },
+        {
+          name: 'port',
+          typeLabel: '{underline number}',
+          description: 'Express host, default: 3000'
+        },
+        {
+          name: 'help',
+          typeLabel: ' ',
+          description: 'Print this usage guide'
+        }
+      ]
+    }
+  ]
+
+  const usage = commandLineUsage(sections)
+  console.log(usage)
+
+  process.exit()
+}
+
+settingsDefault = {
+  db: {
+    host: options['db-host'] || 'localhost',
+    port: options['db-port'] || 27017,
+    name: options['db-name'] || 'wAVdioDB'
+  },
+  server: {
+    port: options['port'] || 3000
+  }
+};
 
 //////////////////////////////////////////////////////////////
 //                Captive Portal Rederictions               //
@@ -158,17 +226,6 @@ server.on('listening', onListening);
 /**
  * Export functios to start and stop the server
  */
-
-settingsDefault = {
-  db: {
-    host: 'localhost',
-    port: 27017,
-    name: 'wAVdioDB'
-  },
-  server: {
-    port: 3000
-  }
-};
 
 module.exports.listen = async function (settings = settingsDefault) {
   try {
