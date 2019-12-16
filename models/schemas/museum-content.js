@@ -8,6 +8,7 @@ module.exports = new Schema({
   lang: {type: String, required: true},
 
   name: {type: String, required: true},
+  info: {type: String, required: false},
   welcomeText: {type: String, required: false},
   termsOfUse: {type: String, required: false},
   privacyTerms: {type: String, required: false},
