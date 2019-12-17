@@ -26,7 +26,7 @@ router.route('/exhibit')
         return response.status(401).json({'message': 'unauthorized'})
       } else {
         const body = request.body;
-        exhibit.find({exposition: body.exposition, code: body.code, active: true}, (error, exhibits) => {
+        exhibit.find({parent: body.parent, code: body.code, active: true}, (error, exhibits) => {
           if (error) {
             logger.error(error);
             response.status(500).send(error);
@@ -103,7 +103,7 @@ router.route('/exhibit/:exhibit_id')
           }
         }).then(
           function () {
-            exhibit.find({exposition: body.exposition, code: body.code, active: true}, (error, exhibits) => {
+            exhibit.find({parent: body.parent, code: body.code, active: true}, (error, exhibits) => {
               if (error) {
                 console.log(error);
                 response.status(500).send(error);
