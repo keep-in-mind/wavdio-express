@@ -8,7 +8,8 @@ const ExhibitContent = require('./exhibit-content');
 const Schema = mongoose.Schema;
 
 module.exports = new Schema({
-  parent: {type: Schema.Types.ObjectId, ref: 'Exposition', required: true},
+  parent: {type: Schema.Types.ObjectId, refPath: 'parentModel', required: true},
+  parentModel: {type: String, enum: ['Museum', 'Exposition'], required: true},
 
   active: {type: Boolean, required: true},
   code: {type: Number, required: true},

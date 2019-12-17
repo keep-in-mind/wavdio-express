@@ -59,6 +59,7 @@ describe('Exhibit', function () {
 
       const existingExhibit = copy(exhibits['monaLisa']);
       existingExhibit.parent = existingExpositionId;
+      existingExhibit.parentModel = 'Exposition';
       await Exhibit.create(existingExhibit);
 
       // WHEN   reading all exhibits
@@ -92,6 +93,7 @@ describe('Exhibit', function () {
 
       const newExhibit = copy(exhibits['monaLisa']);
       newExhibit.parent = existingExpositionId;
+      newExhibit.parentModel = 'Exposition';
 
       // WHEN   creating the new exhibit
 

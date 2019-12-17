@@ -1,6 +1,7 @@
 module.exports = {
   monaLisa: {
     parent: '',
+    parentModel: 'Exposition',
 
     active: true,
     code: 100,
@@ -98,6 +99,7 @@ module.exports = {
 
   thePersistenceOfMemory: {
     parent: '',
+    parentModel: 'Exposition',
 
     active: true,
     code: 101,
