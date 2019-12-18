@@ -109,7 +109,7 @@ router.route('/exposition/:exposition_id')
 
       /* Remove child exhibits from DB */
 
-      const exhibits = await exhibit.find({exposition: expositionId});
+      const exhibits = await exhibit.find({parent: expositionId});
 
       for (const exh of exhibits) {
         await exhibit.findByIdAndRemove(exh._id);

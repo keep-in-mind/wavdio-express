@@ -1,6 +1,7 @@
 module.exports = {
   monaLisa: {
-    exposition: '',
+    parent: '',
+    parentModel: 'Exposition',
 
     active: true,
     code: 100,
@@ -97,7 +98,8 @@ module.exports = {
   },
 
   thePersistenceOfMemory: {
-    exposition: '',
+    parent: '',
+    parentModel: 'Exposition',
 
     active: true,
     code: 101,

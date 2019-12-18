@@ -58,7 +58,8 @@ describe('Exhibit', function () {
       const existingExpositionId = dbExistingExposition._id.toString();
 
       const existingExhibit = copy(exhibits['monaLisa']);
-      existingExhibit.exposition = existingExpositionId;
+      existingExhibit.parent = existingExpositionId;
+      existingExhibit.parentModel = 'Exposition';
       await Exhibit.create(existingExhibit);
 
       // WHEN   reading all exhibits
@@ -91,7 +92,8 @@ describe('Exhibit', function () {
       const existingExpositionId = dbExistingExposition._id.toString();
 
       const newExhibit = copy(exhibits['monaLisa']);
-      newExhibit.exposition = existingExpositionId;
+      newExhibit.parent = existingExpositionId;
+      newExhibit.parentModel = 'Exposition';
 
       // WHEN   creating the new exhibit
 
