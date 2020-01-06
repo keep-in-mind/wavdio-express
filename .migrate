@@ -1,9 +1,13 @@
 {
-  "lastRun": "1577065560618-30_welcome_page.js",
+  "lastRun": "1578353947382-31_multiple_languages.js",
   "migrations": [
     {
       "title": "1577065560618-30_welcome_page.js",
-      "timestamp": 1578330858927
+      "timestamp": 1578354694335
+    },
+    {
+      "title": "1578353947382-31_multiple_languages.js",
+      "timestamp": 1578354694362
     }
   ]
 }
