@@ -17,12 +17,14 @@ module.exports.up = async function () {
     await dbo.collection('museums').updateOne({}, {$set: {'contents.$[].logo': null}})
     await dbo.collection('museums').updateOne({}, {$set: {'contents.$[].image': logo}})
 
+    await db.close()
+
   } catch (error) {
     console.error(error)
   }
 }
 
-module.exports.down = async function (next) {
+module.exports.down = async function () {
   console.log('Downgrading from 30_welcome_page')
 
   try {
@@ -32,6 +34,8 @@ module.exports.down = async function (next) {
     await dbo.collection('museums').updateOne({}, {$set: {'logo': null}})
     await dbo.collection('museums').updateOne({}, {$unset: {'contents.$[].logo': null}})
     await dbo.collection('museums').updateOne({}, {$unset: {'contents.$[].image': null}})
+
+    await db.close()
 
   } catch (error) {
     console.error(error)
