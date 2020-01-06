@@ -24,7 +24,7 @@
     "jquery": "^3.3.1",
     "jsonwebtoken": "^8.5.0",
     "migrate": "^1.6.2",
-    "mongoose": "^4.13.17",
+    "mongoose": "^5.8.3",
     "morgan": "^1.9.1",
     "popper.js": "^1.14.7",
     "rotating-file-stream": "^1.4.0",
