@@ -17,8 +17,6 @@ module.exports.up = async function () {
     await dbo.collection('museums').updateOne({}, {$set: {'contents.$[].logo': null}})
     await dbo.collection('museums').updateOne({}, {$set: {'contents.$[].image': logo}})
 
-    const museumCheck = await dbo.collection('museums').findOne({})
-
   } catch (error) {
     console.error(error)
   }
@@ -26,4 +24,16 @@ module.exports.up = async function () {
 
 module.exports.down = async function (next) {
   console.log('Downgrading from 30_welcome_page')
+
+  try {
+    const db = await MongoClient.connect(url)
+    const dbo = db.db('wAVdioDB')
+
+    await dbo.collection('museums').updateOne({}, {$set: {'logo': null}})
+    await dbo.collection('museums').updateOne({}, {$unset: {'contents.$[].logo': null}})
+    await dbo.collection('museums').updateOne({}, {$unset: {'contents.$[].image': null}})
+
+  } catch (error) {
+    console.error(error)
+  }
 }
