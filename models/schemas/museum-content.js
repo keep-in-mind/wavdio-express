@@ -13,6 +13,8 @@ module.exports = new Schema({
   termsOfUse: {type: String, required: false},
   privacyTerms: {type: String, required: false},
 
+  logo: {type: Image, required: false},
+  image: {type: Image, required: false},
   sitePlan: {type: Image, required: false}
 }, {
   strict: 'throw'
