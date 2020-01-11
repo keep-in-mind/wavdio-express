@@ -35,6 +35,50 @@ module.exports.up = async function () {
       await dbo.collection('museums').updateOne({}, {$push: {contents: {lang: lang}}})
     }
 
+    /* Create exposition contents */
+
+    const expositions = await dbo.collection('expositions').find({}).toArray()
+
+    for (let exposition of expositions) {
+      const langs = ['de', 'en', 'es', 'fr']
+
+      // Delete already existing languages from 'langs'
+      for (let content of exposition.contents) {
+        const index = langs.indexOf(content.lang)
+        if (index !== -1) {
+          langs.splice(index, 1)
+        }
+      }
+
+      // Create remaining, missing languages
+      for (let lang of langs) {
+        await dbo.collection('expositions')
+          .updateOne({_id: exposition._id}, {$push: {contents: {lang: lang}}})
+      }
+    }
+
+    /* Create exhibit contents */
+
+    const exhibits = await dbo.collection('exhibits').find({}).toArray()
+
+    for (let exhibit of exhibits) {
+      const langs = ['de', 'en', 'es', 'fr']
+
+      // Delete already existing languages from 'langs'
+      for (let content of exhibit.contents) {
+        const index = langs.indexOf(content.lang)
+        if (index !== -1) {
+          langs.splice(index, 1)
+        }
+      }
+
+      // Create remaining, missing languages
+      for (let lang of langs) {
+        await dbo.collection('exhibits')
+          .updateOne({_id: exhibit._id}, {$push: {contents: {lang: lang}}})
+      }
+    }
+
     /* */
 
     await db.close()
@@ -61,6 +105,22 @@ module.exports.down = async function () {
 
     for (let lang of ['es', 'fr']) {
       await dbo.collection('museums').updateOne({}, {$pull: {contents: {lang: lang}}})
+    }
+
+    /* Delete Spanish and French exposition contents */
+
+    const expositions = await dbo.collection('expositions').find({}).toArray()
+
+    for (let lang of ['es', 'fr']) {
+      await dbo.collection('expositions').updateMany({}, {$pull: {contents: {lang: lang}}})
+    }
+
+    /* Delete Spanish and French exhibit contents */
+
+    const exhibits = await dbo.collection('exhibits').find({}).toArray()
+
+    for (let lang of ['es', 'fr']) {
+      await dbo.collection('exhibits').updateMany({}, {$pull: {contents: {lang: lang}}})
     }
 
     /* */
