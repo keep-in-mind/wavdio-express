@@ -101,23 +101,17 @@ module.exports.down = async function () {
 
     /* Delete Spanish and French museum contents */
 
-    const museum = await dbo.collection('museums').findOne({})
-
     for (let lang of ['es', 'fr']) {
       await dbo.collection('museums').updateOne({}, {$pull: {contents: {lang: lang}}})
     }
 
     /* Delete Spanish and French exposition contents */
 
-    const expositions = await dbo.collection('expositions').find({}).toArray()
-
     for (let lang of ['es', 'fr']) {
       await dbo.collection('expositions').updateMany({}, {$pull: {contents: {lang: lang}}})
     }
 
     /* Delete Spanish and French exhibit contents */
-
-    const exhibits = await dbo.collection('exhibits').find({}).toArray()
 
     for (let lang of ['es', 'fr']) {
       await dbo.collection('exhibits').updateMany({}, {$pull: {contents: {lang: lang}}})
