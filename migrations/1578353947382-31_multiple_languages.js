@@ -55,6 +55,16 @@ module.exports.down = async function () {
 
     await dbo.collection('settings').drop()
 
+    /* Delete Spanish and French museum contents */
+
+    const museum = await dbo.collection('museums').findOne({})
+
+    for (let lang of ['es', 'fr']) {
+      await dbo.collection('museums').updateOne({}, {$pull: {contents: {lang: lang}}})
+    }
+
+    /* */
+
     await db.close()
 
   } catch (error) {
