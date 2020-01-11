@@ -7,7 +7,7 @@ const Schema = mongoose.Schema;
 module.exports = new Schema({
   lang: {type: String, required: true},
 
-  name: {type: String, required: true},
+  name: {type: String, required: false},
   info: {type: String, required: false},
   welcomeText: {type: String, required: false},
   termsOfUse: {type: String, required: false},
