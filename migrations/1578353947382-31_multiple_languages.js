@@ -7,7 +7,7 @@ module.exports.up = async function () {
   console.log('Upgrading to 31_multiple_languages')
 
   try {
-    const db = await MongoClient.connect(url)
+    const db = await MongoClient.connect(url, {useUnifiedTopology: true})
     const dbo = db.db('wAVdioDB')
 
     /* Create settings collection */
@@ -20,7 +20,7 @@ module.exports.up = async function () {
     /* Create museum contents */
 
     const museum = await dbo.collection('museums').findOne({})
-    let langs = ['de', 'en', 'es', 'fr']
+    const langs = ['de', 'en', 'es', 'fr']
 
     // Delete already existing languages from 'langs'
     for (let content of museum.contents) {
@@ -32,7 +32,7 @@ module.exports.up = async function () {
 
     // Create remaining, missing languages
     for (let lang of langs) {
-      await dbo.collection('museums').update({}, {$push: {'contents': {lang: lang}}})
+      await dbo.collection('museums').updateOne({}, {$push: {contents: {lang: lang}}})
     }
 
     /* */
@@ -48,8 +48,10 @@ module.exports.down = async function () {
   console.log('Downgrading from 31_multiple_languages')
 
   try {
-    const db = await MongoClient.connect(url)
+    const db = await MongoClient.connect(url, {useUnifiedTopology: true})
     const dbo = db.db('wAVdioDB')
+
+    /* Delete settings collection */
 
     await dbo.collection('settings').drop()
 
