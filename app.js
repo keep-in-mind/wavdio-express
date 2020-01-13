@@ -19,6 +19,8 @@ const infopageRouter = require('./routes/infopage');
 const uploadRouter = require('./routes/upload');
 const loggingRouter = require('./routes/logging');
 const userRouter = require('./routes/user');
+const settingRouter = require('./routes/setting')
+
 const userSchema = require('./models/user');
 const museumSchema = require('./models/museum');
 
@@ -32,6 +34,7 @@ app.use('/api/v2', exhibitRouter);
 app.use('/api/v2', infopageRouter);
 app.use('/upload', uploadRouter);
 app.use('/api/v2', userRouter);
+app.use('/api/v2', settingRouter);
 
 //////////////////////////////////////////////////////////////
 //                Parse comand line args                    //
