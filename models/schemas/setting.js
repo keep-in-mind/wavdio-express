@@ -7,6 +7,7 @@ module.exports = new Schema({
     type: {
       de: {type: Boolean, required: true},
       en: {type: Boolean, required: true},
+      es: {type: Boolean, required: true},
       fr: {type: Boolean, required: true}
     },
     required: true
