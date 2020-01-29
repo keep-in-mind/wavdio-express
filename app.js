@@ -256,7 +256,6 @@ function listen(server, settings) {
   });
 
   let museumquery = {
-    'logo': null,
     'contents': [{
       'lang': 'en',
       'name': 'New museum',
@@ -271,6 +270,10 @@ function listen(server, settings) {
       'sitePlan': null,
       'termsOfUse': 'Nutzungsbedingungen...',
       'privacyTerms': 'Datenschutzrichtlinie...',
+    }, {
+      'lang': 'es'
+    }, {
+      'lang': 'fr'
     }]
   };
 
