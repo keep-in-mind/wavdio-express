@@ -10,7 +10,7 @@ const Schema = mongoose.Schema;
 module.exports = new Schema({
   lang: {type: String, required: true},
 
-  name: {type: String, required: true},
+  name: {type: String, required: false},
   info: {type: String, required: false},
   transcript: {type: Transcript, required: false},
 
