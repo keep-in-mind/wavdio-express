@@ -163,22 +163,11 @@ app.use(morganLogger(loggerFormat, {
 
 mongoose.Promise = require('bluebird');
 
-async function connectDB(
-  host = "localhost",
-  port = 27017,
-  dbName = "wAVdioDB",
-  user,
-  password) {
-
-  let uri;
-  if (user === null && password === null) {
-    uri = `mongodb://${host}:${port}/${dbName}`;
-  } else {
-    uri = `mongodb://${user}:${password}@${host}:${port}/${dbName}`;
-  }
-
-  console.log(`Connect to mongodb ${uri}`);
-  return mongoose.connect(uri, {useMongoClient: true});
+async function connectDB(host = "localhost", port = 27017, dbName = "wAVdioDB") {
+  let uri = `mongodb://${host}:${port}/${dbName}`;
+  console.log(`Connect to mongodb server on ${host}:${port}`);
+  return mongoose.connect(
+    uri, {useMongoClient: true});
 }
 
 
@@ -319,13 +308,7 @@ function listen(server, settings) {
 
 module.exports.listen = async function (settings = settingsDefault) {
   try {
-    await connectDB(
-      settings.db.host,
-      settings.db.port,
-      settings.db.name,
-      settings.db.user,
-      settings.db.password);
-
+    await connectDB(settings.db.host, settings.db.port, settings.db.name);
     console.log('MongoDB connection established');
     const server = this.server;
 
