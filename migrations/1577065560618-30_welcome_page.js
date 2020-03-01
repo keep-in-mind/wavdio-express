@@ -1,13 +1,40 @@
 const mongodb = require('mongodb')
 
+const config = require('config')
+
 const MongoClient = mongodb.MongoClient
-const url = 'mongodb://localhost:27017/wAVdioDB'
+
+//
+// Mongo Connection URI
+//
+
+const dbHost = 'localhost'
+const dbPort = 27017
+const dbName = config['db-name']
+const dbUser = config['db-user']
+const dbPassword = config['db-password']
+
+let uri;
+if (dbUser === null && dbPassword === null) {
+  uri = `mongodb://${dbHost}:${dbPort}/${dbName}`
+
+} else if (dbUser !== null && dbPassword !== null) {
+  uri = `mongodb://${dbUser}:${dbPassword}@${dbHost}:${dbPort}/${dbName}`
+
+} else {
+  console.error('Error in config.json. Must provide both user and password, or neither.');
+  process.exit();
+}
+
+//
+// UP
+//
 
 module.exports.up = async function () {
   console.log('Upgrading to 30_welcome_page')
 
   try {
-    const db = await MongoClient.connect(url)
+    const db = await MongoClient.connect(uri)
     const dbo = db.db('wAVdioDB')
 
     const museum = await dbo.collection('museums').findOne({})
@@ -24,11 +51,15 @@ module.exports.up = async function () {
   }
 }
 
+//
+// DOWN
+//
+
 module.exports.down = async function () {
   console.log('Downgrading from 30_welcome_page')
 
   try {
-    const db = await MongoClient.connect(url)
+    const db = await MongoClient.connect(uri)
     const dbo = db.db('wAVdioDB')
 
     await dbo.collection('museums').updateOne({}, {$set: {'logo': null}})

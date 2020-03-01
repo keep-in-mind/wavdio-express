@@ -153,15 +153,17 @@ mongoose.Promise = require('bluebird');
 
 async function connectDB (host = 'localhost', port = 27017, dbName = 'wAVdioDB') {
 
-  dbName = config['db-name'] || dbName;
-  const user = config['db-user'];
-  const password = config['db-password'];
+  dbName = config['db-name'];
+  const dbUser = config['db-user'];
+  const dbPassword = config['db-password'];
 
   let uri;
-  if (user === null && password === null) {
+  if (dbUser === null && dbPassword === null) {
     uri = `mongodb://${host}:${port}/${dbName}`
-  } else if (user !== null && password !== null) {
-    uri = `mongodb://${user}:${password}@${host}:${port}/${dbName}`
+
+  } else if (dbUser !== null && dbPassword !== null) {
+    uri = `mongodb://${dbUser}:${dbPassword}@${host}:${port}/${dbName}`
+
   } else {
     console.error('Error in config.json. Must provide both user and password, or neither.');
     process.exit();
