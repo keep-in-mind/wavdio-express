@@ -153,9 +153,11 @@ mongoose.Promise = require('bluebird');
 
 async function connectDB (host = 'localhost', port = 27017, dbName = 'wAVdioDB') {
 
-  let uri;
+  dbName = config['db-name'] || dbName;
   const user = config['db-user'];
   const password = config['db-password'];
+
+  let uri;
   if (user === null && password === null) {
     uri = `mongodb://${host}:${port}/${dbName}`
   } else if (user !== null && password !== null) {
