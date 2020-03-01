@@ -44,6 +44,8 @@ const optionDefinitions = [
   { name: 'db-host', type: String },
   { name: 'db-port', type: Number },
   { name: 'db-name', type: String },
+  { name: 'db-user', type: String },
+  { name: 'db-password', type: String },
   { name: 'port', type: Number },
   { name: 'help', type: Boolean },
 ]
@@ -71,6 +73,16 @@ if (options['help']) {
           description: 'MongoDB host, default: wavdio'
         },
         {
+          name: 'db-user',
+          typeLabel: '{underline string}',
+          description: 'MongoDB user, default: None'
+        },
+        {
+          name: 'db-password',
+          typeLabel: '{underline string}',
+          description: 'MongoDB password, default: None'
+        },
+        {
           name: 'port',
           typeLabel: '{underline number}',
           description: 'Express host, default: 3000'
@@ -94,7 +106,9 @@ settingsDefault = {
   db: {
     host: options['db-host'] || 'localhost',
     port: options['db-port'] || 27017,
-    name: options['db-name'] || 'wAVdioDB'
+    name: options['db-name'] || 'wAVdioDB',
+    user: options['db-user'] || null,
+    password: options['db-password'] || null,
   },
   server: {
     port: options['port'] || 3000
