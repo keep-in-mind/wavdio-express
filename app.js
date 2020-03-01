@@ -151,11 +151,22 @@ app.use(morganLogger(loggerFormat, {
 
 mongoose.Promise = require('bluebird');
 
-async function connectDB(host = "localhost", port = 27017, dbName = "wAVdioDB") {
-  let uri = `mongodb://${host}:${port}/${dbName}`;
-  console.log(`Connect to mongodb server on ${host}:${port}`);
-  return mongoose.connect(
-    uri, {useMongoClient: true});
+async function connectDB (host = 'localhost', port = 27017, dbName = 'wAVdioDB') {
+
+  let uri;
+  const user = config['db-user'];
+  const password = config['db-password'];
+  if (user === null && password === null) {
+    uri = `mongodb://${host}:${port}/${dbName}`
+  } else if (user !== null && password !== null) {
+    uri = `mongodb://${user}:${password}@${host}:${port}/${dbName}`
+  } else {
+    console.error('Error in config.json. Must provide both user and password, or neither.');
+    process.exit();
+  }
+
+  console.log(`Connect to MongoDB ${uri}`)
+  return mongoose.connect(uri, {useMongoClient: true})
 }
 
 
