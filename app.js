@@ -24,7 +24,7 @@ const settingRouter = require('./routes/setting')
 const userSchema = require('./models/user');
 const museumSchema = require('./models/museum');
 
-const config = require('config')
+const config = require('./config')
 
 const app = express();
 app.use(express.urlencoded({extended: true}));
