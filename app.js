@@ -24,6 +24,8 @@ const settingRouter = require('./routes/setting')
 const userSchema = require('./models/user');
 const museumSchema = require('./models/museum');
 
+const config = require('./config')
+
 const app = express();
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
@@ -149,11 +151,26 @@ app.use(morganLogger(loggerFormat, {
 
 mongoose.Promise = require('bluebird');
 
-async function connectDB(host = "localhost", port = 27017, dbName = "wAVdioDB") {
-  let uri = `mongodb://${host}:${port}/${dbName}`;
-  console.log(`Connect to mongodb server on ${host}:${port}`);
-  return mongoose.connect(
-    uri, {useMongoClient: true});
+async function connectDB (host = 'localhost', port = 27017, dbName = 'wAVdioDB') {
+
+  dbName = config['db-name'];
+  const dbUser = config['db-user'];
+  const dbPassword = config['db-password'];
+
+  let uri;
+  if (dbUser === null && dbPassword === null) {
+    uri = `mongodb://${host}:${port}/${dbName}`
+
+  } else if (dbUser !== null && dbPassword !== null) {
+    uri = `mongodb://${dbUser}:${dbPassword}@${host}:${port}/${dbName}`
+
+  } else {
+    console.error('Error in config.json. Must provide both user and password, or neither.');
+    process.exit();
+  }
+
+  console.log(`Connect to MongoDB ${uri}`)
+  return mongoose.connect(uri, {useMongoClient: true})
 }
 
 
