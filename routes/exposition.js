@@ -141,7 +141,7 @@ router.route('/exposition/:exposition_id/like').post((request, response) => {
   const expositionId = request.params.exposition_id;
   const like = request.body;
 
-  exhibit.findByIdAndUpdate(expositionId, {$push: {likes: like}}, {new: true}, (error, exposition) => {
+  exposition.findByIdAndUpdate(expositionId, {$push: {likes: like}}, {new: true}, (error, exposition) => {
     if (error) {
       logger.log(error);
       response.status(500).send(error);
@@ -157,7 +157,7 @@ router.route('/exposition/:exposition_id/like/:like_id').delete((request, respon
   const expositionId = request.params.exposition_id;
   const likeId = request.params.like_id;
 
-  exhibit.findByIdAndUpdate(expositionId, {$pull: {likes: {_id: likeId}}}, {new: true},(error, exposition) => {
+  exposition.findByIdAndUpdate(expositionId, {$pull: {likes: {_id: likeId}}}, {new: true},(error, exposition) => {
     if (error) {
       logger.log(error);
       response.status(500).send(error);
