@@ -168,6 +168,38 @@ router.route('/exhibit/:exhibit_id')
     }
   });
 
+router.route('/exhibit/:exhibit_id/like').post((request, response) => {
+  const exhibitId = request.params.exhibit_id;
+  const like = request.body;
+
+  exhibit.findByIdAndUpdate(exhibitId, {$push: {likes: like}}, {new: true}, (error, exhibit) => {
+    if (error) {
+      logger.log(error);
+      response.status(500).send(error);
+    } else if (exhibit) {
+      response.status(200).json(exhibit);
+    } else {
+      response.status(404).send();
+    }
+  });
+});
+
+router.route('/exhibit/:exhibit_id/like/:like_id').delete((request, response) => {
+  const exhibitId = request.params.exhibit_id;
+  const likeId = request.params.like_id;
+
+  exhibit.findByIdAndUpdate(exhibitId, {$pull: {likes: {_id: likeId}}}, {new: true},(error, exhibit) => {
+    if (error) {
+      logger.log(error);
+      response.status(500).send(error);
+    } else if (exhibit) {
+      response.status(200).send(exhibit);
+    } else {
+      response.status(404).send();
+    }
+  });
+});
+
 router.route('/exhibit/:exhibit_id/comment_like')
 
   .patch((request, response) => {
