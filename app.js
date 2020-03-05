@@ -119,7 +119,7 @@ app.all('/generate_204',function (req, res){
 //             End Captive Portal Rederictions              //
 //////////////////////////////////////////////////////////////
 
-app.use('/api/v2/logs', loggingRouter);
+app.use('/api/v2', loggingRouter);
 
 //////////////////////////////////////////////////////////////
 //                        LOGGING                           //
