@@ -35,7 +35,7 @@ module.exports.up = async function () {
 
   try {
     const db = await MongoClient.connect(uri)
-    const dbo = db.db('wAVdioDB')
+    const dbo = db.db(dbName)
 
     const museum = await dbo.collection('museums').findOne({})
     const logo = museum.logo
@@ -60,7 +60,7 @@ module.exports.down = async function () {
 
   try {
     const db = await MongoClient.connect(uri)
-    const dbo = db.db('wAVdioDB')
+    const dbo = db.db(dbName)
 
     await dbo.collection('museums').updateOne({}, {$set: {'logo': null}})
     await dbo.collection('museums').updateOne({}, {$unset: {'contents.$[].logo': null}})
