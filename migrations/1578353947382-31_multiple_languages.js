@@ -35,7 +35,7 @@ module.exports.up = async function () {
 
   try {
     const db = await MongoClient.connect(uri, {useUnifiedTopology: true})
-    const dbo = db.db('wAVdioDB')
+    const dbo = db.db(dbName)
 
     /* Create settings collection */
 
@@ -124,7 +124,7 @@ module.exports.down = async function () {
 
   try {
     const db = await MongoClient.connect(uri, {useUnifiedTopology: true})
-    const dbo = db.db('wAVdioDB')
+    const dbo = db.db(dbName)
 
     /* Delete settings collection */
 
