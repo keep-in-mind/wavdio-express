@@ -16,7 +16,8 @@ module.exports = new Schema({
 
   logo: {type: Image, required: false},
   image: {type: Image, required: false},
-  sitePlan: {type: Image, required: false}
+  sitePlan: {type: Image, required: false},
+  sitePlanText: {type: String, required: false}
 }, {
   strict: 'throw'
 });
