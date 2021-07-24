@@ -2,7 +2,7 @@ const mongodb = require('mongodb')
 
 const config = require('../config')
 
-const migrate_db = require('migrate_db')
+const migrate_db = require('./migrate_db')
 
 const MongoClient = mongodb.MongoClient
 
