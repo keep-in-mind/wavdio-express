@@ -107,7 +107,7 @@ if (options['help']) {
 settingsDefault = {
   db: {
     host: options['db-host'] || 'localhost',
-    port: options['db-port'] || 27017,
+    port: process.env.PORT || options['db-port'] || 27017,
     name: options['db-name'] || 'wAVdioDB'
   },
   server: {
