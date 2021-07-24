@@ -40,7 +40,7 @@ module.exports.up = async function () {
   console.log('Upgrading to 31_multiple_languages')
 
   try {
-    const db = await MongoClient.connect(uri, {useUnifiedTopology: true})
+    const db = await MongoClient.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
     const dbo = db.db(dbName)
 
     /* Create settings collection */

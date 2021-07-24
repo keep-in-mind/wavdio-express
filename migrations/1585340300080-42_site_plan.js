@@ -50,7 +50,7 @@ module.exports.down = async function () {
   console.log('Downgrading from 42_site_plan')
 
   try {
-    const db = await MongoClient.connect(uri, {useUnifiedTopology: true})
+    const db = await MongoClient.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
     const dbo = db.db(dbName)
 
     /* Delete site plan text from all languages */

@@ -50,7 +50,7 @@ module.exports.down = async function () {
   console.log('Downgrading from 40_imprint')
 
   try {
-    const db = await MongoClient.connect(uri, {useUnifiedTopology: true})
+    const db = await MongoClient.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
     const dbo = db.db(dbName)
 
     /* Delete imprint from all languages */

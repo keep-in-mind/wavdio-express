@@ -40,7 +40,7 @@ module.exports.up = async function () {
   console.log('Upgrading to 30_welcome_page')
 
   try {
-    const db = await MongoClient.connect(uri)
+    const db = await MongoClient.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
     const dbo = db.db(dbName)
 
     const museum = await dbo.collection('museums').findOne({})
