@@ -1,6 +1,6 @@
 {
   "name": "wavdio-express",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "scripts": {
     "start": "node ./bin/server.js --port 8080 --db-uri $DB_URI",
     "test": "mocha",
