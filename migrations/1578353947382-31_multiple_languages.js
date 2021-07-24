@@ -2,6 +2,8 @@ const mongodb = require('mongodb')
 
 const config = require('../config')
 
+const migrate_db = require('../migrate_db')
+
 const MongoClient = mongodb.MongoClient
 
 //
@@ -15,7 +17,11 @@ const dbUser = config['db-user']
 const dbPassword = config['db-password']
 
 let uri;
-if (dbUser === null && dbPassword === null) {
+
+if (migrate_db.uri) {
+  uri = migrate_db.uri
+
+} else if (dbUser === null && dbPassword === null) {
   uri = `mongodb://${dbHost}:${dbPort}/${dbName}`
 
 } else if (dbUser !== null && dbPassword !== null) {
@@ -34,7 +40,7 @@ module.exports.up = async function () {
   console.log('Upgrading to 31_multiple_languages')
 
   try {
-    const db = await MongoClient.connect(uri, {useUnifiedTopology: true})
+    const db = await MongoClient.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
     const dbo = db.db(dbName)
 
     /* Create settings collection */
