@@ -33,6 +33,9 @@ app.use(express.urlencoded({extended: true}));
 app.use(express.json());
 // app.use(xss());
 
+app.get('/', (req, res) =>
+  res.status(200).send())
+
 app.use('/api/v2', museumRouter);
 app.use('/api/v2', expositionRouter);
 app.use('/api/v2', exhibitRouter);
