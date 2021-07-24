@@ -46,6 +46,7 @@ const optionDefinitions = [
   { name: 'db-host', type: String },
   { name: 'db-port', type: Number },
   { name: 'db-name', type: String },
+  { name: 'db-uri', type: String },
   { name: 'port', type: Number },
   { name: 'help', type: Boolean },
 ]
@@ -71,6 +72,11 @@ if (options['help']) {
           name: 'db-name',
           typeLabel: '{underline string}',
           description: 'MongoDB host, default: wavdio'
+        },
+        {
+          name: 'db-uri',
+          typeLabel: '{underline string}',
+          description: 'MongoDB URI'
         },
         {
           name: 'port',
@@ -158,7 +164,11 @@ async function connectDB (host = 'localhost', port = 27017, dbName = 'wAVdioDB')
   const dbPassword = config['db-password'];
 
   let uri;
-  if (dbUser === null && dbPassword === null) {
+
+  if (options['db-uri']) {
+    uri = options['db-uri']
+
+  } else if (dbUser === null && dbPassword === null) {
     uri = `mongodb://${host}:${port}/${dbName}`
 
   } else if (dbUser !== null && dbPassword !== null) {
