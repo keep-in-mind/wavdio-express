@@ -24,6 +24,8 @@ const settingRouter = require('./routes/setting')
 const userSchema = require('./models/user');
 const museumSchema = require('./models/museum');
 
+const migrate_db = require('./migrations/migrate_db')
+
 const config = require('./config')
 
 const app = express();
@@ -179,6 +181,7 @@ async function connectDB (host = 'localhost', port = 27017, dbName = 'wAVdioDB')
     process.exit();
   }
 
+  migrate_db.uri = uri
   console.log(`Connect to MongoDB ${uri}`)
   return mongoose.connect(uri, {useMongoClient: true})
 }

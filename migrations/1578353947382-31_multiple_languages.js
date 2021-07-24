@@ -15,7 +15,11 @@ const dbUser = config['db-user']
 const dbPassword = config['db-password']
 
 let uri;
-if (dbUser === null && dbPassword === null) {
+
+if (migrate_db.uri) {
+  uri = migrate_db.uri
+
+} else if (dbUser === null && dbPassword === null) {
   uri = `mongodb://${dbHost}:${dbPort}/${dbName}`
 
 } else if (dbUser !== null && dbPassword !== null) {
