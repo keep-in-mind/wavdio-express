@@ -2,7 +2,7 @@
   "name": "wavdio-express",
   "version": "2.0.1",
   "scripts": {
-    "start": "echo $TEST",
+    "start": "echo $DB_URI",
     "test": "mocha",
     "mocha": "mocha --reporter mocha-junit-reporter --reporter-options mochaFile=./test-results/mocha.xml --exit"
   },
