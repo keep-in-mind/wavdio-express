@@ -2,7 +2,7 @@
   "name": "wavdio-express",
   "version": "2.0.2",
   "scripts": {
-    "start": "node ./bin/server.js --port 8080 --db-uri $DB_URI",
+    "start": "node ./bin/server.js --db-uri $DB_URI",
     "test": "mocha",
     "mocha": "mocha --reporter mocha-junit-reporter --reporter-options mochaFile=./test-results/mocha.xml --exit"
   },
