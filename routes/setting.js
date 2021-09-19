@@ -1,75 +1,75 @@
-const express = require('express');
+const express = require('express')
 
-const Setting = require('../models/setting');
+const Setting = require('../models/setting')
 
-const router = express.Router();
-const logger = require('../logging');
+const router = express.Router()
+const logger = require('../logging')
 
-const user = require('../models/user');
+const user = require('../models/user')
 
 router.route('/setting')
 
   .get((request, response) => {
     Setting.find((error, settings) => {
       if (error) {
-        logger.error(error);
-        response.status(500).send(error);
+        logger.error(error)
+        response.status(500).send(error)
       } else {
-        response.status(200).json(settings);
+        response.status(200).json(settings)
       }
-    });
+    })
   })
 
   .post((request, response) => {
 
     user.findOne({}, function (err, user_) {
       if (user_.session_id !== request.headers.authorization) {
-        return response.status(401).json({ 'message': 'unauthorized' })
+        return response.status(401).json({'message': 'unauthorized'})
       } else {
         Setting.create(request.body, (error, setting) => {
           if (error) {
-            logger.log(error);
-            response.status(500).send(error);
+            logger.log(error)
+            response.status(500).send(error)
           } else {
-            response.status(201).json(setting);
+            response.status(201).json(setting)
           }
-        });
+        })
       }
     })
-  });
+  })
 
 router.route('/setting/:setting_id')
 
   .get((request, response) => {
     Setting.findById(request.params.setting_id, (error, setting) => {
       if (error) {
-        logger.error(error);
-        response.status(500).send(error);
+        logger.error(error)
+        response.status(500).send(error)
       } else if (setting) {
-        response.status(200).json(setting);
+        response.status(200).json(setting)
       } else {
-        response.status(404).send();
+        response.status(404).send()
       }
-    });
+    })
   })
 
   .put((request, response) => {
     user.findOne({}, function (err, user_) {
       if (user_.session_id !== request.headers.authorization) {
-        return response.status(401).json({ 'message': 'unauthorized' })
+        return response.status(401).json({'message': 'unauthorized'})
       } else {
-        const body = request.body;
-        delete body._id;
-        Setting.findOneAndUpdate({ _id: request.params.setting_id }, body, (error, setting) => {
+        const body = request.body
+        delete body._id
+        Setting.findOneAndUpdate({_id: request.params.setting_id}, body, (error, setting) => {
           if (error) {
-            logger.log(error);
-            response.status(500).send(error);
+            logger.log(error)
+            response.status(500).send(error)
           } else if (setting) {
-            response.status(200).json(setting);
+            response.status(200).json(setting)
           } else {
-            response.status(404).send();
+            response.status(404).send()
           }
-        });
+        })
       }
     })
   })
@@ -78,19 +78,19 @@ router.route('/setting/:setting_id')
 
     user.findOne({}, function (err, user_) {
       if (user_.session_id !== request.headers.authorization) {
-        return response.status(401).json({ 'message': 'unauthorized' })
+        return response.status(401).json({'message': 'unauthorized'})
 
       } else {
-        const body = request.body;
-        delete body._id;
-        Setting.updateOne({ _id: request.params.setting_id }, body, (error, setting) => {
+        const body = request.body
+        delete body._id
+        Setting.updateOne({_id: request.params.setting_id}, body, (error, setting) => {
           if (error) {
-            logger.log(error);
-            response.status(500).send(error);
+            logger.log(error)
+            response.status(500).send(error)
           } else {
-            response.status(200).json(setting);
+            response.status(200).json(setting)
           }
-        });
+        })
       }
     })
   })
@@ -99,20 +99,20 @@ router.route('/setting/:setting_id')
 
     user.findOne({}, function (err, user_) {
       if (user_.session_id !== request.headers.authorization) {
-        return response.status(401).json({ 'message': 'unauthorized' })
+        return response.status(401).json({'message': 'unauthorized'})
       } else {
-        Setting.findOneAndRemove({ _id: request.params.setting_id }, (error, setting) => {
+        Setting.findOneAndRemove({_id: request.params.setting_id}, (error, setting) => {
           if (error) {
-            logger.log(error);
-            response.status(500).send(error);
+            logger.log(error)
+            response.status(500).send(error)
           } else if (setting) {
-            response.status(200).json(setting);
+            response.status(200).json(setting)
           } else {
-            response.status(404).send();
+            response.status(404).send()
           }
-        });
+        })
       }
     })
-  });
+  })
 
-module.exports = router;
+module.exports = router

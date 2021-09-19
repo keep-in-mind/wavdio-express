@@ -1,12 +1,12 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongoose')
 
-const Image = require('./image');
-const View = require('./view');
-const Like = require('./like');
-const Comment = require('./comment');
-const ExpositionContent = require('./exposition-content');
+const Image = require('./image')
+const View = require('./view')
+const Like = require('./like')
+const Comment = require('./comment')
+const ExpositionContent = require('./exposition-content')
 
-const Schema = mongoose.Schema;
+const Schema = mongoose.Schema
 
 module.exports = new Schema({
   museum: {type: mongoose.Schema.Types.ObjectId, ref: 'Museum', required: true},
@@ -24,4 +24,4 @@ module.exports = new Schema({
   contents: [ExpositionContent]
 }, {
   strict: 'throw'
-});
+})

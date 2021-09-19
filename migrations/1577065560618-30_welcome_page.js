@@ -16,7 +16,7 @@ const dbName = config['db-name']
 const dbUser = config['db-user']
 const dbPassword = config['db-password']
 
-let uri;
+let uri
 
 if (migrate_db.uri) {
   uri = migrate_db.uri
@@ -28,8 +28,8 @@ if (migrate_db.uri) {
   uri = `mongodb://${dbUser}:${dbPassword}@${dbHost}:${dbPort}/${dbName}`
 
 } else {
-  console.error('Error in config.json. Must provide both user and password, or neither.');
-  process.exit();
+  console.error('Error in config.json. Must provide both user and password, or neither.')
+  process.exit()
 }
 
 //
@@ -40,7 +40,7 @@ module.exports.up = async function () {
   console.log('Upgrading to 30_welcome_page')
 
   try {
-    const db = await MongoClient.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
+    const db = await MongoClient.connect(uri, {useNewUrlParser: true, useUnifiedTopology: true})
     const dbo = db.db(dbName)
 
     const museum = await dbo.collection('museums').findOne({})

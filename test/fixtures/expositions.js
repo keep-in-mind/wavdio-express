@@ -98,4 +98,4 @@ module.exports = {
       info: 'Die berühmtesten Kunstwerke von Salvador Dali'
     }]
   }
-};
+}

@@ -6,30 +6,30 @@ module.exports = {
     },
 
     contents: [{
-        lang: 'en',
+      lang: 'en',
 
-        name: 'German Museum',
-        welcomeText: 'Welcome to the German Museum!',
-        termsOfUse: 'terms of use...',
-        privacyTerms: 'privacy terms...',
+      name: 'German Museum',
+      welcomeText: 'Welcome to the German Museum!',
+      termsOfUse: 'terms of use...',
+      privacyTerms: 'privacy terms...',
 
-        sitePlan: {
-          filename: 'site_plan_en.png',
-          alternativeText: 'Site Plan'
-        }
-      }, {
-        lang: 'de',
+      sitePlan: {
+        filename: 'site_plan_en.png',
+        alternativeText: 'Site Plan'
+      }
+    }, {
+      lang: 'de',
 
-        name: 'Deutsches Museum',
-        welcomeText: 'Willkommen im Deutschen Museum!',
-        termsOfUse: 'Nutzungsbedingungen',
-        privacyTerms: 'Datenschutzrichtlinie',
+      name: 'Deutsches Museum',
+      welcomeText: 'Willkommen im Deutschen Museum!',
+      termsOfUse: 'Nutzungsbedingungen',
+      privacyTerms: 'Datenschutzrichtlinie',
 
-        sitePlan: {
-          filename: 'site_plan_de.png',
-          alternativeText: 'Lageplan'
-        }
-      }]
+      sitePlan: {
+        filename: 'site_plan_de.png',
+        alternativeText: 'Lageplan'
+      }
+    }]
   },
 
   louvre: {
@@ -64,4 +64,4 @@ module.exports = {
       }
     }]
   }
-};
+}

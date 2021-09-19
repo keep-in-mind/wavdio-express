@@ -1,8 +1,8 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongoose')
 
-const Image = require('./image');
+const Image = require('./image')
 
-const Schema = mongoose.Schema;
+const Schema = mongoose.Schema
 
 module.exports = new Schema({
   lang: {type: String, required: true},
@@ -20,4 +20,4 @@ module.exports = new Schema({
   sitePlanText: {type: String, required: false}
 }, {
   strict: 'throw'
-});
+})
