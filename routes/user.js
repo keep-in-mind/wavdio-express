@@ -1,8 +1,9 @@
 const express = require('express')
 const router = express.Router()
-let jwt = require('express-jwt')
+let expressJwt = require('express-jwt')
 
-const auth = jwt({
+const auth = expressJwt({
+  algorithms: ['RS256'],
   secret: 'MY_SECRET',
   userProperty: 'payload'
 })

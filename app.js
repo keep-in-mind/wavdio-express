@@ -4,7 +4,7 @@ const mongoose = require('mongoose')
 const http = require('http')
 const createError = require('http-errors')
 const path = require('path')
-const rfs = require('rotating-file-stream')
+const rotatingFileStream = require('rotating-file-stream')
 const favicon = require('serve-favicon')
 const morganLogger = require('morgan')
 const xss = require('xss-clean')
@@ -144,7 +144,7 @@ const loggerFormat = ':date[web] - :status - :method - :url :' +
   ' \n\t Response Header: :res[header] \n\t ResponseTime: :response-time ms'
 
 // create a rotating write stream
-const accessLogStream = rfs('express.log', {
+const accessLogStream = rotatingFileStream.createStream('express.log', {
   size: '10000000B', // rotate every 10 MegaBytes written
   interval: '1d', // rotate daily
   maxFiles: 1,
