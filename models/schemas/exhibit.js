@@ -1,11 +1,11 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongoose')
 
-const View = require('./view');
-const Like = require('./like');
-const Comment = require('./comment');
-const ExhibitContent = require('./exhibit-content');
+const View = require('./view')
+const Like = require('./like')
+const Comment = require('./comment')
+const ExhibitContent = require('./exhibit-content')
 
-const Schema = mongoose.Schema;
+const Schema = mongoose.Schema
 
 module.exports = new Schema({
   parent: {type: Schema.Types.ObjectId, refPath: 'parentModel', required: true},
@@ -22,4 +22,4 @@ module.exports = new Schema({
   contents: [ExhibitContent]
 }, {
   strict: 'throw'
-});
+})

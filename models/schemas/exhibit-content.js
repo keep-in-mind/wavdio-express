@@ -1,11 +1,11 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongoose')
 
-const Image = require('./image');
-const Audio = require('./audio');
-const Video = require('./video');
-const Transcript = require('./transcript');
+const Image = require('./image')
+const Audio = require('./audio')
+const Video = require('./video')
+const Transcript = require('./transcript')
 
-const Schema = mongoose.Schema;
+const Schema = mongoose.Schema
 
 module.exports = new Schema({
   lang: {type: String, required: true},
@@ -19,4 +19,4 @@ module.exports = new Schema({
   video: [Video],
 }, {
   strict: 'throw'
-});
+})

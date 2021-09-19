@@ -1,60 +1,57 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const mongoose = require('mongoose');
-const http = require('http');
-const createError = require('http-errors');
-const path = require('path');
-const rfs = require('rotating-file-stream');
-const favicon = require('serve-favicon');
-const morganLogger = require('morgan');
-const xss = require('xss-clean');
-const commandLineArgs = require('command-line-args');
-const commandLineUsage = require('command-line-usage');
+const express = require('express')
+const mongoose = require('mongoose')
+const http = require('http')
+const createError = require('http-errors')
+const path = require('path')
+const rotatingFileStream = require('rotating-file-stream')
+const morganLogger = require('morgan')
+const commandLineArgs = require('command-line-args')
+const commandLineUsage = require('command-line-usage')
 const migrate = require('migrate')
 
-const museumRouter = require('./routes/museum');
-const expositionRouter = require('./routes/exposition');
-const exhibitRouter = require('./routes/exhibit');
-const infopageRouter = require('./routes/infopage');
-const uploadRouter = require('./routes/upload');
-const loggingRouter = require('./routes/logging');
-const userRouter = require('./routes/user');
+const museumRouter = require('./routes/museum')
+const expositionRouter = require('./routes/exposition')
+const exhibitRouter = require('./routes/exhibit')
+const infopageRouter = require('./routes/infopage')
+const uploadRouter = require('./routes/upload')
+const loggingRouter = require('./routes/logging')
+const userRouter = require('./routes/user')
 const settingRouter = require('./routes/setting')
 
-const userSchema = require('./models/user');
-const museumSchema = require('./models/museum');
+const userSchema = require('./models/user')
+const museumSchema = require('./models/museum')
 
 const migrate_db = require('./migrate_db')
 
 const config = require('./config')
 
-const app = express();
-app.use(express.urlencoded({extended: true}));
-app.use(express.json());
+const app = express()
+app.use(express.urlencoded({extended: true}))
+app.use(express.json())
 // app.use(xss());
 
 app.get('/', (req, res) =>
   res.status(200).send())
 
-app.use('/api/v2', museumRouter);
-app.use('/api/v2', expositionRouter);
-app.use('/api/v2', exhibitRouter);
-app.use('/api/v2', infopageRouter);
-app.use('/upload', uploadRouter);
-app.use('/api/v2', userRouter);
-app.use('/api/v2', settingRouter);
+app.use('/api/v2', museumRouter)
+app.use('/api/v2', expositionRouter)
+app.use('/api/v2', exhibitRouter)
+app.use('/api/v2', infopageRouter)
+app.use('/upload', uploadRouter)
+app.use('/api/v2', userRouter)
+app.use('/api/v2', settingRouter)
 
 //////////////////////////////////////////////////////////////
 //                Parse comand line args                    //
 //////////////////////////////////////////////////////////////
 
 const optionDefinitions = [
-  { name: 'db-host', type: String },
-  { name: 'db-port', type: Number },
-  { name: 'db-name', type: String },
-  { name: 'db-uri', type: String },
-  { name: 'port', type: Number },
-  { name: 'help', type: Boolean },
+  {name: 'db-host', type: String},
+  {name: 'db-port', type: Number},
+  {name: 'db-name', type: String},
+  {name: 'db-uri', type: String},
+  {name: 'port', type: Number},
+  {name: 'help', type: Boolean},
 ]
 
 const options = commandLineArgs(optionDefinitions)
@@ -113,25 +110,25 @@ settingsDefault = {
   server: {
     port: process.env.PORT || options['port'] || 3000
   }
-};
+}
 
 //////////////////////////////////////////////////////////////
 //                Captive Portal Rederictions               //
 //////////////////////////////////////////////////////////////
 
-app.all('/redirect',function (req, res){
-  res.redirect('/');
-});
+app.all('/redirect', function (req, res) {
+  res.redirect('/')
+})
 
-app.all('/generate_204',function (req, res){
-  res.redirect('/');
-});
+app.all('/generate_204', function (req, res) {
+  res.redirect('/')
+})
 
 //////////////////////////////////////////////////////////////
 //             End Captive Portal Rederictions              //
 //////////////////////////////////////////////////////////////
 
-app.use('/api/v2', loggingRouter);
+app.use('/api/v2', loggingRouter)
 
 //////////////////////////////////////////////////////////////
 //                        LOGGING                           //
@@ -141,19 +138,19 @@ app.use('/api/v2', loggingRouter);
 
 const loggerFormat = ':date[web] - :status - :method - :url :' +
   ' \n\t Remote Adress: :remote-addr \n\t Request Header: :req[header]' +
-  ' \n\t Response Header: :res[header] \n\t ResponseTime: :response-time ms';
+  ' \n\t Response Header: :res[header] \n\t ResponseTime: :response-time ms'
 
 // create a rotating write stream
-const accessLogStream = rfs('express.log', {
-  size: "10000000B", // rotate every 10 MegaBytes written
-  interval: "1d", // rotate daily
+const accessLogStream = rotatingFileStream.createStream('express.log', {
+  size: '10000000B', // rotate every 10 MegaBytes written
+  interval: '1d', // rotate daily
   maxFiles: 1,
-  path: "logs"
-});
+  path: 'logs'
+})
 
 app.use(morganLogger(loggerFormat, {
   stream: accessLogStream
-}));
+}))
 
 //////////////////////////////////////////////////////////////
 //                       END LOGGING                        //
@@ -161,15 +158,15 @@ app.use(morganLogger(loggerFormat, {
 
 // database driver
 
-mongoose.Promise = require('bluebird');
+mongoose.Promise = require('bluebird')
 
-async function connectDB (host = 'localhost', port = 27017, dbName = 'wAVdioDB') {
+async function connectDB (host = 'localhost', port = 27017, dbName) {
 
-  dbName = config['db-name'];
-  const dbUser = config['db-user'];
-  const dbPassword = config['db-password'];
+  dbName = config['db-name']
+  const dbUser = config['db-user']
+  const dbPassword = config['db-password']
 
-  let uri;
+  let uri
 
   if (options['db-uri']) {
     uri = options['db-uri']
@@ -181,36 +178,35 @@ async function connectDB (host = 'localhost', port = 27017, dbName = 'wAVdioDB')
     uri = `mongodb://${dbUser}:${dbPassword}@${host}:${port}/${dbName}`
 
   } else {
-    console.error('Error in config.json. Must provide both user and password, or neither.');
-    process.exit();
+    console.error('Error in config.json. Must provide both user and password, or neither.')
+    process.exit()
   }
 
   migrate_db.uri = uri
   console.log(`Connect to MongoDB ${uri}`)
-  return mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
+  return mongoose.connect(uri, {useNewUrlParser: true, useUnifiedTopology: true})
 }
 
-
-app.use(express.json());
-app.use(express.static(path.join(__dirname, 'dist/wAVdio')));
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-app.use('*', express.static(path.join(__dirname, 'dist/wAVdio')));
+app.use(express.json())
+app.use(express.static(path.join(__dirname, 'dist/wAVdio')))
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
+app.use('*', express.static(path.join(__dirname, 'dist/wAVdio')))
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
-  next(createError(404));
-});
+  next(createError(404))
+})
 
 // error handler
 app.use(function (err, req, res) {
   // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+  res.locals.message = err.message
+  res.locals.error = req.app.get('env') === 'development' ? err : {}
 
   // render the error page
-  res.status(err.status || 500);
-  res.sendStatus(err.status);
-});
+  res.status(err.status || 500)
+  res.sendStatus(err.status)
+})
 
 //////////
 
@@ -218,27 +214,27 @@ app.use(function (err, req, res) {
  * Event listener for HTTP server "error" event.
  */
 
-function onError(error) {
+function onError (error) {
   if (error.syscall !== 'listen') {
-    throw error;
+    throw error
   }
 
   const bind = typeof port === 'string'
     ? 'Pipe ' + port
-    : 'Port ' + port;
+    : 'Port ' + port
 
   // handle specific listen errors with friendly messages
   switch (error.code) {
     case 'EACCES':
-      console.error(bind + ' requires elevated privileges');
-      process.exit(1);
-      break;
+      console.error(bind + ' requires elevated privileges')
+      process.exit(1)
+      break
     case 'EADDRINUSE':
-      console.error(bind + ' is already in use');
-      process.exit(1);
-      break;
+      console.error(bind + ' is already in use')
+      process.exit(1)
+      break
     default:
-      throw error;
+      throw error
   }
 }
 
@@ -246,27 +242,27 @@ function onError(error) {
  * Event listener for HTTP server "listening" event.
  */
 
-const server = http.createServer(app);
+const server = http.createServer(app)
 
-const debug = require('debug')('wAVdio:server');
+const debug = require('debug')('wAVdio:server')
 
-function onListening() {
-  const addr = server.address();
+function onListening () {
+  const addr = server.address()
   const bind = typeof addr === 'string'
     ? 'pipe ' + addr
-    : 'port ' + addr.port;
-  debug('wAVdio is listening on ' + bind);
+    : 'port ' + addr.port
+  debug('wAVdio is listening on ' + bind)
 }
 
-server.on('error', onError);
-server.on('listening', onListening);
+server.on('error', onError)
+server.on('listening', onListening)
 
 /**
  * Export functios to start and stop the server
  */
 
-function listen(server, settings) {
-  server.listen(settings.server.port);
+function listen (server, settings) {
+  server.listen(settings.server.port)
 
   console.log(`Listening on port ${settings.server.port}`)
 
@@ -275,21 +271,21 @@ function listen(server, settings) {
     'hash': 'f5feae01aabaa38251fde4cdf7cb32f83b48fb8b646a93632a4bf3d0e87f9c82f54783f1b16b135d54d732ea5620d669b90bbd83ef1b19a22e58d53d30619da5',
     'salt': '244604cf5d7bf393cf8fd4dcc45e2ae2',
     'username': 'admin'
-  };
+  }
 
   userSchema.findOne({}, function (err, user) {
     if (!user) {
-      userSchema.create(userquery, (err, user) => {
+      userSchema.create(userquery, (err) => {
         if (err) {
           console.log(err)
         } else {
-          console.log('Login has been created. Name: admin - Password: hsrm. Please change your credentials');
+          console.log('Login has been created. Name: admin - Password: hsrm. Please change your credentials')
         }
-      });
+      })
     } else {
       console.log('Login already exists - skipped')
     }
-  });
+  })
 
   let museumquery = {
     'contents': [{
@@ -311,28 +307,28 @@ function listen(server, settings) {
     }, {
       'lang': 'fr'
     }]
-  };
+  }
 
   museumSchema.findOne({}, function (err, museum) {
     if (!museum) {
-      museumSchema.create(museumquery, (err, museum) => {
+      museumSchema.create(museumquery, (err) => {
         if (err) {
           console.log(err)
         } else {
-          console.log('Museum has been created. Can be changed in the admin interface');
+          console.log('Museum has been created. Can be changed in the admin interface')
         }
-      });
+      })
     } else {
       console.log('Museum already exists - skipped')
     }
-  });
+  })
 }
 
 module.exports.listen = async function (settings = settingsDefault) {
   try {
-    await connectDB(settings.db.host, settings.db.port, settings.db.name);
-    console.log('MongoDB connection established');
-    const server = this.server;
+    await connectDB(settings.db.host, settings.db.port, settings.db.name)
+    console.log('MongoDB connection established')
+    const server = this.server
 
     migrate.load({
       stateStore: '.migrate'
@@ -351,14 +347,14 @@ module.exports.listen = async function (settings = settingsDefault) {
     })
 
   } catch (err) {
-    console.error(err);
+    console.error(err)
   }
-};
+}
 
 module.exports.close = function (callback) {
-  this.server.close(callback);
+  this.server.close(callback)
   console.log('Server closed')
-};
+}
 
-module.exports.server = server;
-module.exports.defaultSettings = settingsDefault;
+module.exports.server = server
+module.exports.defaultSettings = settingsDefault

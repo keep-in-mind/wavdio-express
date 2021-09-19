@@ -1,20 +1,12 @@
-const express = require('express');
-const router = express.Router();
-let jwt = require('express-jwt');
+const express = require('express')
+const router = express.Router()
 
-const auth = jwt({
-  secret: 'MY_SECRET',
-  userProperty: 'payload'
-});
+const crtlAuth = require('../controllers/authentification')
 
-const User = require('../models/user');
+router.route('/login').post(crtlAuth.login)
 
-const crtlAuth = require('../controllers/authentification');
+router.route('/register').post(crtlAuth.register)
 
-router.route('/login').post(crtlAuth.login);
+router.route('/update').post(crtlAuth.update)
 
-router.route('/register').post(crtlAuth.register);
-
-router.route('/update').post(crtlAuth.update);
-
-module.exports = router;
+module.exports = router

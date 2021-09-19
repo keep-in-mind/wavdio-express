@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-const app = require('../app');
+const app = require('../app')
 
-app.listen();
+app.listen()
 
-module.exports = app.server;
+module.exports = app.server

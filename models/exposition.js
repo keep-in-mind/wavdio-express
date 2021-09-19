@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongoose')
 
-const Exposition = require('./schemas/exposition');
+const Exposition = require('./schemas/exposition')
 
-module.exports = mongoose.model('Exposition', Exposition);
+module.exports = mongoose.model('Exposition', Exposition)
