@@ -214,7 +214,6 @@ describe('Museum', function () {
       // AND    a new museum
 
       const nonExistingId = '012345678901234567890123'
-      const newMuseum = museums['germanMuseum']
 
       // WHEN   trying to replace the non-existing museum with the new one
 

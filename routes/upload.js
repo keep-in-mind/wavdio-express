@@ -6,7 +6,6 @@ const router = express.Router()
 const logger = require('../logging')
 
 router.use(fileUpload({createParentPath: true}))
-const user = require('../models/user')
 
 router
 

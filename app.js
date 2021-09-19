@@ -1,13 +1,10 @@
 const express = require('express')
-const bodyParser = require('body-parser')
 const mongoose = require('mongoose')
 const http = require('http')
 const createError = require('http-errors')
 const path = require('path')
 const rotatingFileStream = require('rotating-file-stream')
-const favicon = require('serve-favicon')
 const morganLogger = require('morgan')
-const xss = require('xss-clean')
 const commandLineArgs = require('command-line-args')
 const commandLineUsage = require('command-line-usage')
 const migrate = require('migrate')
@@ -163,7 +160,7 @@ app.use(morganLogger(loggerFormat, {
 
 mongoose.Promise = require('bluebird')
 
-async function connectDB (host = 'localhost', port = 27017, dbName = 'wAVdioDB') {
+async function connectDB (host = 'localhost', port = 27017, dbName) {
 
   dbName = config['db-name']
   const dbUser = config['db-user']
@@ -278,7 +275,7 @@ function listen (server, settings) {
 
   userSchema.findOne({}, function (err, user) {
     if (!user) {
-      userSchema.create(userquery, (err, user) => {
+      userSchema.create(userquery, (err) => {
         if (err) {
           console.log(err)
         } else {
@@ -314,7 +311,7 @@ function listen (server, settings) {
 
   museumSchema.findOne({}, function (err, museum) {
     if (!museum) {
-      museumSchema.create(museumquery, (err, museum) => {
+      museumSchema.create(museumquery, (err) => {
         if (err) {
           console.log(err)
         } else {

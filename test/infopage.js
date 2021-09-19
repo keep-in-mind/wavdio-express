@@ -187,7 +187,6 @@ describe('Infopage', function () {
       // AND    a new infopage
 
       const nonExistingId = '012345678901234567890123'
-      const newInfopage = infopages['help']
 
       // WHEN   trying to replace the non-existing infopage with the new one
 

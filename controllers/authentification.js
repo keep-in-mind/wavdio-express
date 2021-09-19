@@ -1,10 +1,6 @@
 const mongoose = require('mongoose')
-const User = mongoose.model('User')
 
-const sendJSONresponse = function (res, status, content) {
-  res.status(status)
-  res.json(content)
-}
+const User = mongoose.model('User')
 
 module.exports.register = function (req, res) {
 
@@ -16,7 +12,7 @@ module.exports.register = function (req, res) {
 
   user.setSession()
 
-  user.save(function (err) {
+  user.save(function () {
     res.status(200)
     res.json({
       'token': user.generateJwt()
@@ -35,7 +31,7 @@ module.exports.update = function (req, res) {
     } else {
       res.status(404).json({'message': 'Wrong Data'})
     }
-    user.save(function (err) {
+    user.save(function () {
       res.status(200)
       res.json({
         'token': user.generateJwt()
@@ -46,7 +42,6 @@ module.exports.update = function (req, res) {
 
 module.exports.login = function (req, res) {
   User.findOne({}, function (err, _user) {
-    let token
     if (err) return res.status(404).json(err)
     if (!_user.validPassword(req.body.username, req.body.password)) {
       res.status(401).json({'message': 'Wrong crendentails'})
