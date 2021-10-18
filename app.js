@@ -258,7 +258,7 @@ server.on('error', onError)
 server.on('listening', onListening)
 
 /**
- * Export functios to start and stop the server
+ * Export functions to start and stop the server
  */
 
 function listen (server, settings) {
