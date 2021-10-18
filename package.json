@@ -1,11 +1,14 @@
 {
   "name": "wavdio-express",
-  "version": "2.0.3",
+  "version": "2.0.4-test-5",
   "scripts": {
     "start": "node ./bin/server.js --db-uri $DB_URI",
     "start:windows": "node ./bin/server.js --db-uri %DB_URI%",
     "test": "mocha",
     "mocha": "mocha --reporter mocha-junit-reporter --reporter-options mochaFile=./test-results/mocha.xml --exit"
+  },
+  "bin": {
+    "wavdio-express": "bin/server.js"
   },
   "dependencies": {
     "bluebird": "^3.7.2",

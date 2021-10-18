@@ -258,7 +258,7 @@ server.on('error', onError)
 server.on('listening', onListening)
 
 /**
- * Export functios to start and stop the server
+ * Export functions to start and stop the server
  */
 
 function listen (server, settings) {
@@ -331,7 +331,8 @@ module.exports.listen = async function (settings = settingsDefault) {
     const server = this.server
 
     migrate.load({
-      stateStore: '.migrate'
+      stateStore: '.migrate',
+      migrationsDirectory: path.resolve(__dirname, 'migrations/')
     }, function (err, set) {
       if (err) {
         throw err

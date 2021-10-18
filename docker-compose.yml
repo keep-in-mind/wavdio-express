@@ -1,0 +1,25 @@
+version: "3.7"
+
+networks:
+  wavdio-net:
+
+services:
+
+  wavdio-express:
+    container_name: wavdio-express
+    image: keepinmindbot/wavdio-express:2.0.4
+    command: node ./bin/server.js --db-uri mongodb://wavdio-mongo:27017/
+    networks:
+      - wavdio-net
+    ports:
+      - "3000:3000"
+    depends_on:
+      - wavdio-mongo
+
+  wavdio-mongo:
+    container_name: wavdio-mongo
+    image: mongo:5-focal
+    networks:
+      - wavdio-net
+    expose:
+      - 27017
