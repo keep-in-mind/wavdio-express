@@ -12,7 +12,9 @@ $ npx -y wavdio-express
 Alternatively, `wavdio-express` can also be run via Docker:
 
 ```bash
-$ docker run --name wavdio-express --rm --publish 3000:3000 --detach wavio-express
+$ git clone https://github.com/keep-in-mind/wavdio-express.git
+$ cd wavdio-express/
+$ docker-compose up
 ```
 
 After starting, the API can be tested at http://localhost:3000/api/v2/museum .
