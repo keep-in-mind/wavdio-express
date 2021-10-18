@@ -32,4 +32,8 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: keepinmindbot/wavdio-express:latest
+          tags: |
+            keepinmindbot/wavdio-express:latest
+            keepinmindbot/wavdio-express:2
+            keepinmindbot/wavdio-express:2.0
+            keepinmindbot/wavdio-express:2.0.4
