@@ -45,19 +45,24 @@ const museum = {
 module.exports.up = async function () {
   console.log('Upgrading to version 0 (initial)')
 
-  const db = await MongoClient.connect(dbUri)
-  const dbo = db.db('wavdio-express')
-  const meta = await dbo.collection('meta').findOne()
+  let db
 
-  if (meta === null) {
-    await up(dbo)
+  try {
+    db = await MongoClient.connect(dbUri)
+    const dbo = db.db('wavdio-express')
+    const meta = await dbo.collection('meta').findOne()
 
-    await dbo.collection('meta').insertOne({version: 0})
-  } else {
-    console.warn('Skipping')
+    if (meta === null) {
+      await up(dbo)
+
+      await dbo.collection('meta').insertOne({version: 0})
+    } else {
+      console.warn('Skipping')
+    }
+
+  } finally {
+    await db.close()
   }
-
-  await db.close()
 }
 
 async function up (dbo) {
@@ -72,19 +77,24 @@ async function up (dbo) {
 module.exports.down = async function () {
   console.log('Downgrading from version 0 (initial)')
 
-  const db = await MongoClient.connect(dbUri)
-  const dbo = db.db('wavdio-express')
-  const meta = await dbo.collection('meta').findOne()
+  let db
 
-  if (meta.version === 0) {
-    await down(dbo)
+  try {
+    db = await MongoClient.connect(dbUri)
+    const dbo = db.db('wavdio-express')
+    const meta = await dbo.collection('meta').findOne()
 
-    await dbo.collection('meta').drop()
-  } else {
-    console.warn('Skipping')
+    if (meta.version === 0) {
+      await down(dbo)
+
+      await dbo.collection('meta').drop()
+    } else {
+      console.warn('Skipping')
+    }
+
+  } finally {
+    await db.close()
   }
-
-  await db.close()
 }
 
 async function down (dbo) {

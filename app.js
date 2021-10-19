@@ -18,9 +18,6 @@ const loggingRouter = require('./routes/logging')
 const userRouter = require('./routes/user')
 const settingRouter = require('./routes/setting')
 
-const userSchema = require('./models/user')
-const museumSchema = require('./models/museum')
-
 const migrate_db = require('./migrate_db')
 
 const config = require('./config')
