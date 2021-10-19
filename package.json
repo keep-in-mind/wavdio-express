@@ -1,6 +1,6 @@
 {
   "name": "wavdio-express",
-  "version": "2.0.4",
+  "version": "3.0.0",
   "scripts": {
     "start": "node ./bin/server.js --db-uri $DB_URI",
     "start:windows": "node ./bin/server.js --db-uri %DB_URI%",
