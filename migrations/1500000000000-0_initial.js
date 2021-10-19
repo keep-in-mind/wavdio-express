@@ -45,23 +45,19 @@ const museum = {
 module.exports.up = async function () {
   console.log('Upgrading to version 0 (initial)')
 
-  try {
-    const db = await MongoClient.connect(dbUri)
-    const dbo = db.db('wavdio-express')
-    const meta = await dbo.collection('meta').findOne()
+  const db = await MongoClient.connect(dbUri)
+  const dbo = db.db('wavdio-express')
+  const meta = await dbo.collection('meta').findOne()
 
-    if (meta === null) {
-      await up(dbo)
+  if (meta === null) {
+    await up(dbo)
 
-      await dbo.collection('meta').insertOne({version: 0})
-    } else {
-      console.warn('Skipping')
-    }
-
-    await db.close()
-  } catch (error) {
-    console.error(error)
+    await dbo.collection('meta').insertOne({version: 0})
+  } else {
+    console.warn('Skipping')
   }
+
+  await db.close()
 }
 
 async function up (dbo) {
@@ -76,26 +72,33 @@ async function up (dbo) {
 module.exports.down = async function () {
   console.log('Downgrading from version 0 (initial)')
 
-  try {
-    const db = await MongoClient.connect(dbUri)
-    const dbo = db.db('wavdio-express')
-    const meta = await dbo.collection('meta').findOne()
+  const db = await MongoClient.connect(dbUri)
+  const dbo = db.db('wavdio-express')
+  const meta = await dbo.collection('meta').findOne()
 
-    if (meta.version === 0) {
-      await down(dbo)
+  if (meta.version === 0) {
+    await down(dbo)
 
-      await dbo.collection('meta').drop()
-    } else {
-      console.warn('Skipping')
-    }
-
-    await db.close()
-  } catch (error) {
-    console.error(error)
+    await dbo.collection('meta').drop()
+  } else {
+    console.warn('Skipping')
   }
+
+  await db.close()
 }
 
 async function down (dbo) {
-  await dbo.collection('users').drop()
+
   await dbo.collection('museums').drop()
+  await dbo.collection('users').drop()
+
+  const hasExhibits = await dbo.listCollections({name: 'exhibits'}).hasNext()
+  if (hasExhibits) {
+    await dbo.collection('exhibits').drop()
+  }
+
+  const hasExpositions = await dbo.listCollections({name: 'expositions'}).hasNext()
+  if (hasExpositions) {
+    await dbo.collection('expositions').drop()
+  }
 }

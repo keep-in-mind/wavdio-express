@@ -13,23 +13,19 @@ const dbUri = process.env.DB_URI
 module.exports.up = async function () {
   console.log('Upgrading to version 2 (multiple languages)')
 
-  try {
-    const db = await MongoClient.connect(dbUri)
-    const dbo = db.db('wavdio-express')
-    const meta = await dbo.collection('meta').findOne()
+  const db = await MongoClient.connect(dbUri)
+  const dbo = db.db('wavdio-express')
+  const meta = await dbo.collection('meta').findOne()
 
-    if (meta.version === 1) {
-      await up(dbo)
+  if (meta.version === 1) {
+    await up(dbo)
 
-      await dbo.collection('meta').updateOne({}, {$set: {'version': 2}})
-    } else {
-      console.warn('Skipping')
-    }
-
-    await db.close()
-  } catch (error) {
-    console.error(error)
+    await dbo.collection('meta').updateOne({}, {$set: {'version': 2}})
+  } else {
+    console.warn('Skipping')
   }
+
+  await db.close()
 }
 
 async function up (dbo) {
@@ -108,23 +104,19 @@ async function up (dbo) {
 module.exports.down = async function () {
   console.log('Downgrading from version 2 (multiple languages)')
 
-  try {
-    const db = await MongoClient.connect(dbUri)
-    const dbo = db.db('wavdio-express')
-    const meta = await dbo.collection('meta').findOne()
+  const db = await MongoClient.connect(dbUri)
+  const dbo = db.db('wavdio-express')
+  const meta = await dbo.collection('meta').findOne()
 
-    if (meta.version === 2) {
-      await down(dbo)
+  if (meta.version === 2) {
+    await down(dbo)
 
-      await dbo.collection('meta').updateOne({}, {$set: {'version': 1}})
-    } else {
-      console.warn('Skipping')
-    }
-
-    await db.close()
-  } catch (error) {
-    console.error(error)
+    await dbo.collection('meta').updateOne({}, {$set: {'version': 1}})
+  } else {
+    console.warn('Skipping')
   }
+
+  await db.close()
 }
 
 async function down (dbo) {
