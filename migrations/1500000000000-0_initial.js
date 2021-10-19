@@ -1,5 +1,5 @@
 /*
- * - Create the initial database, which contains one user and an example museum
+ * Create the initial database, which contains one user and an example museum.
  */
 
 const mongodb = require('mongodb')
@@ -40,9 +40,7 @@ const museum = {
   ]
 }
 
-//
-// UP
-//
+/* Up */
 
 module.exports.up = async function () {
   console.log('Upgrading to version 0 (initial)')
@@ -50,14 +48,10 @@ module.exports.up = async function () {
   try {
     const db = await MongoClient.connect(dbUri)
     const dbo = db.db('wavdio-express')
-
     const meta = await dbo.collection('meta').findOne()
 
     if (meta === null) {
-      await dbo.collection('users').insertOne(user)
-      console.log('User "admin" has been created with password "hsrm". Please change your credentials.')
-
-      await dbo.collection('museums').insertOne(museum)
+      await up(dbo)
 
       await dbo.collection('meta').insertOne({version: 0})
     } else {
@@ -65,15 +59,19 @@ module.exports.up = async function () {
     }
 
     await db.close()
-
   } catch (error) {
     console.error(error)
   }
 }
 
-//
-// DOWN
-//
+async function up (dbo) {
+  await dbo.collection('users').insertOne(user)
+  console.log('User "admin" has been created with password "hsrm". Please change your credentials.')
+
+  await dbo.collection('museums').insertOne(museum)
+}
+
+/* Down */
 
 module.exports.down = async function () {
   console.log('Downgrading from version 0 (initial)')
@@ -81,12 +79,10 @@ module.exports.down = async function () {
   try {
     const db = await MongoClient.connect(dbUri)
     const dbo = db.db('wavdio-express')
-
     const meta = await dbo.collection('meta').findOne()
 
     if (meta.version === 0) {
-      await dbo.collection('users').drop()
-      await dbo.collection('museums').drop()
+      await down(dbo)
 
       await dbo.collection('meta').drop()
     } else {
@@ -94,8 +90,12 @@ module.exports.down = async function () {
     }
 
     await db.close()
-
   } catch (error) {
     console.error(error)
   }
+}
+
+async function down (dbo) {
+  await dbo.collection('users').drop()
+  await dbo.collection('museums').drop()
 }
