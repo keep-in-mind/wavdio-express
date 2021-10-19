@@ -9,6 +9,8 @@ services:
     container_name: wavdio-express
     image: keepinmindbot/wavdio-express:2.0.4
     command: node ./bin/server.js --db-uri mongodb://wavdio-mongo:27017/
+    environment:
+      - DB_URI=mongodb://wavdio-mongo:27017/
     networks:
       - wavdio-net
     ports:

@@ -1,10 +1,12 @@
 /*
- * This migration creates the initial database, which contains one user and an example museum.
+ * - Create the initial database, which contains one user and an example museum
  */
 
 const mongodb = require('mongodb')
 
 const MongoClient = mongodb.MongoClient
+
+const dbUri = process.env.DB_URI
 
 const user = {
   'username': 'admin',
@@ -14,28 +16,29 @@ const user = {
 }
 
 const museum = {
-  'contents': [{
-    'lang': 'en',
-    'name': 'New museum',
-    'welcomeText': 'Welcome!',
-    'sitePlan': null,
-    'termsOfUse': 'Terms of use...',
-    'privacyTerms': 'Privacy statement...',
-  }, {
-    'lang': 'de',
-    'name': 'Neues Museum',
-    'welcomeText': 'Willkommen!',
-    'sitePlan': null,
-    'termsOfUse': 'Nutzungsbedingungen...',
-    'privacyTerms': 'Datenschutzrichtlinie...',
-  }, {
-    'lang': 'es'
-  }, {
-    'lang': 'fr'
-  }]
+  'logo': null,
+  'contents': [
+    {
+      'lang': 'en',
+      'name': 'New museum',
+      'welcomeText': 'Welcome!',
+      'sitePlan': null,
+      'termsOfUse': 'Terms of use...',
+      'privacyTerms': 'Privacy statement...',
+    }, {
+      'lang': 'de',
+      'name': 'Neues Museum',
+      'welcomeText': 'Willkommen!',
+      'sitePlan': null,
+      'termsOfUse': 'Nutzungsbedingungen...',
+      'privacyTerms': 'Datenschutzrichtlinie...',
+    }, {
+      'lang': 'es'
+    }, {
+      'lang': 'fr'
+    }
+  ]
 }
-
-const dbUri = process.env.DB_URI
 
 //
 // UP
@@ -48,10 +51,18 @@ module.exports.up = async function () {
     const db = await MongoClient.connect(dbUri)
     const dbo = db.db('wavdio-express')
 
-    await dbo.collection('users').insertOne(user)
-    console.log('User "admin" has been created with password "hsrm". Please change your credentials.')
+    const meta = await dbo.collection('meta').findOne()
 
-    await dbo.collection('museums').insertOne(museum)
+    if (meta === null) {
+      await dbo.collection('users').insertOne(user)
+      console.log('User "admin" has been created with password "hsrm". Please change your credentials.')
+
+      await dbo.collection('museums').insertOne(museum)
+
+      await dbo.collection('meta').insertOne({version: 0})
+    } else {
+      console.warn('Skipping')
+    }
 
     await db.close()
 
@@ -71,8 +82,16 @@ module.exports.down = async function () {
     const db = await MongoClient.connect(dbUri)
     const dbo = db.db('wavdio-express')
 
-    await dbo.collection('users').drop()
-    await dbo.collection('museums').drop()
+    const meta = await dbo.collection('meta').findOne()
+
+    if (meta.version === 0) {
+      await dbo.collection('users').drop()
+      await dbo.collection('museums').drop()
+
+      await dbo.collection('meta').drop()
+    } else {
+      console.warn('Skipping')
+    }
 
     await db.close()
 
