@@ -37,4 +37,4 @@ jobs:
             keepinmindbot/wavdio-express:latest
             keepinmindbot/wavdio-express:2
             keepinmindbot/wavdio-express:2.0
-            keepinmindbot/wavdio-express:2.0.4
+            keepinmindbot/wavdio-express:3.0.0

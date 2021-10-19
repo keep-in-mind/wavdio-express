@@ -7,7 +7,7 @@ services:
 
   wavdio-express:
     container_name: wavdio-express
-    image: keepinmindbot/wavdio-express:3.0.0
+    build: .
     command: node ./bin/server.js --db-uri mongodb://wavdio-mongo:27017/
     environment:
       - DB_URI=mongodb://wavdio-mongo:27017/

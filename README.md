@@ -18,3 +18,17 @@ $ docker-compose up
 ```
 
 After starting, the API can be tested at http://localhost:3000/api/v2/museum .
+
+# Upgrade from 2.x -> 3.x
+
+Before upgrading from version 2.x to 3.x, the database version has to be added manually to the database:
+
+```bash
+$ mongo
+> use wavdio_express
+switched to db wavdio-express
+> db.meta.insert({version: 4})
+WriteResult({ "nInserted" : 1 })
+> db.meta.find()
+{ "_id" : ObjectId("..."), "version" : 4 }
+```
