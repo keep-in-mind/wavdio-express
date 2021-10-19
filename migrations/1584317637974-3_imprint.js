@@ -21,7 +21,7 @@ module.exports.up = async function () {
     if (meta.version === 2) {
       // nothing to do
 
-      await dbo.collection('meta').updateOne({}, {$set: {'version': 2}})
+      await dbo.collection('meta').updateOne({}, {$set: {'version': 3}})
     } else {
       console.warn('Skipping')
     }
@@ -35,17 +35,17 @@ module.exports.up = async function () {
 /* Down */
 
 module.exports.down = async function () {
-  console.log('Downgrading from version 2 (imprint)')
+  console.log('Downgrading from version 3 (imprint)')
 
   try {
     const db = await MongoClient.connect(dbUri)
     const dbo = db.db('wavdio-express')
     const meta = await dbo.collection('meta').findOne()
 
-    if (meta.version === 2) {
+    if (meta.version === 3) {
       await down(dbo)
 
-      await dbo.collection('meta').updateOne({}, {$set: {'version': 1}})
+      await dbo.collection('meta').updateOne({}, {$set: {'version': 2}})
     } else {
       console.warn('Skipping')
     }
