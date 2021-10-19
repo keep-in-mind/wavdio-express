@@ -35,6 +35,6 @@ jobs:
           push: true
           tags: |
             keepinmindbot/wavdio-express:latest
-            keepinmindbot/wavdio-express:2
-            keepinmindbot/wavdio-express:2.0
-            keepinmindbot/wavdio-express:3.0.0
+            keepinmindbot/wavdio-express:3
+            keepinmindbot/wavdio-express:3.0
+            keepinmindbot/wavdio-express:3.0.1
