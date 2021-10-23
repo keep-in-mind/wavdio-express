@@ -18,6 +18,8 @@ const loggingRouter = require('./routes/logging')
 const userRouter = require('./routes/user')
 const settingRouter = require('./routes/setting')
 
+console.log(process.env.DB_URI)
+
 const migrate_db = require('./migrate_db')
 
 const config = require('./config')

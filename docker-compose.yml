@@ -7,8 +7,8 @@ services:
 
   wavdio-express:
     container_name: wavdio-express
-    image: keepinmindbot/wavdio-express:3.0.1-test-11
-    command: node ./bin/server.js --db-uri mongodb://wavdio-mongo:27017/wavdio-express
+    image: keepinmindbot/wavdio-express:3.0.1-test-12
+    command: node ./bin/server.js
     networks:
       - wavdio-net
     ports:
