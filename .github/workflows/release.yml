@@ -1,5 +1,4 @@
 on: [ push ]
-
 jobs:
 
   deliver_npm:
@@ -9,10 +8,30 @@ jobs:
       - name: Checkout from GitHub
         uses: actions/checkout@v2
 
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 16
+          registry-url: https://registry.npmjs.org/
+
       - name: Publish npm package
         run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  test_npx:
+    runs-on: ubuntu-20.04
+    steps:
+
+      - name: Start MongoDB
+        run: docker run --publish "27017:27017" --detach mongo
+
+      - name: Run server
+        run: npx wavdio-express:3.0.1-test-2 &
+
+      - name: Wait for server
+        uses: cygnetdigital/wait_for_response@v2.0.0
+        with:
+          url: 'http://localhost:3000/'
 
 #  test_npm_pack:
 #    runs-on: ubuntu-20.04
