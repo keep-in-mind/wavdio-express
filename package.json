@@ -7,7 +7,7 @@
     "mocha": "mocha --reporter mocha-junit-reporter --reporter-options mochaFile=./test-results/mocha.xml --exit"
   },
   "bin": {
-    "wavdio-express": "bin/server.js"
+    "wavdio-express": "node bin/server.js"
   },
   "dependencies": {
     "bluebird": "^3.7.2",
