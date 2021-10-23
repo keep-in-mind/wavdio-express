@@ -1,6 +1,6 @@
 name: pipeline
 
-on: [push]
+on: [ push ]
 
 jobs:
 
@@ -25,19 +25,48 @@ jobs:
         with:
           url: 'http://localhost:3000/'
 
-#
-#  deliver_npm:
-#    runs-on: ubuntu-latest
+  test_npx_github:
+    runs-on: ubuntu-20.04
+    steps:
+
+      - name: Start MongoDB
+        run: docker run --publish "27017:27017" --detach mongo
+
+      - name: Run server
+        run: npx github:keep-in-mind/wavdio-express &
+
+      - name: Wait for server
+        uses: cygnetdigital/wait_for_response@v2.0.0
+        with:
+          url: 'http://localhost:3000/'
+
+
+
+#  test_npm_pack:
+#    runs-on: ubuntu-20.04
 #    steps:
-#      - uses: actions/checkout@v1
-#      - uses: actions/setup-node@v1
-#        with:
-#          node-version: 12
-#          registry-url: https://registry.npmjs.org/
-#      - run: npm publish --access public
-#        env:
-#          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
 #
+#      - name: Checkout from GitHub
+#        uses: actions/checkout@v2
+#
+#      - name: Create npm package
+#        run: npm pack
+#
+#      - name: Execute npm package
+#        run: npm install
+#
+#      - name: Start MongoDB
+#        run: docker run --publish "27017:27017" --detach mongo
+#
+#      - name: Run server
+#        run: npx start &
+#
+#      - name: Wait for server
+#        uses: cygnetdigital/wait_for_response@v2.0.0
+#        with:
+#          url: 'http://localhost:3000/'
+
+
 #  deliver_docker:
 #    runs-on: ubuntu-latest
 #    steps:
