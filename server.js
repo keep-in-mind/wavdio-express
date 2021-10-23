@@ -88,18 +88,6 @@ const config = {
 process.env.DB_URI = config.dbUri
 
 //
-// Captive Portal Redirections
-//
-
-app.all('/redirect', function (req, res) {
-  res.redirect('/')
-})
-
-app.all('/generate_204', function (req, res) {
-  res.redirect('/')
-})
-
-//
 // Set up logging
 //
 
