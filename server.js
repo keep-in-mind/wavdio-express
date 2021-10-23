@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 
-const bluebird = require('bluebird')
 const commandLineArgs = require('command-line-args')
 const commandLineUsage = require('command-line-usage')
 const createError = require('http-errors')
@@ -123,8 +122,6 @@ app.use(morganLogger(loggerFormat, {
 //
 //
 //
-
-mongoose.Promise = bluebird
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
