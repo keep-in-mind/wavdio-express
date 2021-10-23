@@ -1,6 +1,6 @@
 {
   "name": "wavdio-express",
-  "version": "3.0.1-test-12",
+  "version": "3.0.1-test-13",
   "scripts": {
     "start": "node ./bin/server.js",
     "test": "mocha",

@@ -7,7 +7,7 @@ services:
 
   wavdio-express:
     container_name: wavdio-express
-    image: keepinmindbot/wavdio-express:3.0.1-test-12
+    image: keepinmindbot/wavdio-express:3.0.1-test-13
     command: node ./bin/server.js
     networks:
       - wavdio-net

@@ -18,8 +18,6 @@ const loggingRouter = require('./routes/logging')
 const userRouter = require('./routes/user')
 const settingRouter = require('./routes/setting')
 
-console.log(process.env.DB_URI)
-
 const migrate_db = require('./migrate_db')
 
 const config = require('./config')
@@ -54,7 +52,7 @@ const optionDefinitions = [
 ]
 
 const options = commandLineArgs(optionDefinitions)
-process.env.DB_URI = process.env.DB_URI || options['db-uri'] || 'mongodb://localhost:27017/wavdio-express'
+process.env.DB_URI = options['db-uri'] || process.env.DB_URI || 'mongodb://localhost:27017/wavdio-express'
 
 if (options['help']) {
   const sections = [
@@ -108,7 +106,7 @@ settingsDefault = {
     name: options['db-name'] || 'wAVdioDB'
   },
   server: {
-    port: process.env.PORT || options['port'] || 3000
+    port: options['port'] || process.env.PORT || 3000
   }
 }
 
@@ -170,6 +168,9 @@ async function connectDB (host = 'localhost', port = 27017, dbName) {
 
   if (options['db-uri']) {
     uri = options['db-uri']
+
+  } else if (process.env.DB_URI) {
+    uri = process.env.DB_URI
 
   } else if (dbUser === null && dbPassword === null) {
     uri = `mongodb://${host}:${port}/${dbName}`
