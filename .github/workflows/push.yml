@@ -1,0 +1,23 @@
+on: [ push ]
+jobs:
+
+  test_npm_start:
+    runs-on: ubuntu-20.04
+    steps:
+
+      - name: Checkout from GitHub
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Start MongoDB
+        run: docker run --publish "27017:27017" --detach mongo
+
+      - name: Run server
+        run: npm start &
+
+      - name: Wait for server
+        uses: cygnetdigital/wait_for_response@v2.0.0
+        with:
+          url: 'http://localhost:3000/'

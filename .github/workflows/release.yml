@@ -1,44 +1,26 @@
-name: pipeline
-
-on: [ push ]
+on: [ release ]
 
 jobs:
 
-  test_npm_start:
+  test:
     runs-on: ubuntu-20.04
     steps:
+      - run: echo test
 
-      - name: Checkout from GitHub
-        uses: actions/checkout@v2
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Start MongoDB
-        run: docker run --publish "27017:27017" --detach mongo
-
-      - name: Run server
-        run: npm start &
-
-      - name: Wait for server
-        uses: cygnetdigital/wait_for_response@v2.0.0
-        with:
-          url: 'http://localhost:3000/'
-
-  test_npx_github:
-    runs-on: ubuntu-20.04
-    steps:
-
-      - name: Start MongoDB
-        run: docker run --publish "27017:27017" --detach mongo
-
-      - name: Run server
-        run: npx github:keep-in-mind/wavdio-express &
-
-      - name: Wait for server
-        uses: cygnetdigital/wait_for_response@v2.0.0
-        with:
-          url: 'http://localhost:3000/'
+#  test_npx_github:
+#    runs-on: ubuntu-20.04
+#    steps:
+#
+#      - name: Start MongoDB
+#        run: docker run --publish "27017:27017" --detach mongo
+#
+#      - name: Run server
+#        run: npx github:keep-in-mind/wavdio-express &
+#
+#      - name: Wait for server
+#        uses: cygnetdigital/wait_for_response@v2.0.0
+#        with:
+#          url: 'http://localhost:3000/'
 
 
 
