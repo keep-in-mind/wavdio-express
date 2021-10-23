@@ -52,6 +52,7 @@ const optionDefinitions = [
 ]
 
 const options = commandLineArgs(optionDefinitions)
+process.env.DB_URI = process.env.DB_URI || options['db-uri'] || 'mongodb://localhost:27017/wavdio-express'
 
 if (options['help']) {
   const sections = [
