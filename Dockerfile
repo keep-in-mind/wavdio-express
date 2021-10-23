@@ -12,4 +12,4 @@ EXPOSE 3000
 
 ENV DB_URI mongodb://wavdio-mongo:27017/wavdio-express
 
-CMD [ "node", "bin/server.js" ]
+CMD [ "node", "app.js" ]

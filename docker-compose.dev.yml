@@ -8,7 +8,6 @@ services:
   wavdio-express:
     container_name: wavdio-express
     build: .
-    command: node ./bin/server.js
     networks:
       - wavdio-net
     ports:

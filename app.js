@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const express = require('express')
 const mongoose = require('mongoose')
 const http = require('http')
@@ -303,3 +305,5 @@ module.exports.close = function (callback) {
 
 module.exports.server = server
 module.exports.defaultSettings = settingsDefault
+
+server.listen()
