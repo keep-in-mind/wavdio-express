@@ -7,7 +7,7 @@ services:
 
   wavdio-express:
     container_name: wavdio-express
-    image: keepinmindbot/wavdio-express:3.0.1-test-16
+    image: keepinmindbot/wavdio-express:3.0.1-test-17
     networks:
       - wavdio-net
     ports:

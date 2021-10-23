@@ -1,47 +1,48 @@
 #!/usr/bin/env node
 
-const express = require('express')
-const mongoose = require('mongoose')
-const http = require('http')
-const createError = require('http-errors')
-const path = require('path')
-const rotatingFileStream = require('rotating-file-stream')
-const morganLogger = require('morgan')
+const bluebird = require('bluebird')
 const commandLineArgs = require('command-line-args')
 const commandLineUsage = require('command-line-usage')
+const createError = require('http-errors')
+const express = require('express')
+const http = require('http')
 const migrate = require('migrate')
-
-const museumRouter = require('./routes/museum')
-const expositionRouter = require('./routes/exposition')
-const exhibitRouter = require('./routes/exhibit')
-const infopageRouter = require('./routes/infopage')
-const uploadRouter = require('./routes/upload')
-const loggingRouter = require('./routes/logging')
-const userRouter = require('./routes/user')
-const settingRouter = require('./routes/setting')
-
-const migrate_db = require('./migrate_db')
+const mongoose = require('mongoose')
+const morganLogger = require('morgan')
+const path = require('path')
+const rotatingFileStream = require('rotating-file-stream')
 
 const config = require('./config')
+const exhibitRouter = require('./routes/exhibit')
+const expositionRouter = require('./routes/exposition')
+const infopageRouter = require('./routes/infopage')
+const loggingRouter = require('./routes/logging')
+const migrate_db = require('./migrate_db')
+const museumRouter = require('./routes/museum')
+const settingRouter = require('./routes/setting')
+const uploadRouter = require('./routes/upload')
+const userRouter = require('./routes/user')
 
 const app = express()
+
 app.use(express.urlencoded({extended: true}))
 app.use(express.json())
+
+app.use('/api/v2', exhibitRouter)
+app.use('/api/v2', expositionRouter)
+app.use('/api/v2', infopageRouter)
+app.use('/api/v2', loggingRouter)
+app.use('/api/v2', museumRouter)
+app.use('/api/v2', settingRouter)
+app.use('/api/v2', userRouter)
+app.use('/upload', uploadRouter)
 
 app.get('/', (req, res) =>
   res.status(200).send('Server is up'))
 
-app.use('/api/v2', museumRouter)
-app.use('/api/v2', expositionRouter)
-app.use('/api/v2', exhibitRouter)
-app.use('/api/v2', infopageRouter)
-app.use('/upload', uploadRouter)
-app.use('/api/v2', userRouter)
-app.use('/api/v2', settingRouter)
-
-//////////////////////////////////////////////////////////////
-//                Parse comand line args                    //
-//////////////////////////////////////////////////////////////
+//
+// Command Line Args
+//
 
 const optionDefinitions = [
   {name: 'db-host', type: String},
@@ -111,9 +112,9 @@ const settingsDefault = {
   }
 }
 
-//////////////////////////////////////////////////////////////
-//                Captive Portal Rederictions               //
-//////////////////////////////////////////////////////////////
+//
+// Captive Portal Redirections
+//
 
 app.all('/redirect', function (req, res) {
   res.redirect('/')
@@ -123,17 +124,9 @@ app.all('/generate_204', function (req, res) {
   res.redirect('/')
 })
 
-//////////////////////////////////////////////////////////////
-//             End Captive Portal Rederictions              //
-//////////////////////////////////////////////////////////////
-
-app.use('/api/v2', loggingRouter)
-
-//////////////////////////////////////////////////////////////
-//                        LOGGING                           //
-//////////////////////////////////////////////////////////////
-
-/////////////////// MORGAN - EXPRESS-LOGGER //////////////////
+//
+// Set up logging
+//
 
 const loggerFormat = ':date[web] - :status - :method - :url :' +
   ' \n\t Remote Adress: :remote-addr \n\t Request Header: :req[header]' +
@@ -151,13 +144,11 @@ app.use(morganLogger(loggerFormat, {
   stream: accessLogStream
 }))
 
-//////////////////////////////////////////////////////////////
-//                       END LOGGING                        //
-//////////////////////////////////////////////////////////////
+//
+//
+//
 
-// database driver
-
-mongoose.Promise = require('bluebird')
+mongoose.Promise = bluebird
 
 async function connectDB (host = 'localhost', port = 27017, dbName) {
 
@@ -210,11 +201,9 @@ app.use(function (err, req, res) {
   res.sendStatus(err.status)
 })
 
-//////////
-
-/**
- * Event listener for HTTP server "error" event.
- */
+//
+// Event listener for HTTP server "error" event
+//
 
 function onError (error) {
   if (error.syscall !== 'listen') {
@@ -240,9 +229,9 @@ function onError (error) {
   }
 }
 
-/**
- * Event listener for HTTP server "listening" event.
- */
+//
+// Event listener for HTTP server "listening" event
+//
 
 const server = http.createServer(app)
 
@@ -259,9 +248,9 @@ function onListening () {
 server.on('error', onError)
 server.on('listening', onListening)
 
-/**
- * Export functions to start and stop the server
- */
+//
+// Export functions to start and stop the server
+//
 
 function listen (server, settings) {
   server.listen(settings.server.port)
@@ -294,11 +283,6 @@ const listen2 = async function (settings = settingsDefault) {
   } catch (err) {
     console.error(err)
   }
-}
-
-module.exports.close = function (callback) {
-  this.server.close(callback)
-  console.log('Server closed')
 }
 
 listen2()
