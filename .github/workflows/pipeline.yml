@@ -17,8 +17,8 @@ jobs:
       - name: Start MongoDB
         run: docker run --publish "27017:27017" --detach mongo
 
-      - name: Start server
-        run: npm start
+      - name: Run server
+        run: npm start &
 
       - name: Wait for server
         uses: cygnetdigital/wait_for_response@v2.0.0
