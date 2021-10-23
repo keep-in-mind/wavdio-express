@@ -9,8 +9,6 @@ services:
     container_name: wavdio-express
     build: .
     command: node ./bin/server.js --db-uri mongodb://wavdio-mongo:27017/wavdio-express
-    environment:
-      - DB_URI=mongodb://wavdio-mongo:27017/
     networks:
       - wavdio-net
     ports:
