@@ -12,12 +12,10 @@ const morganLogger = require('morgan')
 const path = require('path')
 const rotatingFileStream = require('rotating-file-stream')
 
-const config = require('./config')
 const exhibitRouter = require('./routes/exhibit')
 const expositionRouter = require('./routes/exposition')
 const infopageRouter = require('./routes/infopage')
 const loggingRouter = require('./routes/logging')
-const migrate_db = require('./migrate_db')
 const museumRouter = require('./routes/museum')
 const settingRouter = require('./routes/setting')
 const uploadRouter = require('./routes/upload')
@@ -37,6 +35,10 @@ app.use('/api/v2', settingRouter)
 app.use('/api/v2', userRouter)
 app.use('/upload', uploadRouter)
 
+app.use(express.static(path.join(__dirname, 'dist/wAVdio')))
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
+app.use('*', express.static(path.join(__dirname, 'dist/wAVdio')))
+
 app.get('/', (req, res) =>
   res.status(200).send('Server is up'))
 
@@ -44,56 +46,33 @@ app.get('/', (req, res) =>
 // Command Line Args
 //
 
-const optionDefinitions = [
-  {name: 'db-host', type: String},
-  {name: 'db-port', type: Number},
-  {name: 'db-name', type: String},
+const options = commandLineArgs([
   {name: 'db-uri', type: String},
-  {name: 'port', type: Number},
   {name: 'help', type: Boolean},
-]
-
-const options = commandLineArgs(optionDefinitions)
-process.env.DB_URI = options['db-uri'] || process.env.DB_URI || 'mongodb://localhost:27017/wavdio-express'
+  {name: 'port', type: Number}
+])
 
 if (options['help']) {
-  const sections = [
-    {
-      header: 'Options',
-      optionList: [
-        {
-          name: 'db-host',
-          typeLabel: '{underline string}',
-          description: 'MongoDB host, default: localhost'
-        },
-        {
-          name: 'db-port',
-          typeLabel: '{underline number}',
-          description: 'MongoDB port, default: 27017'
-        },
-        {
-          name: 'db-name',
-          typeLabel: '{underline string}',
-          description: 'MongoDB host, default: wavdio'
-        },
-        {
-          name: 'db-uri',
-          typeLabel: '{underline string}',
-          description: 'MongoDB URI'
-        },
-        {
-          name: 'port',
-          typeLabel: '{underline number}',
-          description: 'Express host, default: 3000'
-        },
-        {
-          name: 'help',
-          typeLabel: ' ',
-          description: 'Print this usage guide'
-        }
-      ]
-    }
-  ]
+  const sections = [{
+    header: 'Options',
+    optionList: [
+      {
+        name: 'db-uri',
+        typeLabel: '{underline string}',
+        description: 'MongoDB URI'
+      },
+      {
+        name: 'help',
+        typeLabel: ' ',
+        description: 'Print this usage guide'
+      },
+      {
+        name: 'port',
+        typeLabel: '{underline number}',
+        description: 'Express port (default: 3000)'
+      }
+    ]
+  }]
 
   const usage = commandLineUsage(sections)
   console.log(usage)
@@ -101,16 +80,13 @@ if (options['help']) {
   process.exit()
 }
 
-const settingsDefault = {
-  db: {
-    host: options['db-host'] || 'localhost',
-    port: options['db-port'] || 27017,
-    name: options['db-name'] || 'wAVdioDB'
-  },
-  server: {
-    port: options['port'] || process.env.PORT || 3000
-  }
+const config = {
+  dbUri: options['db-uri'] || process.env.DB_URI || 'mongodb://localhost:27017/wavdio-express',
+  port: options['port'] || process.env.PORT || 3000
 }
+
+// Make DB URI accessible in migrations
+process.env.DB_URI = config.dbUri
 
 //
 // Captive Portal Redirections
@@ -149,41 +125,6 @@ app.use(morganLogger(loggerFormat, {
 //
 
 mongoose.Promise = bluebird
-
-async function connectDB (host = 'localhost', port = 27017, dbName) {
-
-  dbName = config['db-name']
-  const dbUser = config['db-user']
-  const dbPassword = config['db-password']
-
-  let uri
-
-  if (options['db-uri']) {
-    uri = options['db-uri']
-
-  } else if (process.env.DB_URI) {
-    uri = process.env.DB_URI
-
-  } else if (dbUser === null && dbPassword === null) {
-    uri = `mongodb://${host}:${port}/${dbName}`
-
-  } else if (dbUser !== null && dbPassword !== null) {
-    uri = `mongodb://${dbUser}:${dbPassword}@${host}:${port}/${dbName}`
-
-  } else {
-    console.error('Error in config.json. Must provide both user and password, or neither.')
-    process.exit()
-  }
-
-  migrate_db.uri = uri
-  console.log(`Connect to MongoDB ${uri}`)
-  return mongoose.connect(uri, {useNewUrlParser: true, useUnifiedTopology: true})
-}
-
-app.use(express.json())
-app.use(express.static(path.join(__dirname, 'dist/wAVdio')))
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
-app.use('*', express.static(path.join(__dirname, 'dist/wAVdio')))
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
@@ -252,37 +193,31 @@ server.on('listening', onListening)
 // Export functions to start and stop the server
 //
 
-function listen (server, settings) {
-  server.listen(settings.server.port)
+main()
+  .then()
+  .catch(error => console.error(error))
 
-  console.log(`Listening on port ${settings.server.port}`)
-}
+async function main() {
+  console.log(`Connect to MongoDB at ${config.dbUri}`)
+  await mongoose.connect(config.dbUri)
 
-const listen2 = async function (settings = settingsDefault) {
-  try {
-    await connectDB(settings.db.host, settings.db.port, settings.db.name)
-    console.log('MongoDB connection established')
-
-    migrate.load({
-      stateStore: '.migrate',
-      migrationsDirectory: path.resolve(__dirname, 'migrations/')
-    }, function (err, set) {
+  migrate.load({
+    stateStore: '.migrate',
+    migrationsDirectory: path.resolve(__dirname, 'migrations/')
+  }, function (err, set) {
+    if (err) {
+      throw err
+    }
+    set.up(function (err) {
       if (err) {
         throw err
       }
-      set.up(function (err) {
-        if (err) {
-          throw err
-        }
-        console.log('migrations successfully ran')
 
-        listen(server, settings)
-      })
+      console.log('Migrations ran successfully')
+
+      server.listen(config.port)
+
+      console.log(`Listening on port ${config.port}`)
     })
-
-  } catch (err) {
-    console.error(err)
-  }
+  })
 }
-
-listen2()
