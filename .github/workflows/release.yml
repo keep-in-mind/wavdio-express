@@ -26,8 +26,8 @@ jobs:
       - name: Start MongoDB
         run: docker run --publish "27017:27017" --detach mongo
 
-      - name: Run server
-        run: npx wavdio-express@3.0.1-test-6 &
+      - name: Start server
+        run: npx wavdio-express@3.0.1-test-7 &
 
       - name: Wait for server
         uses: cygnetdigital/wait_for_response@v2.0.0
@@ -55,7 +55,7 @@ jobs:
             keepinmindbot/wavdio-express:latest
             keepinmindbot/wavdio-express:3
             keepinmindbot/wavdio-express:3.0
-            keepinmindbot/wavdio-express:3.0.1-test-6
+            keepinmindbot/wavdio-express:3.0.1-test-7
 
   test_docker:
     needs: deliver_docker
@@ -65,8 +65,21 @@ jobs:
       - name: Start MongoDB
         run: docker run --publish "27017:27017" --detach mongo
 
-      - name: Run server
-        run: docker run --publish "3000:3000" --detach wavdio-express:3.0.1-test-6
+      - name: Start server
+        run: docker run --publish "3000:3000" --detach keepinmindbot/wavdio-express:3.0.1-test-7
+
+      - name: Wait for server
+        uses: cygnetdigital/wait_for_response@v2.0.0
+        with:
+          url: 'http://localhost:3000/'
+
+  test_docker_compose:
+    needs: deliver_docker
+    runs-on: ubuntu-20.04
+    steps:
+
+      - name: Start MongoDB and server
+        run: docker-compose up
 
       - name: Wait for server
         uses: cygnetdigital/wait_for_response@v2.0.0
