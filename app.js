@@ -101,7 +101,7 @@ if (options['help']) {
   process.exit()
 }
 
-settingsDefault = {
+const settingsDefault = {
   db: {
     host: options['db-host'] || 'localhost',
     port: options['db-port'] || 27017,
@@ -270,11 +270,10 @@ function listen (server, settings) {
   console.log(`Listening on port ${settings.server.port}`)
 }
 
-module.exports.listen = async function (settings = settingsDefault) {
+const listen2 = async function (settings = settingsDefault) {
   try {
     await connectDB(settings.db.host, settings.db.port, settings.db.name)
     console.log('MongoDB connection established')
-    const server = this.server
 
     migrate.load({
       stateStore: '.migrate',
@@ -303,7 +302,4 @@ module.exports.close = function (callback) {
   console.log('Server closed')
 }
 
-module.exports.server = server
-module.exports.defaultSettings = settingsDefault
-
-server.listen()
+listen2()
