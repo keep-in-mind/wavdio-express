@@ -27,7 +27,6 @@ const config = require('./config')
 const app = express()
 app.use(express.urlencoded({extended: true}))
 app.use(express.json())
-// app.use(xss());
 
 app.get('/', (req, res) =>
   res.status(200).send('Server is up'))
