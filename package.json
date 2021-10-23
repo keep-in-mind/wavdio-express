@@ -2,8 +2,8 @@
   "name": "wavdio-express",
   "version": "3.0.1",
   "scripts": {
-    "start": "node ./bin/server.js --db-uri $DB_URI",
-    "start:windows": "node ./bin/server.js --db-uri %DB_URI%",
+    "start": "node ./bin/server.js",
+    "start:windows": "node ./bin/server.js",
     "test": "mocha",
     "mocha": "mocha --reporter mocha-junit-reporter --reporter-options mochaFile=./test-results/mocha.xml --exit"
   },

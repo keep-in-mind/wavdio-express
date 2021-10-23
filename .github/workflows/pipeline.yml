@@ -4,7 +4,7 @@ on: [push]
 
 jobs:
 
-  test_start_node:
+  test_npm_start:
     runs-on: ubuntu-20.04
     steps:
 
@@ -18,7 +18,7 @@ jobs:
         run: docker run --publish "27017:27017" --detach mongo
 
       - name: Start server
-        run: node bin/server.js
+        run: npm start
 
       - name: Wait for server
         uses: cygnetdigital/wait_for_response@v2.0.0
