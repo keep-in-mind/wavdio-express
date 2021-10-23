@@ -26,7 +26,7 @@ jobs:
         run: docker run --publish "27017:27017" --detach mongo
 
       - name: Run server
-        run: npx wavdio-express:3.0.1-test2 &
+        run: npx wavdio-express@3.0.1-test-3 &
 
       - name: Wait for server
         uses: cygnetdigital/wait_for_response@v2.0.0
