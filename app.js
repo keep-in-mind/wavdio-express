@@ -28,7 +28,7 @@ app.use(express.json())
 // app.use(xss());
 
 app.get('/', (req, res) =>
-  res.status(200).send())
+  res.status(200).send('Server is up'))
 
 app.use('/api/v2', museumRouter)
 app.use('/api/v2', expositionRouter)
