@@ -2,7 +2,6 @@
 
 const commandLineArgs = require('command-line-args')
 const commandLineUsage = require('command-line-usage')
-const createError = require('http-errors')
 const express = require('express')
 const http = require('http')
 const migrate = require('migrate')
@@ -34,15 +33,13 @@ app.use('/api/v2', settingRouter)
 app.use('/api/v2', userRouter)
 app.use('/upload', uploadRouter)
 
-app.use(express.static(path.join(__dirname, 'dist/wAVdio')))
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
-app.use('*', express.static(path.join(__dirname, 'dist/wAVdio')))
 
 app.get('/', (req, res) =>
   res.status(200).send('Server is up'))
 
 //
-// Command Line Args
+// Read command line args and environment vars
 //
 
 const options = commandLineArgs([
@@ -107,24 +104,8 @@ const stream = rotatingFileStream.createStream('express.log', {
 app.use(morgan(format, {stream}))
 
 //
+// Run migrations and server
 //
-//
-
-// catch 404 and forward to error handler
-app.use(function (req, res, next) {
-  next(createError(404))
-})
-
-// error handler
-app.use(function (err, req, res) {
-  // set locals, only providing error in development
-  res.locals.message = err.message
-  res.locals.error = req.app.get('env') === 'development' ? err : {}
-
-  // render the error page
-  res.status(err.status || 500)
-  res.sendStatus(err.status)
-})
 
 main()
   .then()
@@ -132,6 +113,7 @@ main()
 
 async function main () {
   console.log(`Connect to MongoDB at ${config.dbUri}`)
+
   await mongoose.connect(config.dbUri)
 
   migrate.load({
@@ -141,6 +123,7 @@ async function main () {
     if (err) {
       throw err
     }
+
     set.up(function (err) {
       if (err) {
         throw err
