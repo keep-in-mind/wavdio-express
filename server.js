@@ -7,7 +7,7 @@ const express = require('express')
 const http = require('http')
 const migrate = require('migrate')
 const mongoose = require('mongoose')
-const morganLogger = require('morgan')
+const morgan = require('morgan')
 const path = require('path')
 const rotatingFileStream = require('rotating-file-stream')
 
@@ -91,21 +91,20 @@ process.env.DB_URI = config.dbUri
 // Set up logging
 //
 
-const loggerFormat = ':date[web] - :status - :method - :url :' +
-  ' \n\t Remote Adress: :remote-addr \n\t Request Header: :req[header]' +
-  ' \n\t Response Header: :res[header] \n\t ResponseTime: :response-time ms'
+const format = ':date[web] - :status - :method - :url :' + '\n' +
+  '\t' + 'Remote Address: :remote-addr' + '\n' +
+  '\t' + 'Request Header: :req[header]' + '\n' +
+  '\t' + 'Response Header: :res[header]' + '\n' +
+  '\t' + 'ResponseTime: :response-time ms'
 
-// create a rotating write stream
-const accessLogStream = rotatingFileStream.createStream('express.log', {
-  size: '10000000B', // rotate every 10 MegaBytes written
-  interval: '1d', // rotate daily
+const stream = rotatingFileStream.createStream('express.log', {
+  size: '10M',
+  interval: '1d',
   maxFiles: 1,
   path: 'logs'
 })
 
-app.use(morganLogger(loggerFormat, {
-  stream: accessLogStream
-}))
+app.use(morgan(format, {stream}))
 
 //
 //
@@ -131,7 +130,7 @@ main()
   .then()
   .catch(error => console.error(error))
 
-async function main() {
+async function main () {
   console.log(`Connect to MongoDB at ${config.dbUri}`)
   await mongoose.connect(config.dbUri)
 
