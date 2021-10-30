@@ -2,24 +2,48 @@ const chai = require('chai')
 const chaiHttp = require('chai-http')
 const chaiShallowDeepEqual = require('chai-shallow-deep-equal')
 
-const server = require('../bin/server')
 const Museum = require('../models/museum')
-const museums = require('./fixtures/museums')
 const authorization = require('./fixtures/authorization')
+const mongoose = require('mongoose')
+const server = require('../server')
 
 chai.use(chaiHttp)
 chai.use(chaiShallowDeepEqual)
 
 const expect = chai.expect
 
-deepFreeze(museums)
+describe('Museums', () => {
 
-describe('Museum', function () {
-  beforeEach(async function () {
+  before(async () => {
+    await mongoose.connect('mongodb://localhost:27017/wavdio-express')
+  })
+
+  beforeEach(async () => {
     await Museum.deleteMany({})
   })
 
-  describe('GET /museum', function () {
+  after(() => {
+    mongoose.disconnect()
+  })
+
+  describe('GET /museum', () => {
+
+    it('should return no museums for an empty database', async () => {
+
+      // GIVEN an empty database
+
+      // WHEN  getting all museums
+
+      const getResponse = await chai.request(server).get('/api/v2/museum')
+
+      // THEN  the server should return no museums
+
+      expect(getResponse).to.have.status(200)
+      expect(getResponse.body).to.deep.equal([])
+    })
+  })
+
+  describe('GET /museum TODO', function () {
     it('reading all museums from an empty museum collection should succeed', async function () {
 
       // GIVEN  the empty database
@@ -276,23 +300,6 @@ describe('Museum', function () {
     })
   })
 })
-
-function deepFreeze (object) {
-
-  // Retrieve the property names defined on object
-  const propNames = Object.getOwnPropertyNames(object)
-
-  // Freeze properties before freezing self
-
-  for (let name of propNames) {
-    let value = object[name]
-
-    object[name] = value && typeof value === 'object' ?
-      deepFreeze(value) : value
-  }
-
-  return Object.freeze(object)
-}
 
 function copy (object) {
   return JSON.parse(JSON.stringify(object))
