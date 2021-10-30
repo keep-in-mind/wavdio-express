@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 const express = require('express')
 const migrate = require('migrate')
 const mongoose = require('mongoose')
