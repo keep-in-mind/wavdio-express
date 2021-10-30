@@ -6,6 +6,7 @@ const Museum = require('../models/museum')
 const authorization = require('./fixtures/authorization')
 const mongoose = require('mongoose')
 const server = require('../server')
+const {louvre, germanMuseum} = require('./fixtures/museums')
 
 chai.use(chaiHttp)
 chai.use(chaiShallowDeepEqual)
@@ -64,7 +65,7 @@ describe('Museums', () => {
 
       // GIVEN  a database with an existing museum
 
-      const existingMuseum = museums['louvre']
+      const existingMuseum = louvre
 
       await Museum.create(existingMuseum)
 
@@ -88,7 +89,7 @@ describe('Museums', () => {
       // GIVEN  the empty database
       // AND    a new, complete museum
 
-      const newMuseum = museums['louvre']
+      const newMuseum = louvre
 
       // WHEN   creating the new museum
 
@@ -114,7 +115,7 @@ describe('Museums', () => {
       // GIVEN  the empty database
       // AND    a new museum with a missing, required property
 
-      const newMuseum = copy(museums['louvre'])
+      const newMuseum = copy(louvre)
       delete newMuseum.logo.filename
 
       // WHEN   trying to create the new museum
@@ -138,7 +139,7 @@ describe('Museums', () => {
       // GIVEN  the empty database
       // AND    a new museum with a missing, non-required property
 
-      const newMuseum = museums['louvre']
+      const newMuseum = louvre
       delete newMuseum.logo
 
       // WHEN   creating the new museum
@@ -166,7 +167,7 @@ describe('Museums', () => {
 
       // GIVEN  a database with an existing museum
 
-      const existingMuseum = museums['louvre']
+      const existingMuseum = louvre
       const dbExistingMuseum = await Museum.create(existingMuseum)
       const existingMuseumId = dbExistingMuseum._id
 
@@ -206,11 +207,11 @@ describe('Museums', () => {
       // GIVEN  a database with an existing museum
       // AND    a new museum
 
-      const existingMuseum = museums['louvre']
+      const existingMuseum = louvre
       const dbExistingMuseum = await Museum.create(existingMuseum)
       const existingMuseumId = dbExistingMuseum._id
 
-      const newMuseum = museums['germanMuseum']
+      const newMuseum = germanMuseum
 
       // WHEN   replacing the existing museum with the new one
 
@@ -260,7 +261,7 @@ describe('Museums', () => {
 
       // GIVEN  a database with an existing museum
 
-      const existingMuseum = museums['louvre']
+      const existingMuseum = louvre
       const dbExistingMuseum = await Museum.create(existingMuseum)
       const existingMuseumId = dbExistingMuseum._id
 

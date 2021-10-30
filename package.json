@@ -3,8 +3,7 @@
   "version": "3.1.0-test-4",
   "scripts": {
     "start": "node bin/wavdio-express.js",
-    "test": "mocha",
-    "mocha": "mocha --reporter mocha-junit-reporter --reporter-options mochaFile=./test-results/mocha.xml --exit"
+    "test": "mocha"
   },
   "bin": {
     "wavdio-express": "bin/wavdio-express.js"
