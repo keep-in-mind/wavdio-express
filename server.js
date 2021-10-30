@@ -1,9 +1,6 @@
 #!/usr/bin/env node
 
-const commandLineArgs = require('command-line-args')
-const commandLineUsage = require('command-line-usage')
 const express = require('express')
-const http = require('http')
 const migrate = require('migrate')
 const mongoose = require('mongoose')
 const morgan = require('morgan')
@@ -19,123 +16,78 @@ const settingRouter = require('./routes/setting')
 const uploadRouter = require('./routes/upload')
 const userRouter = require('./routes/user')
 
-const app = express()
+module.exports.createServer = (config) => new Promise((resolve, reject) => {
 
-app.use(express.urlencoded({extended: true}))
-app.use(express.json())
+  const app = express()
 
-app.use('/api/v2', exhibitRouter)
-app.use('/api/v2', expositionRouter)
-app.use('/api/v2', infopageRouter)
-app.use('/api/v2', loggingRouter)
-app.use('/api/v2', museumRouter)
-app.use('/api/v2', settingRouter)
-app.use('/api/v2', userRouter)
-app.use('/upload', uploadRouter)
+  app.use(express.urlencoded({extended: true}))
+  app.use(express.json())
 
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
+  app.use('/api/v2', exhibitRouter)
+  app.use('/api/v2', expositionRouter)
+  app.use('/api/v2', infopageRouter)
+  app.use('/api/v2', loggingRouter)
+  app.use('/api/v2', museumRouter)
+  app.use('/api/v2', settingRouter)
+  app.use('/api/v2', userRouter)
+  app.use('/upload', uploadRouter)
 
-app.get('/', (req, res) =>
-  res.status(200).send('Server is up'))
+  app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
 
-//
-// Read command line args and environment vars
-//
+  app.get('/', (req, res) =>
+    res.status(200).send('Server is up'))
 
-const options = commandLineArgs([
-  {name: 'db-uri', type: String},
-  {name: 'help', type: Boolean},
-  {name: 'port', type: Number}
-])
+  //
+  // Set up logging
+  //
 
-if (options['help']) {
-  const sections = [{
-    header: 'Options',
-    optionList: [
-      {
-        name: 'db-uri',
-        typeLabel: '{underline string}',
-        description: 'MongoDB URI'
-      },
-      {
-        name: 'help',
-        typeLabel: ' ',
-        description: 'Print this usage guide'
-      },
-      {
-        name: 'port',
-        typeLabel: '{underline number}',
-        description: 'Express port (default: 3000)'
-      }
-    ]
-  }]
+  const format = ':date[web] - :status - :method - :url :' + '\n' +
+    '\t' + 'Remote Address: :remote-addr' + '\n' +
+    '\t' + 'Request Header: :req[header]' + '\n' +
+    '\t' + 'Response Header: :res[header]' + '\n' +
+    '\t' + 'ResponseTime: :response-time ms'
 
-  const usage = commandLineUsage(sections)
-  console.log(usage)
+  const stream = rotatingFileStream.createStream('express.log', {
+    size: '10M',
+    interval: '1d',
+    maxFiles: 1,
+    path: 'logs'
+  })
 
-  process.exit()
-}
+  app.use(morgan(format, {stream}))
 
-const config = {
-  dbUri: options['db-uri'] || process.env.DB_URI || 'mongodb://localhost:27017/wavdio-express',
-  port: options['port'] || process.env.PORT || 3000
-}
+  //
+  // Run migrations
+  //
 
-// Make DB URI accessible in migrations
-process.env.DB_URI = config.dbUri
-
-//
-// Set up logging
-//
-
-const format = ':date[web] - :status - :method - :url :' + '\n' +
-  '\t' + 'Remote Address: :remote-addr' + '\n' +
-  '\t' + 'Request Header: :req[header]' + '\n' +
-  '\t' + 'Response Header: :res[header]' + '\n' +
-  '\t' + 'ResponseTime: :response-time ms'
-
-const stream = rotatingFileStream.createStream('express.log', {
-  size: '10M',
-  interval: '1d',
-  maxFiles: 1,
-  path: 'logs'
-})
-
-app.use(morgan(format, {stream}))
-
-//
-// Run migrations and server
-//
-
-main()
-  .then()
-  .catch(error => console.error(error))
-
-async function main () {
-  console.log(`Connect to MongoDB at ${config.dbUri}`)
-
-  await mongoose.connect(config.dbUri)
+  // Make DB URI accessible in migrations
+  process.env.DB_URI = config.dbUri
 
   migrate.load({
     stateStore: '.migrate',
     migrationsDirectory: path.resolve(__dirname, 'migrations/')
   }, function (err, set) {
     if (err) {
-      throw err
+      reject(err)
     }
 
     set.up(function (err) {
       if (err) {
-        throw err
+        reject(err)
       }
 
       console.log('Migrations ran successfully')
 
-      const server = http.createServer(app)
+      console.log(`Connect to MongoDB at ${config.dbUri}`)
+      mongoose.connect(config.dbUri, () => {
+        console.log('Connected to MongoDB')
 
-      server.listen(config.port)
+        //
+        // Return server
+        //
 
-      console.log(`Listening on port ${config.port}`)
+        resolve(app)
+      })
     })
   })
-}
+})
