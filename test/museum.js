@@ -79,65 +79,60 @@ describe('Museums', () => {
         .send(louvre)
 
       // THEN   the server should return an HTTP 401 Unauthorized
-      // AND    the JSON response should not contain sensitive information
+      // AND    the JSON response shouldn't contain sensitive information
 
       expect(postResponse).to.have.status(401)
       expect(postResponse.body).to.deep.equal({message: 'unauthorized'})
 
-      // THEN   the museum should not have been posted
+      // THEN   the database shouldn't contain the museum
 
       const museums = await Museum.find()
       expect(museums).to.be.an('array').that.is.empty
     })
 
-    it('creating a complete museum should succeed', async function () {
+    it('should work for an authorized user', async () => {
 
-      // GIVEN  the empty database
-      // AND    a new, complete museum
-
-      const newMuseum = louvre
-
-      // WHEN   creating the new museum
+      // WHEN   posting a museum without authenticating first
 
       const postResponse = await chai.request(server)
         .post('/api/v2/museum')
         .set({'Authorization': authorization})
-        .send(newMuseum)
+        .send(louvre)
 
       // THEN   the server should return an HTTP 201 Created
       // AND    the JSON response should be the new museum
-      // AND    the database should contain the new museum
 
       expect(postResponse).to.have.status(201)
-      expect(postResponse.body).to.shallowDeepEqual(newMuseum)
+      expect(postResponse.body).to.shallowDeepEqual(louvre)
 
-      const dbMuseumsAfter = await Museum.find()
-      expect(dbMuseumsAfter).to.be.an('array').of.length(1)
-      expect(dbMuseumsAfter[0]).to.shallowDeepEqual(newMuseum)
+      // THEN   the database should contain the museum
+
+      const museums = await Museum.find()
+      expect(museums).to.be.an('array').with.lengthOf(1)
+      expect(museums[0]).to.shallowDeepEqual(louvre)
     })
 
-    it('creating a museum with a missing, required property should fail', async function () {
+    it('should fail when posting a museum with a missing required property', async () => {
 
-      // GIVEN  the empty database
-      // AND    a new museum with a missing, required property
+      // WHEN   posting a museum with a missing required property
 
-      const newMuseum = copy(louvre)
-      delete newMuseum.logo.filename
-
-      // WHEN   trying to create the new museum
+      const louvreWithMissingLang = copy(louvre)
+      delete louvreWithMissingLang.contents[0].lang
 
       const postResponse = await chai.request(server)
         .post('/api/v2/museum')
         .set({'Authorization': authorization})
-        .send(newMuseum)
+        .send(louvreWithMissingLang)
 
-      // THEN   the server should return an HTTP 500 Internal Server Error
-      // AND    the database shouldn't contain new the museum
+      // THEN   the server should return an HTTP 400 Bad Request
+      // AND    the database shouldn't contain the new museum
 
-      expect(postResponse).to.have.status(500)
+      expect(postResponse).to.have.status(400)
 
-      const dbMuseumsAfter = await Museum.find()
-      expect(dbMuseumsAfter).to.be.an('array').that.is.empty
+      // THEN   the database shouldn't contain the museum
+
+      const museums = await Museum.find()
+      expect(museums).to.be.an('array').that.is.empty
     })
 
     it('creating a museum with a missing, non-required property should succeed', async function () {
