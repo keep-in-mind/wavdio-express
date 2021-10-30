@@ -135,31 +135,29 @@ describe('Museums', () => {
       expect(museums).to.be.an('array').that.is.empty
     })
 
-    it('creating a museum with a missing, non-required property should succeed', async function () {
+    it('should work when posting a museum with a missing non-required property', async () => {
 
-      // GIVEN  the empty database
-      // AND    a new museum with a missing, non-required property
+      // WHEN   posting a museum with a missing non-required property
 
-      const newMuseum = louvre
-      delete newMuseum.logo
-
-      // WHEN   creating the new museum
+      const louvreWithMissingImprint = copy(louvre)
+      delete louvreWithMissingImprint.contents[0].imprint
 
       const postResponse = await chai.request(server)
         .post('/api/v2/museum')
         .set({'Authorization': authorization})
-        .send(newMuseum)
+        .send(louvreWithMissingImprint)
 
       // THEN   the server should return an HTTP 201 Created
       // AND    the JSON response should be the new museum
-      // AND    the database should contain the new museum
 
       expect(postResponse).to.have.status(201)
-      expect(postResponse.body).to.shallowDeepEqual(newMuseum)
+      expect(postResponse.body).to.shallowDeepEqual(louvreWithMissingImprint)
 
-      const dbMuseumsAfter = await Museum.find()
-      expect(dbMuseumsAfter).to.be.an('array').of.length(1)
-      expect(dbMuseumsAfter[0]).to.shallowDeepEqual(newMuseum)
+      // THEN   the database should contain the museum
+
+      const museums = await Museum.find()
+      expect(museums).to.be.an('array').with.lengthOf(1)
+      expect(museums[0]).to.shallowDeepEqual(louvreWithMissingImprint)
     })
   })
 
