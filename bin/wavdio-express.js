@@ -4,6 +4,8 @@ const commandLineArgs = require('command-line-args')
 const commandLineUsage = require('command-line-usage')
 
 const server = require('../server')
+const migrate = require('../migrate')
+const mongoose = require('mongoose')
 
 const options = commandLineArgs([
   {name: 'db-uri', type: String},
@@ -44,9 +46,14 @@ const config = {
   port: options['port'] || process.env.PORT || 3000
 }
 
-server.createServer(config)
-  .then((app) => {
-    app.listen(config.port)
-    console.log(`Listening on port ${config.port}`)
+migrate(config.dbUri)
+  .then(() => {
+    console.log(`Connect to MongoDB at ${config.dbUri}`)
+    mongoose.connect(config.dbUri, () => {
+      console.log('Connected to MongoDB')
+
+      server.listen(config.port)
+      console.log(`Listening on port ${config.port}`)
+    })
   })
   .catch(error => console.error(error))
