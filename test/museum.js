@@ -27,29 +27,13 @@ describe('Museums', () => {
     mongoose.disconnect()
   })
 
-  describe('GET /museum', () => {
+  describe('GET /museum',  () => {
 
     it('should return no museums for an empty database', async () => {
 
-      // GIVEN an empty database
+      // GIVEN  an empty database
 
-      // WHEN  getting all museums
-
-      const getResponse = await chai.request(server).get('/api/v2/museum')
-
-      // THEN  the server should return no museums
-
-      expect(getResponse).to.have.status(200)
-      expect(getResponse.body).to.deep.equal([])
-    })
-  })
-
-  describe('GET /museum TODO', function () {
-    it('reading all museums from an empty museum collection should succeed', async function () {
-
-      // GIVEN  the empty database
-
-      // WHEN   reading all museums
+      // WHEN   getting all museums
 
       const getResponse = await chai.request(server)
         .get('/api/v2/museum')
@@ -61,29 +45,30 @@ describe('Museums', () => {
       expect(getResponse.body).to.be.an('array').that.is.empty
     })
 
-    it('reading all museums from a non-empty museum collection should succeed', async function () {
+    it('should return all museums from a database that contains museums', async () => {
 
-      // GIVEN  a database with an existing museum
+      // GIVEN  a database with existing museums
 
-      const existingMuseum = louvre
+      await Museum.create(louvre)
+      await Museum.create(germanMuseum)
 
-      await Museum.create(existingMuseum)
-
-      // WHEN   reading all museums
+      // WHEN   getting all museums
 
       const getResponse = await chai.request(server)
         .get('/api/v2/museum')
 
       // THEN   the server should return an HTTP 200 OK
-      // AND    the JSON response should be an array containing the existing museum
+      // AND    the JSON response should be an array containing the existing museums
 
       expect(getResponse).to.have.status(200)
-      expect(getResponse.body).to.be.an('array').of.length(1)
-      expect(getResponse.body[0]).to.shallowDeepEqual(existingMuseum)
+      expect(getResponse.body).to.be.an('array').with.lengthOf(2)
+      expect(getResponse.body[0]).to.shallowDeepEqual(louvre)
+      expect(getResponse.body[1]).to.shallowDeepEqual(germanMuseum)
     })
   })
 
   describe('POST /museum', function () {
+    
     it('creating a complete museum should succeed', async function () {
 
       // GIVEN  the empty database
