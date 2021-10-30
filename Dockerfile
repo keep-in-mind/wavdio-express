@@ -10,4 +10,6 @@ COPY ./ ./
 
 EXPOSE 3000
 
-CMD [ "node", "bin/server.js" ]
+ENV DB_URI mongodb://wavdio-mongo:27017/wavdio-express
+
+CMD [ "node", "server.js" ]
