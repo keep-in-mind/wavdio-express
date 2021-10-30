@@ -20,6 +20,9 @@ describe('Museums', () => {
   })
 
   beforeEach(async () => {
+
+    // GIVEN  an empty database
+
     await Museum.deleteMany({})
   })
 
@@ -27,11 +30,9 @@ describe('Museums', () => {
     mongoose.disconnect()
   })
 
-  describe('GET /museum',  () => {
+  describe('GET /museum', () => {
 
     it('should return no museums for an empty database', async () => {
-
-      // GIVEN  an empty database
 
       // WHEN   getting all museums
 
@@ -68,7 +69,27 @@ describe('Museums', () => {
   })
 
   describe('POST /museum', function () {
-    
+
+    it('should not work without authorization', async () => {
+
+      // WHEN   posting a museum without authenticating first
+
+      const postResponse = await chai.request(server)
+        .post('/api/v2/museum')
+        .send(louvre)
+
+      // THEN   the server should return an HTTP 401 Unauthorized
+      // AND    the JSON response should not contain sensitive information
+
+      expect(postResponse).to.have.status(401)
+      expect(postResponse.body).to.deep.equal({message: 'unauthorized'})
+
+      // THEN   the museum should not have been posted
+
+      const museums = await Museum.find()
+      expect(museums).to.be.an('array').that.is.empty
+    })
+
     it('creating a complete museum should succeed', async function () {
 
       // GIVEN  the empty database
