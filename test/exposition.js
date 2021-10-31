@@ -17,14 +17,10 @@ const expect = chai.expect
 
 describe('Expositions', () => {
 
-  let defaultExpositions
-
   let museum100Id
 
   before(async () => {
     await mongoose.connect('mongodb://localhost:27017/wavdio-express')
-
-    defaultExpositions = await Exposition.find()
 
     const mongoMuseum100 = await Museum.create(museum100)
     museum100Id = mongoMuseum100._id.toString()
@@ -32,7 +28,6 @@ describe('Expositions', () => {
 
   afterEach(async () => {
     await Exposition.deleteMany()
-    await Exposition.insertMany(defaultExpositions)
   })
 
   after(async () => {
