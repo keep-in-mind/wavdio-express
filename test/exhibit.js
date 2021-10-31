@@ -2,33 +2,43 @@ const chai = require('chai')
 const chaiHttp = require('chai-http')
 const chaiShallowDeepEqual = require('chai-shallow-deep-equal')
 
-const server = require('../server')
-const Museum = require('../models/museum')
-const Exposition = require('../models/exposition')
 const Exhibit = require('../models/exhibit')
-const museums = require('./fixtures/museums')
-const expositions = require('./fixtures/expositions')
-const exhibits = require('./fixtures/exhibits')
+const Exposition = require('../models/exposition')
+const Museum = require('../models/museum')
 const authorization = require('./fixtures/authorization')
+const exhibits = require('./fixtures/exhibits')
+const expositions = require('./fixtures/expositions')
+const mongoose = require('mongoose')
+const museums = require('./fixtures/museums')
+const server = require('../server')
+const {copy} = require('./util')
 
 chai.use(chaiHttp)
 chai.use(chaiShallowDeepEqual)
 
 const expect = chai.expect
 
-deepFreeze(museums)
-deepFreeze(expositions)
-deepFreeze(exhibits)
+describe('Exhibits', () => {
 
-describe('Exhibit', function () {
-  beforeEach(async function () {
-    await Museum.deleteMany({})
-    await Exposition.deleteMany({})
-    await Exhibit.deleteMany({})
+  let defaultExhibits
+
+  before(async () => {
+    await mongoose.connect('mongodb://localhost:27017/wavdio-express')
+
+    defaultExhibits = await Exhibit.find()
   })
 
-  describe('GET /exhibit', function () {
-    it('reading all exhibits from an empty exhibit collection should succeed', async function () {
+  beforeEach(async () => {
+    await Exhibit.deleteMany()
+    await Exhibit.insertMany(defaultExhibits)
+  })
+
+  after(() => {
+    mongoose.disconnect()
+  })
+
+  describe('GET /exhibit', () => {
+    it('reading all exhibits from an empty exhibit collection should succeed', async () => {
 
       // GIVEN  the empty database
 
@@ -44,7 +54,7 @@ describe('Exhibit', function () {
       expect(getResponse.body).to.be.an('array').that.is.empty
     })
 
-    it('reading all exhibits from a non-empty exhibit collection should succeed', async function () {
+    it('reading all exhibits from a non-empty exhibit collection should succeed', async () => {
 
       // GIVEN  a database with an existing exhibit
 
@@ -76,8 +86,8 @@ describe('Exhibit', function () {
     })
   })
 
-  describe('POST /exhibit', function () {
-    it('creating a complete exhibit should succeed', async function () {
+  describe('POST /exhibit', () => {
+    it('creating a complete exhibit should succeed', async () => {
 
       // GIVEN  a database with an exposition
       // AND    a new, complete exhibit
@@ -117,7 +127,7 @@ describe('Exhibit', function () {
       // expect(dbExhibitsAfter[0]).to.shallowDeepEqual(newExhibit);
     })
 
-    it('creating an exhibit with a missing, required property should fail', async function () {
+    it('creating an exhibit with a missing, required property should fail', async () => {
 
       // GIVEN  a database with an exposition
       // AND    a new exhibit with a missing, required property: the exposition
@@ -151,7 +161,7 @@ describe('Exhibit', function () {
       expect(dbExhibitsAfter).to.be.an('array').that.is.empty
     })
 
-    it('creating an exhibit with a missing, non-required property should succeed', async function () {
+    it('creating an exhibit with a missing, non-required property should succeed', async () => {
 
       // GIVEN  a database with an exposition
       // AND    a new exhibit with a missing, non-required property
@@ -190,8 +200,8 @@ describe('Exhibit', function () {
     })
   })
 
-  describe('GET /exhibit/{{exhibit_id}}', function () {
-    it('reading an existing exhibit should succeed', async function () {
+  describe('GET /exhibit/{{exhibit_id}}', () => {
+    it('reading an existing exhibit should succeed', async () => {
 
       // GIVEN  a database with an existing exhibit
 
@@ -221,7 +231,7 @@ describe('Exhibit', function () {
       expect(readResponse.body).to.shallowDeepEqual(existingExhibit)
     })
 
-    it('reading a non-existing exhibit should fail', async function () {
+    it('reading a non-existing exhibit should fail', async () => {
 
       // GIVEN  the empty database
       // AND    a non-existing ID
@@ -239,8 +249,8 @@ describe('Exhibit', function () {
     })
   })
 
-  describe('PUT /exhibit/{{exhibit_id}}', function () {
-    it('replacing an existing exhibit should succeed', async function () {
+  describe('PUT /exhibit/{{exhibit_id}}', () => {
+    it('replacing an existing exhibit should succeed', async () => {
 
       // GIVEN  a database with an existing exhibit
       // AND    a new exhibit
@@ -282,7 +292,7 @@ describe('Exhibit', function () {
       // expect(dbExhibitsAfter[0]).to.shallowDeepEqual(newExhibit);
     })
 
-    it('replacing a non-existing exhibit should fail', async function () {
+    it('replacing a non-existing exhibit should fail', async () => {
 
       // GIVEN  the empty database
       // AND    a non-existing ID
@@ -309,8 +319,8 @@ describe('Exhibit', function () {
     })
   })
 
-  describe('DELETE /exhibit/{{exhibit_id}}', function () {
-    it('deleting an existing exhibit should succeed', async function () {
+  describe('DELETE /exhibit/{{exhibit_id}}', () => {
+    it('deleting an existing exhibit should succeed', async () => {
 
       // GIVEN  a database with an existing exhibit
 
@@ -345,7 +355,7 @@ describe('Exhibit', function () {
       expect(dbExhibitsAfter).to.be.an('array').that.is.empty
     })
 
-    it('deleting a non-existing exhibit should fail', async function () {
+    it('deleting a non-existing exhibit should fail', async () => {
 
       // GIVEN  the empty database
       // AND    a non-existing ID
@@ -364,24 +374,3 @@ describe('Exhibit', function () {
     })
   })
 })
-
-function deepFreeze (object) {
-
-  // Retrieve the property names defined on object
-  const propNames = Object.getOwnPropertyNames(object)
-
-  // Freeze properties before freezing self
-
-  for (let name of propNames) {
-    let value = object[name]
-
-    object[name] = value && typeof value === 'object' ?
-      deepFreeze(value) : value
-  }
-
-  return Object.freeze(object)
-}
-
-function copy (object) {
-  return JSON.parse(JSON.stringify(object))
-}
