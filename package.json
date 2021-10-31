@@ -3,7 +3,7 @@
   "version": "3.1.0-test-4",
   "scripts": {
     "start": "node bin/wavdio-express.js",
-    "test": "mocha"
+    "test:e2e": "mocha"
   },
   "bin": {
     "wavdio-express": "bin/wavdio-express.js"

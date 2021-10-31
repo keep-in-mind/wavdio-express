@@ -2,7 +2,7 @@ on: [ push ]
 
 jobs:
 
-  test:
+  e2e_tests:
     runs-on: ubuntu-20.04
     steps:
 
@@ -16,7 +16,7 @@ jobs:
         run: docker run --publish "27017:27017" --detach mongo
 
       - name: Run e2e tests
-        run: npm test
+        run: npm run test:e2e
 
   test_npm_start:
     runs-on: ubuntu-20.04
