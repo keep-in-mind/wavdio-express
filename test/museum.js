@@ -120,7 +120,7 @@ describe('Museums', () => {
 
       // WHEN   posting a museum with a missing required property
 
-      const museum100_ = {...museum100}
+      const museum100_ = JSON.parse(JSON.stringify(museum100))
       delete museum100_.contents[0].lang
 
       const postResponse = await chai.request(server)
