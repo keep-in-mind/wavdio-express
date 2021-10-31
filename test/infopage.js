@@ -14,13 +14,13 @@ const expect = chai.expect
 
 deepFreeze(infopages)
 
-describe('Infopage', function () {
-  beforeEach(async function () {
+describe('Infopage', () => {
+  beforeEach(async () => {
     await Infopage.deleteMany({})
   })
 
-  describe('GET /infopage', function () {
-    it('reading all infopages from an empty infopage collection should succeed', async function () {
+  describe('GET /infopage', () => {
+    it('reading all infopages from an empty infopage collection should succeed', async () => {
 
       // GIVEN  the empty database
 
@@ -36,7 +36,7 @@ describe('Infopage', function () {
       expect(getResponse.body).to.be.an('array').that.is.empty
     })
 
-    it('reading all infopages from a non-empty infopage collection should succeed', async function () {
+    it('reading all infopages from a non-empty infopage collection should succeed', async () => {
 
       // GIVEN  a database with an existing infopage
 
@@ -58,8 +58,8 @@ describe('Infopage', function () {
     })
   })
 
-  describe('POST /infopage', function () {
-    it('creating a complete infopage should succeed', async function () {
+  describe('POST /infopage', () => {
+    it('creating a complete infopage should succeed', async () => {
 
       // GIVEN  the empty database
       // AND    a new, complete infopage
@@ -85,7 +85,7 @@ describe('Infopage', function () {
       expect(dbInfopagesAfter[0]).to.shallowDeepEqual(newInfopage)
     })
 
-    it('creating an infopage with a missing, non-required property should succeed', async function () {
+    it('creating an infopage with a missing, non-required property should succeed', async () => {
 
       // GIVEN  the empty database
       // AND    a new infopage with a missing, required property
@@ -110,8 +110,8 @@ describe('Infopage', function () {
     })
   })
 
-  describe('GET /infopage/{{infopage_id}}', function () {
-    it('reading an existing infopage should succeed', async function () {
+  describe('GET /infopage/{{infopage_id}}', () => {
+    it('reading an existing infopage should succeed', async () => {
 
       // GIVEN  a database with an existing infopage
 
@@ -131,7 +131,7 @@ describe('Infopage', function () {
       expect(getResponse.body).to.shallowDeepEqual(existingInfopage)
     })
 
-    it('reading a non-existing infopage should fail', async function () {
+    it('reading a non-existing infopage should fail', async () => {
 
       // GIVEN  the empty database
       // AND    a non-existing ID
@@ -149,8 +149,8 @@ describe('Infopage', function () {
     })
   })
 
-  describe('PUT /infopage/{{infopage_id}}', function () {
-    it('replacing an existing infopage should succeed', async function () {
+  describe('PUT /infopage/{{infopage_id}}', () => {
+    it('replacing an existing infopage should succeed', async () => {
 
       // GIVEN  a database with an existing infopage
       // AND    a new infopage
@@ -180,7 +180,7 @@ describe('Infopage', function () {
       expect(dbInfopagesAfter[0]).to.shallowDeepEqual(newInfopage)
     })
 
-    it('replacing a non-existing infopage should fail', async function () {
+    it('replacing a non-existing infopage should fail', async () => {
 
       // GIVEN  the empty database
       // AND    a non-existing ID
@@ -204,8 +204,8 @@ describe('Infopage', function () {
     })
   })
 
-  describe('DELETE /infopage/{{infopage_id}}', function () {
-    it('deleting an existing infopage should succeed', async function () {
+  describe('DELETE /infopage/{{infopage_id}}', () => {
+    it('deleting an existing infopage should succeed', async () => {
 
       // GIVEN  a database with an existing infopage
 
@@ -230,7 +230,7 @@ describe('Infopage', function () {
       expect(dbInfopagesAfter).to.be.an('array').that.is.empty
     })
 
-    it('deleting a non-existing infopage should fail', async function () {
+    it('deleting a non-existing infopage should fail', async () => {
 
       // GIVEN  the empty database
       // AND    a non-existing ID

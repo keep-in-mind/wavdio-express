@@ -8,9 +8,9 @@ const expect = chai.expect
 
 chai.use(chaiHttp)
 
-describe('Upload', function () {
-  describe('POST /upload', function () {
-    it('upload image', async function () {
+describe('Upload', () => {
+  describe('POST /upload', () => {
+    it('upload image', async () => {
       const _id = '5c0fc030f3d3190ded731d98'
       const file = './test/TestMedium/hallo_winni.jpg'
 

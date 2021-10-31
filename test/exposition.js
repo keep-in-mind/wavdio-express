@@ -14,17 +14,15 @@ chai.use(chaiShallowDeepEqual)
 
 const expect = chai.expect
 
-deepFreeze(museums)
-deepFreeze(expositions)
-
-describe('Exposition', function () {
-  beforeEach(async function () {
+describe('Expositions', () => {
+  
+  beforeEach(async () => {
     await Museum.deleteMany({})
     await Exposition.deleteMany({})
   })
 
-  describe('GET /exposition', function () {
-    it('reading all expositions from an empty exposition collection should succeed', async function () {
+  describe('GET /exposition', () => {
+    it('reading all expositions from an empty exposition collection should succeed', async () => {
 
       // GIVEN  the empty database
 
@@ -40,7 +38,7 @@ describe('Exposition', function () {
       expect(getResponse.body).to.be.an('array').that.is.empty
     })
 
-    it('reading all expositions from a non-empty exposition collection should succeed', async function () {
+    it('reading all expositions from a non-empty exposition collection should succeed', async () => {
 
       // GIVEN  a database with an existing exposition
 
@@ -66,8 +64,8 @@ describe('Exposition', function () {
     })
   })
 
-  describe('POST /exposition', function () {
-    it('creating a complete exposition should succeed', async function () {
+  describe('POST /exposition', () => {
+    it('creating a complete exposition should succeed', async () => {
 
       // GIVEN  a database with a museum
       // AND    a new, complete exposition
@@ -99,7 +97,7 @@ describe('Exposition', function () {
       // expect(dbExpositionsAfter[0]).to.shallowDeepEqual(newExposition);
     })
 
-    it('creating an exposition with a missing, required property should fail', async function () {
+    it('creating an exposition with a missing, required property should fail', async () => {
 
       // GIVEN  a database with a museum
       // AND    a new exposition with a missing, required property: the museum
@@ -128,7 +126,7 @@ describe('Exposition', function () {
       expect(dbExpositionsAfter).to.be.an('array').that.is.empty
     })
 
-    it('creating an exposition with a missing, non-required property should succeed', async function () {
+    it('creating an exposition with a missing, non-required property should succeed', async () => {
 
       // GIVEN  a database with a museum
       // AND    a new exposition with a missing, non-required property
@@ -162,8 +160,8 @@ describe('Exposition', function () {
     })
   })
 
-  describe('GET /exposition/{{exposition_id}}', function () {
-    it('reading an existing exposition should succeed', async function () {
+  describe('GET /exposition/{{exposition_id}}', () => {
+    it('reading an existing exposition should succeed', async () => {
 
       // GIVEN  a database with an existing exposition
 
@@ -188,7 +186,7 @@ describe('Exposition', function () {
       expect(getResponse.body).to.shallowDeepEqual(existingExposition)
     })
 
-    it('reading a non-existing exposition should fail', async function () {
+    it('reading a non-existing exposition should fail', async () => {
 
       // GIVEN  the empty database
       // AND    a non-existing ID
@@ -206,8 +204,8 @@ describe('Exposition', function () {
     })
   })
 
-  describe('PUT /exposition/{{exposition_id}}', function () {
-    it('replacing an existing exposition should succeed', async function () {
+  describe('PUT /exposition/{{exposition_id}}', () => {
+    it('replacing an existing exposition should succeed', async () => {
 
       // GIVEN  a database with an existing exposition
       // AND    a new exposition
@@ -244,7 +242,7 @@ describe('Exposition', function () {
       // expect(dbExpositionsAfter[0]).to.shallowDeepEqual(newExposition);
     })
 
-    it('replacing a non-existing exposition should fail', async function () {
+    it('replacing a non-existing exposition should fail', async () => {
 
       // GIVEN  the empty database
       // AND    a non-existing ID
@@ -271,8 +269,8 @@ describe('Exposition', function () {
     })
   })
 
-  describe('DELETE /exposition/{{exposition_id}}', function () {
-    it('deleting an existing exposition should succeed', async function () {
+  describe('DELETE /exposition/{{exposition_id}}', () => {
+    it('deleting an existing exposition should succeed', async () => {
 
       // GIVEN  a database with an existing exposition
 
@@ -302,7 +300,7 @@ describe('Exposition', function () {
       expect(dbExpositionsAfter).to.be.an('array').that.is.empty
     })
 
-    it('deleting a non-existing exposition should fail', async function () {
+    it('deleting a non-existing exposition should fail', async () => {
 
       // GIVEN  the empty database
       // AND    a non-existing ID
@@ -321,24 +319,3 @@ describe('Exposition', function () {
     })
   })
 })
-
-function deepFreeze (object) {
-
-  // Retrieve the property names defined on object
-  const propNames = Object.getOwnPropertyNames(object)
-
-  // Freeze properties before freezing self
-
-  for (let name of propNames) {
-    let value = object[name]
-
-    object[name] = value && typeof value === 'object' ?
-      deepFreeze(value) : value
-  }
-
-  return Object.freeze(object)
-}
-
-function copy (object) {
-  return JSON.parse(JSON.stringify(object))
-}
