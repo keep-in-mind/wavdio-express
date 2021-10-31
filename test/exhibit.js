@@ -6,15 +6,11 @@ const Exhibit = require('../models/exhibit')
 const Exposition = require('../models/exposition')
 const Museum = require('../models/museum')
 const authorization = require('./fixtures/authorization')
-const exhibits = require('./fixtures/exhibits')
-const expositions = require('./fixtures/expositions')
 const mongoose = require('mongoose')
-const museums = require('./fixtures/museums')
 const server = require('../server')
-const {copy} = require('./util')
 const {exhibit111, exhibit112} = require('./fixtures/exhibits')
 const {exposition110} = require('./fixtures/expositions')
-const {museum100, louvre} = require('./fixtures/museums')
+const {museum100} = require('./fixtures/museums')
 
 chai.use(chaiHttp)
 chai.use(chaiShallowDeepEqual)
@@ -203,6 +199,7 @@ describe('Exhibits', () => {
       // GIVEN  a database with an exhibit
 
       const newExhibit111 = {...exhibit111, parent: exposition110Id}
+
       const mongoExhibit111 = await Exhibit.create(newExhibit111)
       const exhibit111Id = mongoExhibit111._id
 
@@ -234,119 +231,96 @@ describe('Exhibits', () => {
   })
 
   describe('PUT /exhibit/:exhibitId', () => {
-    it('replacing an existing exhibit should succeed', async () => {
 
-      // GIVEN  a database with an existing exhibit
-      // AND    a new exhibit
+    it('should replace an existing exhibit', async () => {
 
-      const existingMuseum = museums['louvre']
-      const dbExistingMuseum = await Museum.create(existingMuseum)
-      const existingMuseumId = dbExistingMuseum._id.toString()
+      // GIVEN  a database with an exhibit
 
-      const existingExposition = copy(expositions['bestOfLeonardoDaVinci'])
-      existingExposition.museum = existingMuseumId
-      const dbExistingExposition = await Exposition.create(existingExposition)
-      const existingExpositionId = dbExistingExposition._id.toString()
+      const exhibit111_ = {...exhibit111, parent: exposition110Id}
 
-      const existingExhibit = copy(exhibits['monaLisa'])
-      existingExhibit.exposition = existingExpositionId
-      const dbExistingExhibit = await Exhibit.create(existingExhibit)
-      const existingExhibitId = dbExistingExhibit._id
+      const exhibit111Doc = await Exhibit.create(exhibit111_)
+      const exhibit111Id = exhibit111Doc._id
 
-      const newExhibit = copy(exhibits['thePersistenceOfMemory'])
-      newExhibit.exposition = existingExpositionId
+      // WHEN   replacing the existing exhibit
 
-      // WHEN   replacing the existing exhibit with the new one
+      const exhibit112_ = {...exhibit112, parent: exposition110Id}
 
       const putResponse = await chai.request(server)
-        .put(`/api/v2/exhibit/${existingExhibitId}`)
+        .put(`/api/v2/exhibit/${exhibit111Id}`)
         .set({'Authorization': authorization})
-        .send(newExhibit)
+        .send(exhibit112_)
 
       // THEN   the server should return an HTTP 200
       // AND    the JSON response should contain the old exhibit
-      // AND    the database should contain the new exhibit
 
       expect(putResponse).to.have.status(200)
-      expect(putResponse.body).to.shallowDeepEqual(existingExhibit)
+      expect(putResponse.body).to.shallowDeepEqual(exhibit111_)
 
-      const dbExhibitsAfter = await Exhibit.find()
-      expect(dbExhibitsAfter).to.be.an('array').of.length(1)
+      // THEN   the database should contain the new exhibit
+
+      const exhibits = await Exhibit.find()
+      expect(exhibits).to.be.an('array').with.lengthOf(1)
       // TODO: check content, check for super set not working because dates are stored differently
-      // expect(dbExhibitsAfter[0]).to.shallowDeepEqual(newExhibit);
+      // expect(exhibits[0]).to.shallowDeepEqual(exhibit112_)
     })
 
-    it('replacing a non-existing exhibit should fail', async () => {
+    it('should fail when replacing a non-existing exhibit', async () => {
 
-      // GIVEN  the empty database
-      // AND    a non-existing ID
-      // AND    a new exhibit
+      // WHEN   trying to replace a non-existing exhibit
 
       const nonExistingId = '012345678901234567890123'
-      const newExhibit = copy(exhibits['thePersistenceOfMemory'])
-      newExhibit.exposition = nonExistingId
-
-      // WHEN   trying to replace the non-existing exhibit with the new one
+      const exhibit111_ = {...exhibit111, parent: exposition110Id}
 
       const putResponse = await chai.request(server)
         .put(`/api/v2/exhibit/${nonExistingId}`)
         .set({'Authorization': authorization})
-        .send(newExhibit)
+        .send(exhibit111_)
 
       // THEN   the server should return an HTTP 404 Not Found
-      // AND    the database shouldn't contain an exhibit
 
       expect(putResponse).to.have.status(404)
 
-      const dbExhibitsAfter = await Exhibit.find()
-      expect(dbExhibitsAfter).to.be.an('array').that.is.empty
+      // THEN   the database shouldn't have changed
+
+      const exhibits = await Exhibit.find()
+      expect(exhibits).to.be.an('array').that.is.empty
     })
   })
 
   describe('DELETE /exhibit/:exhibitId', () => {
-    it('deleting an existing exhibit should succeed', async () => {
 
-      // GIVEN  a database with an existing exhibit
+    it('should delete the specified exhibit', async () => {
 
-      const existingMuseum = museums['louvre']
-      const dbExistingMuseum = await Museum.create(existingMuseum)
-      const existingMuseumId = dbExistingMuseum._id.toString()
+      // GIVEN  a database with an exhibit
 
-      const existingExposition = copy(expositions['bestOfLeonardoDaVinci'])
-      existingExposition.museum = existingMuseumId
-      const dbExistingExposition = await Exposition.create(existingExposition)
-      const existingExpositionId = dbExistingExposition._id.toString()
+      const exhibit111_ = {...exhibit111, parent: exposition110Id}
 
-      const existingExhibit = copy(exhibits['monaLisa'])
-      existingExhibit.exposition = existingExpositionId
-      const dbExistingExhibit = await Exhibit.create(existingExhibit)
-      const existingExhibitId = dbExistingExhibit._id
+      const exhibit111Doc = await Exhibit.create(exhibit111_)
+      const exhibit111Id = exhibit111Doc._id
 
-      // WHEN   deleting the existing exhibit
+      // WHEN   deleting the exhibit
 
       const deleteResponse = await chai.request(server)
-        .delete(`/api/v2/exhibit/${existingExhibitId}`)
+        .delete(`/api/v2/exhibit/${exhibit111Id}`)
         .set({'Authorization': authorization})
 
       // THEN   the server should return an HTTP 200
-      // AND    the JSON response should contain the old exhibit
-      // AND    the database should contain no exhibits anymore
+      // AND    the JSON response should contain the deleted exhibit
 
       expect(deleteResponse).to.have.status(200)
-      expect(deleteResponse.body).to.shallowDeepEqual(existingExhibit)
+      expect(deleteResponse.body).to.shallowDeepEqual(exhibit111_)
 
-      const dbExhibitsAfter = await Exhibit.find()
-      expect(dbExhibitsAfter).to.be.an('array').that.is.empty
+      // THEN   the database shouldn't contain the deleted exhibit anymore
+
+      const exhibits = await Exhibit.find()
+      expect(exhibits).to.be.an('array').that.is.empty
     })
 
-    it('deleting a non-existing exhibit should fail', async () => {
+    it('should fail when deleting a non-existing exhibit', async () => {
 
-      // GIVEN  the empty database
-      // AND    a non-existing ID
+      // WHEN   deleting a non-existing exhibit
 
       const nonExistingId = '012345678901234567890123'
-
-      // WHEN   trying to delete the non-existing exhibit
 
       const deleteResponse = await chai.request(server)
         .delete(`/api/v2/exhibit/${nonExistingId}`)

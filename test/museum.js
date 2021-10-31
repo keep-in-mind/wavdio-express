@@ -288,11 +288,6 @@ describe('Museums', () => {
       // THEN   the server should return an HTTP 404 Not Found
 
       expect(deleteResponse).to.have.status(404)
-
-      // THEN   the database should not have changed
-
-      const museums = await Museum.find()
-      expect(museums).to.be.an('array').that.is.empty
     })
   })
 })
