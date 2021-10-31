@@ -14,3 +14,7 @@ module.exports.deepFreeze = function deepFreeze (object) {
 
   return Object.freeze(object)
 }
+
+module.exports.copy = (object) => {
+  return JSON.parse(JSON.stringify(object))
+}
