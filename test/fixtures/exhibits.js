@@ -32,21 +32,19 @@ module.exports.exhibit111 = {
       info: 'Exhibit 111 EN Info',
 
       images: [
-        {filename: 'exhibit_111_en_image_1.jpg', alternativeText: 'Exhibit 111 EN Image 1 Alt Text'},
-        {filename: 'exhibit_111_en_image_2.jpg', alternativeText: 'Exhibit 111 EN Image 2 Alt Text'}
+        {
+          filename: 'exhibit_111_en_image_1.jpg',
+          alternativeText: 'Exhibit 111 EN Image 1 Alt Text'
+        },
+        {
+          filename: 'exhibit_111_en_image_2.jpg',
+          alternativeText: 'Exhibit 111 EN Image 2 Alt Text'
+        }
       ],
 
       audio: [
-        {
-          filename: 'exhibit_111_en_audio_1.mp3',
-          mimeType: 'audio/mpeg',
-          transcript: 'Exhibit 111 EN Audio 1 Transcript'
-        },
-        {
-          filename: 'exhibit_111_en_audio_2.wav',
-          mimeType: 'audio/wav',
-          transcript: 'Exhibit 111 EN Audio 2 Transcript'
-        }
+        {filename: 'exhibit_111_en_audio_1.mp3', mimeType: 'audio/mpeg'},
+        {filename: 'exhibit_111_en_audio_2.wav', mimeType: 'audio/wav'}
       ],
 
       video: [
@@ -69,21 +67,19 @@ module.exports.exhibit111 = {
       info: 'Exhibit 111 DE Info',
 
       images: [
-        {filename: 'exhibit_111_de_image_1.jpg', alternativeText: 'Exhibit 111 DE Image 1 Alt Text'},
-        {filename: 'exhibit_111_de_image_2.jpg', alternativeText: 'Exhibit 111 DE Image 2 Alt Text'}
+        {
+          filename: 'exhibit_111_de_image_1.jpg',
+          alternativeText: 'Exhibit 111 DE Image 1 Alt Text'
+        },
+        {
+          filename: 'exhibit_111_de_image_2.jpg',
+          alternativeText: 'Exhibit 111 DE Image 2 Alt Text'
+        }
       ],
 
       audio: [
-        {
-          filename: 'exhibit_111_de_audio_1.mp3',
-          mimeType: 'audio/mpeg',
-          transcript: 'Exhibit 111 DE Audio 1 Transcript'
-        },
-        {
-          filename: 'exhibit_111_de_audio_2.wav',
-          mimeType: 'audio/wav',
-          transcript: 'Exhibit 111 DE Audio 2 Transcript'
-        }
+        {filename: 'exhibit_111_de_audio_1.mp3', mimeType: 'audio/mpeg'},
+        {filename: 'exhibit_111_de_audio_2.wav', mimeType: 'audio/wav'}
       ],
 
       video: [
@@ -136,21 +132,19 @@ module.exports.exhibit112 = {
       info: 'Exhibit 112 EN Info',
 
       images: [
-        {filename: 'exhibit_112_en_image_1.jpg', alternativeText: 'Exhibit 112 EN Image 1 Alt Text'},
-        {filename: 'exhibit_112_en_image_2.jpg', alternativeText: 'Exhibit 112 EN Image 2 Alt Text'}
+        {
+          filename: 'exhibit_112_en_image_1.jpg',
+          alternativeText: 'Exhibit 112 EN Image 1 Alt Text'
+        },
+        {
+          filename: 'exhibit_112_en_image_2.jpg',
+          alternativeText: 'Exhibit 112 EN Image 2 Alt Text'
+        }
       ],
 
       audio: [
-        {
-          filename: 'exhibit_112_en_audio_1.mp3',
-          mimeType: 'audio/mpeg',
-          transcript: 'Exhibit 112 EN Audio 1 Transcript'
-        },
-        {
-          filename: 'exhibit_112_en_audio_2.wav',
-          mimeType: 'audio/wav',
-          transcript: 'Exhibit 112 EN Audio 2 Transcript'
-        }
+        {filename: 'exhibit_112_en_audio_1.mp3', mimeType: 'audio/mpeg'},
+        {filename: 'exhibit_112_en_audio_2.wav', mimeType: 'audio/wav'}
       ],
 
       video: [
@@ -173,21 +167,19 @@ module.exports.exhibit112 = {
       info: 'Exhibit 112 DE Info',
 
       images: [
-        {filename: 'exhibit_112_de_image_1.jpg', alternativeText: 'Exhibit 112 DE Image 1 Alt Text'},
-        {filename: 'exhibit_112_de_image_2.jpg', alternativeText: 'Exhibit 112 DE Image 2 Alt Text'}
+        {
+          filename: 'exhibit_112_de_image_1.jpg',
+          alternativeText: 'Exhibit 112 DE Image 1 Alt Text'
+        },
+        {
+          filename: 'exhibit_112_de_image_2.jpg',
+          alternativeText: 'Exhibit 112 DE Image 2 Alt Text'
+        }
       ],
 
       audio: [
-        {
-          filename: 'exhibit_112_de_audio_1.mp3',
-          mimeType: 'audio/mpeg',
-          transcript: 'Exhibit 112 DE Audio 1 Transcript'
-        },
-        {
-          filename: 'exhibit_112_de_audio_2.wav',
-          mimeType: 'audio/wav',
-          transcript: 'Exhibit 112 DE Audio 2 Transcript'
-        }
+        {filename: 'exhibit_112_de_audio_1.mp3', mimeType: 'audio/mpeg'},
+        {filename: 'exhibit_112_de_audio_2.wav', mimeType: 'audio/wav'}
       ],
 
       video: [

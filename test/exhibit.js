@@ -12,6 +12,9 @@ const mongoose = require('mongoose')
 const museums = require('./fixtures/museums')
 const server = require('../server')
 const {copy} = require('./util')
+const {museum100} = require('./fixtures/museums')
+const {exposition110} = require('./fixtures/expositions')
+const {exhibit111, exhibit112} = require('./fixtures/exhibits')
 
 chai.use(chaiHttp)
 chai.use(chaiShallowDeepEqual)
@@ -38,7 +41,39 @@ describe('Exhibits', () => {
   })
 
   describe('GET /exhibit', () => {
-    it('reading all exhibits from an empty exhibit collection should succeed', async () => {
+
+    it('should return all exhibits', async () => {
+
+      // GIVEN  a database with exhibits
+
+      const mongoMuseum100 = await Museum.create(museum100)
+      const museum100Id = mongoMuseum100._id.toString()
+
+      const newExposition110 = {...exposition110, museum: museum100Id}
+      const mongoExposition110 = await Exposition.create(newExposition110)
+      const exposition110Id = mongoExposition110._id.toString()
+
+      const newExhibit111 = {...exhibit111, parent: exposition110Id}
+      await Exhibit.create(newExhibit111)
+
+      const newExhibit112 = {...exhibit112, parent: exposition110Id}
+      await Exhibit.create(newExhibit112)
+
+      // WHEN   getting all exhibits
+
+      const getResponse = await chai.request(server)
+        .get('/api/v2/exhibit')
+
+      // THEN   the server should return an HTTP 200 OK
+      // AND    the JSON response should contain the exhibits
+
+      expect(getResponse).to.have.status(200)
+      expect(getResponse.body).to.be.an('array').with.lengthOf(2)
+      expect(getResponse.body[0]).to.shallowDeepEqual(newExhibit111)
+      expect(getResponse.body[1]).to.shallowDeepEqual(newExhibit112)
+    })
+
+    it('should return all exhibits TODO', async () => {
 
       // GIVEN  the empty database
 
@@ -52,37 +87,6 @@ describe('Exhibits', () => {
 
       expect(getResponse).to.have.status(200)
       expect(getResponse.body).to.be.an('array').that.is.empty
-    })
-
-    it('reading all exhibits from a non-empty exhibit collection should succeed', async () => {
-
-      // GIVEN  a database with an existing exhibit
-
-      const existingMuseum = museums['louvre']
-      const dbExistingMuseum = await Museum.create(existingMuseum)
-      const existingMuseumId = dbExistingMuseum._id.toString()
-
-      const existingExposition = copy(expositions['bestOfLeonardoDaVinci'])
-      existingExposition.museum = existingMuseumId
-      const dbExistingExposition = await Exposition.create(existingExposition)
-      const existingExpositionId = dbExistingExposition._id.toString()
-
-      const existingExhibit = copy(exhibits['monaLisa'])
-      existingExhibit.parent = existingExpositionId
-      existingExhibit.parentModel = 'Exposition'
-      await Exhibit.create(existingExhibit)
-
-      // WHEN   reading all exhibits
-
-      const getResponse = await chai.request(server)
-        .get('/api/v2/exhibit')
-
-      // THEN   the server should return an HTTP 200 OK
-      // AND    the JSON response should be an array containing the existing exhibit
-
-      expect(getResponse).to.have.status(200)
-      expect(getResponse.body).to.be.an('array').of.length(1)
-      expect(getResponse.body[0]).to.shallowDeepEqual(existingExhibit)
     })
   })
 
