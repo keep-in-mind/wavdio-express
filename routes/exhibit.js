@@ -160,7 +160,7 @@ router.route('/exhibit/:exhibit_id')
       const exh = await exhibit.findByIdAndRemove(exhibitId)
 
       if (!exh) {
-        logger.warning(`No exhibit with ID ${exhibitId}`)
+        logger.warn(`No exhibit with ID ${exhibitId}`)
         response.status(404).send()
         return
       }

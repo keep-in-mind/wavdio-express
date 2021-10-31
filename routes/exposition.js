@@ -127,7 +127,7 @@ router.route('/exposition/:exposition_id')
       const expo = await exposition.findByIdAndRemove(expositionId)
 
       if (!expo) {
-        logger.warning(`No exposition with ID ${expositionId}`)
+        logger.warn(`No exposition with ID ${expositionId}`)
         response.status(404).send()
         return
       }
