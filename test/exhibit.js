@@ -196,56 +196,44 @@ describe('Exhibits', () => {
     })
   })
 
-  describe('GET /exhibit/{{exhibit_id}}', () => {
-    it('reading an existing exhibit should succeed', async () => {
+  describe('GET /exhibit/:exhibitId', () => {
 
-      // GIVEN  a database with an existing exhibit
+    it('should return the specified exhibit', async () => {
 
-      const existingMuseum = museums['louvre']
-      const dbExistingMuseum = await Museum.create(existingMuseum)
-      const existingMuseumId = dbExistingMuseum._id.toString()
+      // GIVEN  a database with an exhibit
 
-      const existingExposition = copy(expositions['bestOfLeonardoDaVinci'])
-      existingExposition.museum = existingMuseumId
-      const dbExistingExposition = await Exposition.create(existingExposition)
-      const existingExpositionId = dbExistingExposition._id.toString()
+      const newExhibit111 = {...exhibit111, parent: exposition110Id}
+      const mongoExhibit111 = await Exhibit.create(newExhibit111)
+      const exhibit111Id = mongoExhibit111._id
 
-      const existingExhibit = copy(exhibits['monaLisa'])
-      existingExhibit.exposition = existingExpositionId
-      const dbExistingExhibit = await Exhibit.create(existingExhibit)
-      const existingExhibitId = dbExistingExhibit._id
+      // WHEN   getting the exhibit
 
-      // WHEN   reading the existing exhibit
-
-      const readResponse = await chai.request(server)
-        .get(`/api/v2/exhibit/${existingExhibitId}`)
+      const getResponse = await chai.request(server)
+        .get(`/api/v2/exhibit/${exhibit111Id}`)
 
       // THEN   the server should return an HTTP 200 OK
-      // AND    the JSON response should return the existing exhibit
+      // AND    the JSON response should be the exhibit
 
-      expect(readResponse).to.have.status(200)
-      expect(readResponse.body).to.shallowDeepEqual(existingExhibit)
+      expect(getResponse).to.have.status(200)
+      expect(getResponse.body).to.shallowDeepEqual(newExhibit111)
     })
 
-    it('reading a non-existing exhibit should fail', async () => {
+    it('should fail for a non-existing exhibit', async () => {
 
-      // GIVEN  the empty database
-      // AND    a non-existing ID
+      // WHEN   getting a non-existing exhibit
 
       const nonExistingId = '012345678901234567890123'
 
-      // WHEN   trying to read the non-existing exhibit
-
-      const readResponse = await chai.request(server)
+      const getResponse = await chai.request(server)
         .get(`/api/v2/exhibit/${nonExistingId}`)
 
       // THEN   the server should return an HTTP 404 Not Found
 
-      expect(readResponse).to.have.status(404)
+      expect(getResponse).to.have.status(404)
     })
   })
 
-  describe('PUT /exhibit/{{exhibit_id}}', () => {
+  describe('PUT /exhibit/:exhibitId', () => {
     it('replacing an existing exhibit should succeed', async () => {
 
       // GIVEN  a database with an existing exhibit
@@ -315,7 +303,7 @@ describe('Exhibits', () => {
     })
   })
 
-  describe('DELETE /exhibit/{{exhibit_id}}', () => {
+  describe('DELETE /exhibit/:exhibitId', () => {
     it('deleting an existing exhibit should succeed', async () => {
 
       // GIVEN  a database with an existing exhibit

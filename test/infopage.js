@@ -121,14 +121,14 @@ describe('Infopage', function () {
 
       // WHEN   reading the existing infopage
 
-      const readResponse = await chai.request(server)
+      const getResponse = await chai.request(server)
         .get(`/api/v2/infopage/${existingInfopageId}`)
 
       // THEN   the server should return an HTTP 200 OK
       // AND    the JSON response should return the existing infopage
 
-      expect(readResponse).to.have.status(200)
-      expect(readResponse.body).to.shallowDeepEqual(existingInfopage)
+      expect(getResponse).to.have.status(200)
+      expect(getResponse.body).to.shallowDeepEqual(existingInfopage)
     })
 
     it('reading a non-existing infopage should fail', async function () {
@@ -140,12 +140,12 @@ describe('Infopage', function () {
 
       // WHEN   trying to read the non-existing infopage
 
-      const readResponse = await chai.request(server)
+      const getResponse = await chai.request(server)
         .get(`/api/v2/infopage/${nonExistingId}`)
 
       // THEN   the server should return an HTTP 404 Not Found
 
-      expect(readResponse).to.have.status(404)
+      expect(getResponse).to.have.status(404)
     })
   })
 

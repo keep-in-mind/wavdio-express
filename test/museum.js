@@ -172,14 +172,14 @@ describe('Museums', () => {
 
       // WHEN   getting an existing museum
 
-      const readResponse = await chai.request(server)
+      const getResponse = await chai.request(server)
         .get(`/api/v2/museum/${louvreId}`)
 
       // THEN   the server should return an HTTP 200 OK
       // AND    the JSON response should be the requested museum
 
-      expect(readResponse).to.have.status(200)
-      expect(readResponse.body).to.shallowDeepEqual(louvre)
+      expect(getResponse).to.have.status(200)
+      expect(getResponse.body).to.shallowDeepEqual(louvre)
     })
 
     it('should fail for a non-existing museum', async () => {
@@ -188,12 +188,12 @@ describe('Museums', () => {
 
       const nonExistingId = '012345678901234567890123'
 
-      const readResponse = await chai.request(server)
+      const getResponse = await chai.request(server)
         .get(`/api/v2/museum/${nonExistingId}`)
 
       // THEN   the server should return an HTTP 404 Not Found
 
-      expect(readResponse).to.have.status(404)
+      expect(getResponse).to.have.status(404)
     })
   })
 

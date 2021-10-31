@@ -178,14 +178,14 @@ describe('Exposition', function () {
 
       // WHEN   reading the existing exposition
 
-      const readResponse = await chai.request(server)
+      const getResponse = await chai.request(server)
         .get(`/api/v2/exposition/${existingExpositionId}`)
 
       // THEN   the server should return an HTTP 200 OK
       // AND    the JSON response should return the existing exposition
 
-      expect(readResponse).to.have.status(200)
-      expect(readResponse.body).to.shallowDeepEqual(existingExposition)
+      expect(getResponse).to.have.status(200)
+      expect(getResponse.body).to.shallowDeepEqual(existingExposition)
     })
 
     it('reading a non-existing exposition should fail', async function () {
@@ -197,12 +197,12 @@ describe('Exposition', function () {
 
       // WHEN   trying to read the non-existing exposition
 
-      const readResponse = await chai.request(server)
+      const getResponse = await chai.request(server)
         .get(`/api/v2/exposition/${nonExistingId}`)
 
       // THEN   the server should return an HTTP 404 Not Found
 
-      expect(readResponse).to.have.status(404)
+      expect(getResponse).to.have.status(404)
     })
   })
 
