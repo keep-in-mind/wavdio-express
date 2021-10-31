@@ -4,9 +4,9 @@ const fs = require('fs')
 
 const server = require('../server')
 
-const expect = chai.expect
-
 chai.use(chaiHttp)
+
+const expect = chai.expect
 
 describe('Upload', () => {
   describe('POST /upload', () => {

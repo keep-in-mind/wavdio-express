@@ -3,11 +3,11 @@ const chaiHttp = require('chai-http')
 const chaiShallowDeepEqual = require('chai-shallow-deep-equal')
 
 const Museum = require('../models/museum')
-const authorization = require('./fixtures/authorization')
 const mongoose = require('mongoose')
 const server = require('../server')
-const {louvre, germanMuseum} = require('./fixtures/museums')
+const {authorization} = require('./fixtures/authorization')
 const {copy} = require('./util')
+const {louvre, germanMuseum} = require('./fixtures/museums')
 
 chai.use(chaiHttp)
 chai.use(chaiShallowDeepEqual)
