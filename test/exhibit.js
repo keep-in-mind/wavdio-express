@@ -20,6 +20,8 @@ const expect = chai.expect
 describe('Exhibits', () => {
 
   let defaultExhibits
+
+  let museum100Id
   let exposition110Id
 
   before(async () => {
@@ -27,12 +29,8 @@ describe('Exhibits', () => {
 
     defaultExhibits = await Exhibit.find()
 
-    //
-    // Create exposition to work with
-    //
-
     const mongoMuseum100 = await Museum.create(museum100)
-    const museum100Id = mongoMuseum100._id.toString()
+    museum100Id = mongoMuseum100._id.toString()
 
     const newExposition110 = {...exposition110, museum: museum100Id}
     const mongoExposition110 = await Exposition.create(newExposition110)
@@ -44,8 +42,11 @@ describe('Exhibits', () => {
     await Exhibit.insertMany(defaultExhibits)
   })
 
-  after(() => {
-    mongoose.disconnect()
+  after(async () => {
+    await Exposition.findByIdAndDelete(exposition110Id)
+    await Museum.findByIdAndDelete(museum100Id)
+
+    await mongoose.disconnect()
   })
 
   describe('GET /exhibit', () => {
@@ -70,11 +71,11 @@ describe('Exhibits', () => {
 
       // GIVEN  a database with exhibits
 
-      const newExhibit111 = {...exhibit111, parent: exposition110Id}
-      await Exhibit.create(newExhibit111)
+      const exhibit111_ = {...exhibit111, parent: exposition110Id}
+      await Exhibit.create(exhibit111_)
 
-      const newExhibit112 = {...exhibit112, parent: exposition110Id}
-      await Exhibit.create(newExhibit112)
+      const exhibit112_ = {...exhibit112, parent: exposition110Id}
+      await Exhibit.create(exhibit112_)
 
       // WHEN   getting all exhibits
 
@@ -86,8 +87,8 @@ describe('Exhibits', () => {
 
       expect(getResponse).to.have.status(200)
       expect(getResponse.body).to.be.an('array').with.lengthOf(2)
-      expect(getResponse.body[0]).to.shallowDeepEqual(newExhibit111)
-      expect(getResponse.body[1]).to.shallowDeepEqual(newExhibit112)
+      expect(getResponse.body[0]).to.shallowDeepEqual(exhibit111_)
+      expect(getResponse.body[1]).to.shallowDeepEqual(exhibit112_)
     })
   })
 
@@ -99,36 +100,36 @@ describe('Exhibits', () => {
 
       // WHEN   posting an exhibit for the exposition
 
-      const newExhibit111 = {...exhibit111, parent: exposition110Id}
+      const exhibit111_ = {...exhibit111, parent: exposition110Id}
 
       const postResponse = await chai.request(server)
         .post('/api/v2/exhibit')
         .set({'Authorization': authorization})
-        .send(newExhibit111)
+        .send(exhibit111_)
 
       // THEN   the server should return an HTTP 201 Created
       // AND    the JSON response should contain the new exhibit
 
       expect(postResponse).to.have.status(201)
-      expect(postResponse.body).to.shallowDeepEqual(newExhibit111)
+      expect(postResponse.body).to.shallowDeepEqual(exhibit111_)
 
       // THEN   the database should contain the new exhibit
 
       const exhibits = await Exhibit.find()
       expect(exhibits).to.be.an('array').with.lengthOf(1)
       // TODO: check content, check for super set not working because dates are stored differently
-      // expect(exhibits[0]).to.shallowDeepEqual(exhibits)
+      // expect(exhibits[0]).to.shallowDeepEqual(exhibit111_)
     })
 
     it('should fail without authorization', async () => {
 
       // WHEN   posting an exhibit without authorization
 
-      const newExhibit111 = {...exhibit111, parent: exposition110Id}
+      const exhibit111_ = {...exhibit111, parent: exposition110Id}
 
       const postResponse = await chai.request(server)
         .post('/api/v2/exhibit')
-        .send(newExhibit111)
+        .send(exhibit111_)
 
       // THEN   the server should return an HTTP 401 Unauthorized
       // AND    the JSON response shouldn't contain sensitive information
@@ -136,7 +137,7 @@ describe('Exhibits', () => {
       expect(postResponse).to.have.status(401)
       expect(postResponse.body).to.deep.equal({message: 'unauthorized'})
 
-      // THEN   the database shouldn't contain the museum
+      // THEN   the database shouldn't contain the exhibit
 
       const exhibits = await Exhibit.find()
       expect(exhibits).to.be.an('array').that.is.empty
@@ -146,16 +147,16 @@ describe('Exhibits', () => {
 
       // WHEN   posting an exhibit with a missing required property
 
-      const newExhibit111 = {...exhibit111, parent: exposition110Id}
-      delete newExhibit111.code
+      const exhibit111_ = {...exhibit111, parent: exposition110Id}
+      delete exhibit111_.code
 
       const postResponse = await chai.request(server)
         .post('/api/v2/exhibit')
         .set({'Authorization': authorization})
-        .send(newExhibit111)
+        .send(exhibit111_)
 
       // THEN   the server should return an HTTP 400 Bad Request
-      // AND    the database shouldn't contain the new museum
+      // AND    the database shouldn't contain the new exhibit
 
       expect(postResponse).to.have.status(400)
 
@@ -169,26 +170,26 @@ describe('Exhibits', () => {
 
       // WHEN   posting an exhibit with a missing non-required property
 
-      const newExhibit111 = {...exhibit111, parent: exposition110Id}
-      delete newExhibit111.note
+      const exhibit111_ = {...exhibit111, parent: exposition110Id}
+      delete exhibit111_.note
 
       const postResponse = await chai.request(server)
         .post('/api/v2/exhibit')
         .set({'Authorization': authorization})
-        .send(newExhibit111)
+        .send(exhibit111_)
 
       // THEN   the server should return an HTTP 201 Created
       // AND    the JSON response should be the new exhibit
 
       expect(postResponse).to.have.status(201)
-      expect(postResponse.body).to.shallowDeepEqual(newExhibit111)
+      expect(postResponse.body).to.shallowDeepEqual(exhibit111_)
 
       // THEN   the database should contain the exhibit
 
       const exhibits = await Exhibit.find()
       expect(exhibits).to.be.an('array').with.lengthOf(1)
       // TODO: check content, check for super set not working because dates are stored differently
-      // expect(exhibits[0]).to.shallowDeepEqual(newExhibit111)
+      // expect(exhibits[0]).to.shallowDeepEqual(exhibit111_)
     })
   })
 
@@ -198,10 +199,10 @@ describe('Exhibits', () => {
 
       // GIVEN  a database with an exhibit
 
-      const newExhibit111 = {...exhibit111, parent: exposition110Id}
+      const exhibit111_ = {...exhibit111, parent: exposition110Id}
 
-      const mongoExhibit111 = await Exhibit.create(newExhibit111)
-      const exhibit111Id = mongoExhibit111._id
+      const exhibit111Doc = await Exhibit.create(exhibit111_)
+      const exhibit111Id = exhibit111Doc._id
 
       // WHEN   getting the exhibit
 
@@ -212,7 +213,7 @@ describe('Exhibits', () => {
       // AND    the JSON response should be the exhibit
 
       expect(getResponse).to.have.status(200)
-      expect(getResponse.body).to.shallowDeepEqual(newExhibit111)
+      expect(getResponse.body).to.shallowDeepEqual(exhibit111_)
     })
 
     it('should fail for a non-existing exhibit', async () => {
