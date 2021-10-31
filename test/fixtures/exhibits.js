@@ -1,4 +1,6 @@
-module.exports.exhibit111 = {
+const {deepFreeze} = require('../util')
+
+module.exports.exhibit111 = deepFreeze({
   parent: '',
   parentModel: 'Exposition',
 
@@ -96,9 +98,9 @@ module.exports.exhibit111 = {
       ]
     }
   ]
-}
+})
 
-module.exports.exhibit112 = {
+module.exports.exhibit112 = deepFreeze({
   parent: '',
   parentModel: 'Exposition',
 
@@ -196,4 +198,4 @@ module.exports.exhibit112 = {
       ]
     }
   ]
-}
+})

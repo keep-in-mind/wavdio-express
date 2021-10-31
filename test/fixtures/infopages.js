@@ -1,15 +1,15 @@
-module.exports = {
-  about: {
-    lang: 'en',
+const {deepFreeze} = require('../util')
 
-    name: 'About',
-    text: 'About this app'
-  },
+module.exports.infopage1 = deepFreeze({
+  lang: 'en',
 
-  help: {
-    lang: 'de',
+  name: 'Infopage 1',
+  text: 'Infopage 1 Text'
+})
 
-    name: 'Hilfe',
-    text: 'Rufen Sie an.'
-  },
-}
+module.exports.infopage2 = deepFreeze({
+  lang: 'de',
+
+  name: 'Infopage 2',
+  text: 'Infopage 2 Text'
+})
