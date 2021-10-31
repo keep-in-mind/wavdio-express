@@ -34,7 +34,9 @@ router.route('/exhibit')
             response.status(500).send({'error_code': '13'})
           } else {
             exhibit.create(request.body, (error, exhibit) => {
-              if (error) {
+              if (error && error.name === 'ValidationError') {
+                response.status(400).json({'message': error.message})
+              } else if (error) {
                 console.log(error)
                 response.status(500).send(error)
               } else {
@@ -70,7 +72,9 @@ router.route('/exhibit/:exhibit_id')
         const body = request.body
         delete body._id
         exhibit.findOneAndUpdate({_id: request.params.exhibit_id}, body, (error, exhibit) => {
-          if (error) {
+          if (error && error.name === 'ValidationError') {
+            response.status(400).json({'message': error.message})
+          } else if (error) {
             logger.error(error)
             response.status(500).send(error)
           } else if (exhibit) {
@@ -90,8 +94,8 @@ router.route('/exhibit/:exhibit_id')
         return response.status(401).json({'message': 'unauthorized'})
       } else {
         const body = request.body
-        old_code = 0
-        old_active = true
+        let old_code = 0
+        let old_active = true
         exhibit.findOne({_id: body._id}, (error, exhibit) => {
           if (error) {
             logger.error(error)
@@ -117,7 +121,9 @@ router.route('/exhibit/:exhibit_id')
                 response.status(500).send({'error_code': '13'})
               } else {
                 exhibit.findOneAndUpdate({_id: request.params.exhibit_id}, body, (error, exhibit) => {
-                  if (error) {
+                  if (error && error.name === 'ValidationError') {
+                    response.status(400).json({'message': error.message})
+                  } else if (error) {
                     console.log(error)
                     response.status(500).send(error)
                   } else if (exhibit) {
@@ -155,7 +161,7 @@ router.route('/exhibit/:exhibit_id')
 
       if (!exh) {
         logger.warning(`No exhibit with ID ${exhibitId}`)
-        respnse.status(404).send()
+        response.status(404).send()
         return
       }
 
@@ -175,7 +181,9 @@ router.route('/exhibit/:exhibit_id/like').post((request, response) => {
   const like = request.body
 
   exhibit.findByIdAndUpdate(exhibitId, {$push: {likes: like}}, {new: true}, (error, exhibit) => {
-    if (error) {
+    if (error && error.name === 'ValidationError') {
+      response.status(400).json({'message': error.message})
+    } else if (error) {
       logger.log(error)
       response.status(500).send(error)
     } else if (exhibit) {
@@ -191,7 +199,9 @@ router.route('/exhibit/:exhibit_id/like/:like_id').delete((request, response) =>
   const likeId = request.params.like_id
 
   exhibit.findByIdAndUpdate(exhibitId, {$pull: {likes: {_id: likeId}}}, {new: true}, (error, exhibit) => {
-    if (error) {
+    if (error && error.name === 'ValidationError') {
+      response.status(400).json({'message': error.message})
+    } else if (error) {
       logger.log(error)
       response.status(500).send(error)
     } else if (exhibit) {
@@ -210,7 +220,9 @@ router.route('/exhibit/:exhibit_id/comment_like')
     exhibit.findByIdAndUpdate(exhibitId, {
       comments: body.comments, likes: body.likes
     }, (error, exhibit) => {
-      if (error) {
+      if (error && error.name === 'ValidationError') {
+        response.status(400).json({'message': error.message})
+      } else if (error) {
         logger.log(error)
         response.status(500).send(error)
       } else if (exhibit) {

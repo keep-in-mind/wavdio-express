@@ -27,7 +27,9 @@ router.route('/museum')
         return response.status(401).json({'message': 'unauthorized'})
       } else {
         Museum.create(request.body, (error, museum) => {
-          if (error) {
+          if (error && error.name === 'ValidationError') {
+            response.status(400).json({'message': error.message})
+          } else if (error) {
             logger.log(error)
             response.status(500).send(error)
           } else {
@@ -61,7 +63,9 @@ router.route('/museum/:museum_id')
         const body = request.body
         delete body._id
         Museum.findOneAndUpdate({_id: request.params.museum_id}, body, (error, museum) => {
-          if (error) {
+          if (error && error.name === 'ValidationError') {
+            response.status(400).json({'message': error.message})
+          } else if (error) {
             logger.log(error)
             response.status(500).send(error)
           } else if (museum) {
@@ -84,7 +88,9 @@ router.route('/museum/:museum_id')
         const body = request.body
         delete body._id
         Museum.updateOne({_id: request.params.museum_id}, body, (error, museum) => {
-          if (error) {
+          if (error && error.name === 'ValidationError') {
+            response.status(400).json({'message': error.message})
+          } else if (error) {
             logger.log(error)
             response.status(500).send(error)
           } else {

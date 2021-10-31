@@ -27,7 +27,9 @@ router.route('/setting')
         return response.status(401).json({'message': 'unauthorized'})
       } else {
         Setting.create(request.body, (error, setting) => {
-          if (error) {
+          if (error && error.name === 'ValidationError') {
+            response.status(400).json({'message': error.message})
+          } else if (error) {
             logger.log(error)
             response.status(500).send(error)
           } else {
@@ -61,7 +63,9 @@ router.route('/setting/:setting_id')
         const body = request.body
         delete body._id
         Setting.findOneAndUpdate({_id: request.params.setting_id}, body, (error, setting) => {
-          if (error) {
+          if (error && error.name === 'ValidationError') {
+            response.status(400).json({'message': error.message})
+          } else if (error) {
             logger.log(error)
             response.status(500).send(error)
           } else if (setting) {
@@ -84,7 +88,9 @@ router.route('/setting/:setting_id')
         const body = request.body
         delete body._id
         Setting.updateOne({_id: request.params.setting_id}, body, (error, setting) => {
-          if (error) {
+          if (error && error.name === 'ValidationError') {
+            response.status(400).json({'message': error.message})
+          } else if (error) {
             logger.log(error)
             response.status(500).send(error)
           } else {
