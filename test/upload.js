@@ -9,15 +9,23 @@ chai.use(chaiHttp)
 const expect = chai.expect
 
 describe('Upload', () => {
+
   describe('POST /upload', () => {
-    it('upload image', async () => {
-      const _id = '5c0fc030f3d3190ded731d98'
-      const file = './test/TestMedium/hallo_winni.jpg'
 
-      const response = await chai.request(server).post('/upload/' + _id)
-        .attach('file', fs.readFileSync(file))
+    it('should upload an image', async () => {
 
-      expect(response).to.have.status(201)
+      // WHEN   uploading an image
+
+      const id = '012345678901234567890123'
+      const file = fs.readFileSync('test/fixtures/cat.jpg')
+
+      const postResponse = await chai.request(server)
+        .post(`/upload/${id}`)
+        .attach('file', file)
+
+      // THEN   the server should return an HTTP 201 Created
+
+      expect(postResponse).to.have.status(201)
     })
   })
 })
