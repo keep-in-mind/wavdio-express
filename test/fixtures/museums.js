@@ -1,124 +1,119 @@
-const util = require('../util')
+const {deepFreeze} = require('../util')
 
-const louvre = {
+module.exports.museum100 = deepFreeze({
   contents: [
     {
       lang: 'en',
 
-      name: 'Louvre EN',
-      info: 'Louvre EN Info',
-      welcomeText: 'Louvre EN Welcome Text',
-      termsOfUse: 'Louvre EN Terms of Use',
-      privacyTerms: 'Louvre EN Privacy Terms',
-      imprint: 'Louvre EN Imprint',
+      name: 'Museum 100 EN',
+      info: 'Museum 100 EN Info',
+      welcomeText: 'Museum 100 EN Welcome Text',
+      termsOfUse: 'Museum 100 EN Terms of Use',
+      privacyTerms: 'Museum 100 EN Privacy Terms',
+      imprint: 'Museum 100 EN Imprint',
 
       logo: {
-        filename: 'louvre_en_logo.png',
-        alternativeText: 'Louvre EN Logo Alt Text'
+        filename: 'museum_100_en_logo.png',
+        alternativeText: 'Museum 100 EN Logo Alt Text'
       },
 
       image: {
-        filename: 'louvre_en_image.jpg',
-        alternativeText: 'Louvre EN Image Alt Text'
+        filename: 'museum_100_en_image.jpg',
+        alternativeText: 'Museum 100 EN Image Alt Text'
       },
 
       sitePlan: {
-        filename: 'louvre_en_site_plan.jpg',
-        alternativeText: 'Louvre EN Site Plan Alt Text'
+        filename: 'museum_100_en_site_plan.jpg',
+        alternativeText: 'Museum 100 EN Site Plan Alt Text'
       },
 
-      sitePlanText: 'Louvre EN Site Plan Text'
+      sitePlanText: 'Museum 100 EN Site Plan Text'
     },
     {
       lang: 'de',
 
-      name: 'Louvre DE',
-      info: 'Louvre DE Info',
-      welcomeText: 'Louvre DE Welcome Text',
-      termsOfUse: 'Louvre DE Terms of Use',
-      privacyTerms: 'Louvre DE Privacy Terms',
-      imprint: 'Louvre DE Imprint',
+      name: 'Museum 100 DE',
+      info: 'Museum 100 DE Info',
+      welcomeText: 'Museum 100 DE Welcome Text',
+      termsOfUse: 'Museum 100 DE Terms of Use',
+      privacyTerms: 'Museum 100 DE Privacy Terms',
+      imprint: 'Museum 100 DE Imprint',
 
       logo: {
-        filename: 'louvre_de_logo.png',
-        alternativeText: 'Louvre DE Logo Alt Text'
+        filename: 'museum_100_de_logo.png',
+        alternativeText: 'Museum 100 DE Logo Alt Text'
       },
 
       image: {
-        filename: 'louvre_de_image.jpg',
-        alternativeText: 'Louvre DE Image Alt Text'
+        filename: 'museum_100_de_image.jpg',
+        alternativeText: 'Museum 100 DE Image Alt Text'
       },
 
       sitePlan: {
-        filename: 'louvre_de_site_plan.jpg',
-        alternativeText: 'Louvre DE Site Plan Alt Text'
+        filename: 'museum_100_de_site_plan.jpg',
+        alternativeText: 'Museum 100 DE Site Plan Alt Text'
       },
 
-      sitePlanText: 'Louvre DE Site Plan Text'
+      sitePlanText: 'Museum 100 DE Site Plan Text'
     },
   ]
-}
+})
 
-const germanMuseum = {
+module.exports.museum200 = deepFreeze({
   contents: [
     {
       lang: 'en',
 
-      name: 'German Museum EN',
-      info: 'German Museum EN Info',
-      welcomeText: 'German Museum EN Welcome Text',
-      termsOfUse: 'German Museum EN Terms of Use',
-      privacyTerms: 'German Museum EN Privacy Terms',
-      imprint: 'German Museum EN Imprint',
+      name: 'Museum 200 EN',
+      info: 'Museum 200 EN Info',
+      welcomeText: 'Museum 200 EN Welcome Text',
+      termsOfUse: 'Museum 200 EN Terms of Use',
+      privacyTerms: 'Museum 200 EN Privacy Terms',
+      imprint: 'Museum 200 EN Imprint',
 
       logo: {
-        filename: 'german_museum_en_logo.png',
-        alternativeText: 'German Museum EN Logo Alt Text'
+        filename: 'museum_200_en_logo.png',
+        alternativeText: 'Museum 200 EN Logo Alt Text'
       },
 
       image: {
-        filename: 'german_museum_en_image.jpg',
-        alternativeText: 'German Museum EN Image Alt Text'
+        filename: 'museum_200_en_image.jpg',
+        alternativeText: 'Museum 200 EN Image Alt Text'
       },
 
       sitePlan: {
-        filename: 'german_museum_en_site_plan.jpg',
-        alternativeText: 'German Museum EN Site Plan Alt Text'
+        filename: 'museum_200_en_site_plan.jpg',
+        alternativeText: 'Museum 200 EN Site Plan Alt Text'
       },
 
-      sitePlanText: 'German Museum EN Site Plan Text'
+      sitePlanText: 'Museum 200 EN Site Plan Text'
     },
     {
       lang: 'de',
 
-      name: 'German Museum DE',
-      info: 'German Museum DE Info',
-      welcomeText: 'German Museum DE Welcome Text',
-      termsOfUse: 'German Museum DE Terms of Use',
-      privacyTerms: 'German Museum DE Privacy Terms',
-      imprint: 'German Museum DE Imprint',
+      name: 'Museum 200 DE',
+      info: 'Museum 200 DE Info',
+      welcomeText: 'Museum 200 DE Welcome Text',
+      termsOfUse: 'Museum 200 DE Terms of Use',
+      privacyTerms: 'Museum 200 DE Privacy Terms',
+      imprint: 'Museum 200 DE Imprint',
 
       logo: {
-        filename: 'german_museum_de_logo.png',
-        alternativeText: 'German Museum DE Logo Alt Text'
+        filename: 'museum_200_de_logo.png',
+        alternativeText: 'Museum 200 DE Logo Alt Text'
       },
 
       image: {
-        filename: 'german_museum_de_image.jpg',
-        alternativeText: 'German Museum DE Image Alt Text'
+        filename: 'museum_200_de_image.jpg',
+        alternativeText: 'Museum 200 DE Image Alt Text'
       },
 
       sitePlan: {
-        filename: 'german_museum_de_site_plan.jpg',
-        alternativeText: 'German Museum DE Site Plan Alt Text'
+        filename: 'museum_200_de_site_plan.jpg',
+        alternativeText: 'Museum 200 DE Site Plan Alt Text'
       },
 
-      sitePlanText: 'German Museum DE Site Plan Text'
+      sitePlanText: 'Museum 200 DE Site Plan Text'
     },
   ]
-}
-
-util.deepFreeze(louvre)
-util.deepFreeze(germanMuseum)
-
-module.exports = {louvre, germanMuseum}
+})
