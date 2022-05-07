@@ -7,17 +7,11 @@ const { User } = require('../models/user')
 
 const router = express.Router()
 
-router.route('/museum').get(async (request, response) => {
+router.route('/museum').get(async (_request, response) => {
   try {
+    const museums = Museum.find()
 
-    Museum.find((error, museums) => {
-      if (error) {
-        logger.error(error)
-        response.status(500).send(error)
-      } else {
-        response.status(200).json(museums)
-      }
-    })
+    return response.status(200).json(museums)
 
   } catch (error) {
     logger.error(error)

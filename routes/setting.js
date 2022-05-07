@@ -7,17 +7,11 @@ const { User } = require('../models/user')
 
 const router = express.Router()
 
-router.route('/setting').get(async (request, response) => {
+router.route('/setting').get(async (_request, response) => {
   try {
+    const settings = Setting.find()
 
-    Setting.find((error, settings) => {
-      if (error) {
-        logger.error(error)
-        response.status(500).send(error)
-      } else {
-        response.status(200).json(settings)
-      }
-    })
+    return response.status(200).json(settings)
 
   } catch (error) {
     logger.error(error)

@@ -9,17 +9,11 @@ const { User } = require('../models/user')
 
 const router = express.Router()
 
-router.route('/exposition').get(async (request, response) => {
+router.route('/exposition').get(async (_request, response) => {
   try {
+    const expositions = Exposition.find()
 
-    Exposition.find((error, expositions) => {
-      if (error) {
-        logger.error(error)
-        response.status(500).send(error)
-      } else {
-        response.status(200).json(expositions)
-      }
-    })
+    return response.status(200).json(expositions)
 
   } catch (error) {
     logger.error(error)
