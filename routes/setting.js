@@ -54,16 +54,15 @@ router.route('/setting/:settingId').get(async (request, response) => {
   try {
     const settingId = request.params.settingId
 
-    Setting.findById(settingId, (error, setting) => {
-      if (error) {
-        logger.error(error)
-        response.status(500).send(error)
-      } else if (setting) {
-        response.status(200).json(setting)
-      } else {
-        response.status(404).send()
-      }
-    })
+    /// Check if setting exists and return it
+
+    const setting = await Setting.findById(settingId)
+
+    if (!setting) {
+      return response.status(404).send()
+    }
+
+    return response.status(200).json(setting)
 
   } catch (error) {
     logger.error(error)

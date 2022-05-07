@@ -63,16 +63,15 @@ router.route('/exhibit/:exhibitId').get(async (request, response) => {
   try {
     const exhibitId = request.params.exhibitId
 
-    Exhibit.findById(exhibitId, (error, exhibit) => {
-      if (error) {
-        logger.error(error)
-        response.status(500).send(error)
-      } else if (exhibit) {
-        response.status(200).json(exhibit)
-      } else {
-        response.status(404).send()
-      }
-    })
+    /// Check if exhibit exists and return it
+
+    const exhibit = await Exhibit.findById(exhibitId)
+
+    if (!exhibit) {
+      return response.status(404).send()
+    }
+
+    return response.status(200).json(exhibit)
 
   } catch (error) {
     logger.error(error)

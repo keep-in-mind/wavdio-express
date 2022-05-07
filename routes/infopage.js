@@ -54,16 +54,15 @@ router.route('/infopage/:infopageId').get(async (request, response) => {
   try {
     const infopageId = request.params.infopageId
 
-    Infopage.findById(infopageId, (error, infopage) => {
-      if (error) {
-        logger.error(error)
-        response.status(500).send(error)
-      } else if (infopage) {
-        response.status(200).json(infopage)
-      } else {
-        response.status(404).send()
-      }
-    })
+    /// Check if infopage exists and return it
+
+    const infopage = await Infopage.findById(infopageId)
+
+    if (!infopage) {
+      return response.status(404).send()
+    }
+
+    return response.status(200).json(infopage)
 
   } catch (error) {
     logger.error(error)

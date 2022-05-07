@@ -54,16 +54,15 @@ router.route('/museum/:museumId').get(async (request, response) => {
   try {
     const museumId = request.params.museumId
 
-    Museum.findById(museumId, (error, museum) => {
-      if (error) {
-        logger.error(error)
-        response.status(500).send(error)
-      } else if (museum) {
-        response.status(200).json(museum)
-      } else {
-        response.status(404).send()
-      }
-    })
+    /// Check if museum exists and return it
+
+    const museum = await Museum.findById(museumId)
+
+    if (!museum) {
+      return response.status(404).send()
+    }
+
+    return response.status(200).json(museum)
 
   } catch (error) {
     logger.error(error)

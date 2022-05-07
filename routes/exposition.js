@@ -56,16 +56,15 @@ router.route('/exposition/:expositionId').get(async (request, response) => {
   try {
     const expositionId = request.params.expositionId
 
-    Exposition.findById(expositionId, (error, exposition) => {
-      if (error) {
-        logger.error(error)
-        response.status(500).send(error)
-      } else if (exposition) {
-        response.status(200).json(exposition)
-      } else {
-        response.status(404).send()
-      }
-    })
+    /// Check if exposition exists and return it
+
+    const exposition = await Exposition.findById(expositionId)
+
+    if (!exposition) {
+      return response.status(404).send()
+    }
+
+    return response.status(200).json(exposition)
 
   } catch (error) {
     logger.error(error)
