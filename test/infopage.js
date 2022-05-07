@@ -2,7 +2,7 @@ const chai = require('chai')
 const chaiHttp = require('chai-http')
 const chaiShallowDeepEqual = require('chai-shallow-deep-equal')
 
-const Infopage = require('../models/infopage')
+const {Infopage} = require('../models/infopage')
 const mongoose = require('mongoose')
 const server = require('../server')
 const {authorization} = require('./fixtures/authorization')

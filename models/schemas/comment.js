@@ -1,10 +1,10 @@
-const mongoose = require('mongoose')
+const { Schema } = require('mongoose')
 
-const Schema = mongoose.Schema
-
-module.exports = new Schema({
-  text: {type: String, required: true},
-  timestamp: {type: Date, required: true}
+const commentSchema = new Schema({
+  text: { type: String, required: true },
+  timestamp: { type: Date, required: true }
 }, {
   strict: 'throw'
 })
+
+module.exports = { commentSchema }

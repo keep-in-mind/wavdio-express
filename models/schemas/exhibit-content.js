@@ -1,22 +1,22 @@
-const mongoose = require('mongoose')
+const { Schema } = require('mongoose')
 
-const Image = require('./image')
-const Audio = require('./audio')
-const Video = require('./video')
-const Transcript = require('./transcript')
+const { audioSchema } = require('./audio')
+const { imageSchema } = require('./image')
+const { transcriptSchema } = require('./transcript')
+const { videoSchema } = require('./video')
 
-const Schema = mongoose.Schema
+const exhibitContentSchema = new Schema({
+  lang: { type: String, required: true },
 
-module.exports = new Schema({
-  lang: {type: String, required: true},
+  name: { type: String, required: false },
+  info: { type: String, required: false },
+  transcript: { type: transcriptSchema, required: false },
 
-  name: {type: String, required: false},
-  info: {type: String, required: false},
-  transcript: {type: Transcript, required: false},
-
-  images: [Image],
-  audio: [Audio],
-  video: [Video],
+  images: [imageSchema],
+  audio: [audioSchema],
+  video: [videoSchema],
 }, {
   strict: 'throw'
 })
+
+module.exports = { exhibitContentSchema }

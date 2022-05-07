@@ -1,9 +1,10 @@
 const express = require('express')
-const fs = require('fs')
 const fileUpload = require('express-fileupload')
+const fs = require('fs')
+
+const logger = require('../logging')
 
 const router = express.Router()
-const logger = require('../logging')
 
 router.use(fileUpload({createParentPath: true}))
 

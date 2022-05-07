@@ -1,5 +1,7 @@
-const mongoose = require('mongoose')
+const { model } = require('mongoose')
 
-const Meta = require('./schemas/meta')
+const { metaSchema } = require('./schemas/meta')
 
-module.exports = mongoose.model('Meta', Meta)
+const Meta = model('Meta', metaSchema)
+
+module.exports = { Meta }

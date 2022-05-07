@@ -1,25 +1,25 @@
-const mongoose = require('mongoose')
+const { Schema } = require('mongoose')
 
-const View = require('./view')
-const Like = require('./like')
-const Comment = require('./comment')
-const ExhibitContent = require('./exhibit-content')
+const { commentSchema } = require('./comment')
+const { exhibitContentSchema } = require('./exhibit-content')
+const { likeSchema } = require('./like')
+const { viewSchema } = require('./view')
 
-const Schema = mongoose.Schema
+const exhibitSchema = new Schema({
+  parent: { type: Schema.Types.ObjectId, refPath: 'parentModel', required: true },
+  parentModel: { type: String, enum: ['Museum', 'Exposition'], required: true },
 
-module.exports = new Schema({
-  parent: {type: Schema.Types.ObjectId, refPath: 'parentModel', required: true},
-  parentModel: {type: String, enum: ['Museum', 'Exposition'], required: true},
+  active: { type: Boolean, required: true },
+  code: { type: Number, required: true },
+  note: { type: String, required: false },
 
-  active: {type: Boolean, required: true},
-  code: {type: Number, required: true},
-  note: {type: String, required: false},
+  views: [viewSchema],
+  likes: [likeSchema],
+  comments: [commentSchema],
 
-  views: [View],
-  likes: [Like],
-  comments: [Comment],
-
-  contents: [ExhibitContent]
+  contents: [exhibitContentSchema]
 }, {
   strict: 'throw'
 })
+
+module.exports = { exhibitSchema }

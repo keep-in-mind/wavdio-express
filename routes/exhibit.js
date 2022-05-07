@@ -2,15 +2,16 @@ const express = require('express')
 const rimraf = require('rimraf')
 
 const logger = require('../logging')
-const exhibit = require('../models/exhibit')
-const user = require('../models/user')
+
+const { Exhibit } = require('../models/exhibit')
+const { User } = require('../models/user')
 
 const router = express.Router()
 
 router.route('/exhibit')
 
   .get((request, response) => {
-    exhibit.find((error, exhibits) => {
+    Exhibit.find((error, exhibits) => {
       if (error) {
         logger.error(error)
         response.status(500).send(error)
@@ -21,21 +22,21 @@ router.route('/exhibit')
   })
 
   .post((request, response) => {
-    user.findOne({}, function (err, user_) {
+    User.findOne({}, function (err, user_) {
       if (user_.session_id !== request.headers.authorization) {
-        return response.status(401).json({'message': 'unauthorized'})
+        return response.status(401).json({ 'message': 'unauthorized' })
       } else {
         const body = request.body
-        exhibit.find({parent: body.parent, code: body.code, active: true}, (error, exhibits) => {
+        Exhibit.find({ parent: body.parent, code: body.code, active: true }, (error, exhibits) => {
           if (error) {
             logger.error(error)
             response.status(500).send(error)
           } else if (exhibits.length > 0 && body.active === true) {
-            response.status(500).send({'error_code': '13'})
+            response.status(500).send({ 'error_code': '13' })
           } else {
-            exhibit.create(request.body, (error, exhibit) => {
+            Exhibit.create(request.body, (error, exhibit) => {
               if (error && error.name === 'ValidationError') {
-                response.status(400).json({'message': error.message})
+                response.status(400).json({ 'message': error.message })
               } else if (error) {
                 console.log(error)
                 response.status(500).send(error)
@@ -52,7 +53,7 @@ router.route('/exhibit')
 router.route('/exhibit/:exhibit_id')
 
   .get((request, response) => {
-    exhibit.findById(request.params.exhibit_id, (error, exhibit) => {
+    Exhibit.findById(request.params.exhibit_id, (error, exhibit) => {
       if (error) {
         logger.error(error)
         response.status(500).send(error)
@@ -65,15 +66,15 @@ router.route('/exhibit/:exhibit_id')
   })
 
   .put((request, response) => {
-    user.findOne({}, function (err, user_) {
+    User.findOne({}, function (err, user_) {
       if (user_.session_id !== request.headers.authorization) {
-        return response.status(401).json({'message': 'unauthorized'})
+        return response.status(401).json({ 'message': 'unauthorized' })
       } else {
         const body = request.body
         delete body._id
-        exhibit.findOneAndUpdate({_id: request.params.exhibit_id}, body, (error, exhibit) => {
+        Exhibit.findOneAndUpdate({ _id: request.params.exhibit_id }, body, (error, exhibit) => {
           if (error && error.name === 'ValidationError') {
-            response.status(400).json({'message': error.message})
+            response.status(400).json({ 'message': error.message })
           } else if (error) {
             logger.error(error)
             response.status(500).send(error)
@@ -90,23 +91,23 @@ router.route('/exhibit/:exhibit_id')
   .patch(async (request, response) => {
 
     try {
-      const user_ = await user.findOne({})
+      const user_ = await User.findOne({})
 
       if (user_.session_id !== request.headers.authorization) {
-        return response.status(401).json({'message': 'unauthorized'})
+        return response.status(401).json({ 'message': 'unauthorized' })
       }
 
       const body = request.body
       let old_code = 0
       let old_active = true
 
-      const exhibit_ = await exhibit.findOne({_id: body._id})
+      const exhibit_ = await Exhibit.findOne({ _id: body._id })
 
       old_code = exhibit_.code
       old_active = exhibit_.active
       delete body._id
 
-      const exhibits = await exhibit.find({parent: body.parent, code: body.code, active: true})
+      const exhibits = await Exhibit.find({ parent: body.parent, code: body.code, active: true })
 
       if (
         // Anderes Exponat existiert mit dem code, der geändert wurde
@@ -114,10 +115,10 @@ router.route('/exhibit/:exhibit_id')
         // Anderes Exponat existiert mit dem alten code, darf nicht auf active gesetzt werden
         (exhibits.length > 0 && body.code === old_code && body.active === true && old_active === false)) {
 
-        response.status(500).send({'error_code': '13'})
+        response.status(500).send({ 'error_code': '13' })
 
       } else {
-        const exhibit__ = await exhibit.findOneAndUpdate({_id: request.params.exhibit_id}, body)
+        const exhibit__ = await Exhibit.findOneAndUpdate({ _id: request.params.exhibit_id }, body)
 
         if (exhibit__) {
           response.status(200).json(exhibit__)
@@ -130,7 +131,7 @@ router.route('/exhibit/:exhibit_id')
       console.error(error)
 
       if (error && error.name === 'ValidationError') {
-        response.status(400).json({'message': error.message})
+        response.status(400).json({ 'message': error.message })
 
       } else if (error) {
         response.status(500).send(error)
@@ -145,16 +146,16 @@ router.route('/exhibit/:exhibit_id')
 
       /* Authenticate */
 
-      const u = await user.findOne({})
+      const u = await User.findOne({})
 
       if (u.session_id !== request.headers.authorization) {
-        response.status(401).json({'message': 'unauthorized'})
+        response.status(401).json({ 'message': 'unauthorized' })
         return
       }
 
       /* Remove from DB. Invalid ID -> 404 Not Found */
 
-      const exh = await exhibit.findByIdAndRemove(exhibitId)
+      const exh = await Exhibit.findByIdAndRemove(exhibitId)
 
       if (!exh) {
         logger.warn(`No exhibit with ID ${exhibitId}`)
@@ -177,9 +178,9 @@ router.route('/exhibit/:exhibit_id/like').post((request, response) => {
   const exhibitId = request.params.exhibit_id
   const like = request.body
 
-  exhibit.findByIdAndUpdate(exhibitId, {$push: {likes: like}}, {new: true}, (error, exhibit) => {
+  Exhibit.findByIdAndUpdate(exhibitId, { $push: { likes: like } }, { new: true }, (error, exhibit) => {
     if (error && error.name === 'ValidationError') {
-      response.status(400).json({'message': error.message})
+      response.status(400).json({ 'message': error.message })
     } else if (error) {
       logger.log(error)
       response.status(500).send(error)
@@ -195,9 +196,9 @@ router.route('/exhibit/:exhibit_id/like/:like_id').delete((request, response) =>
   const exhibitId = request.params.exhibit_id
   const likeId = request.params.like_id
 
-  exhibit.findByIdAndUpdate(exhibitId, {$pull: {likes: {_id: likeId}}}, {new: true}, (error, exhibit) => {
+  Exhibit.findByIdAndUpdate(exhibitId, { $pull: { likes: { _id: likeId } } }, { new: true }, (error, exhibit) => {
     if (error && error.name === 'ValidationError') {
-      response.status(400).json({'message': error.message})
+      response.status(400).json({ 'message': error.message })
     } else if (error) {
       logger.log(error)
       response.status(500).send(error)
@@ -214,11 +215,11 @@ router.route('/exhibit/:exhibit_id/comment_like')
   .patch((request, response) => {
     const exhibitId = request.params.exhibit_id
     const body = request.body
-    exhibit.findByIdAndUpdate(exhibitId, {
+    Exhibit.findByIdAndUpdate(exhibitId, {
       comments: body.comments, likes: body.likes
     }, (error, exhibit) => {
       if (error && error.name === 'ValidationError') {
-        response.status(400).json({'message': error.message})
+        response.status(400).json({ 'message': error.message })
       } else if (error) {
         logger.log(error)
         response.status(500).send(error)

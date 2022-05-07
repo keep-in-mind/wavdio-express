@@ -1,11 +1,11 @@
 const express = require('express')
 
-const Museum = require('../models/museum')
-
-const router = express.Router()
 const logger = require('../logging')
 
-const user = require('../models/user')
+const {Museum} = require('../models/museum')
+const {User} = require('../models/user')
+
+const router = express.Router()
 
 router.route('/museum')
 
@@ -22,7 +22,7 @@ router.route('/museum')
 
   .post((request, response) => {
 
-    user.findOne({}, function (err, user_) {
+    User.findOne({}, function (err, user_) {
       if (user_.session_id !== request.headers.authorization) {
         return response.status(401).json({'message': 'unauthorized'})
       } else {
@@ -56,7 +56,7 @@ router.route('/museum/:museum_id')
   })
 
   .put((request, response) => {
-    user.findOne({}, function (err, user_) {
+    User.findOne({}, function (err, user_) {
       if (user_.session_id !== request.headers.authorization) {
         return response.status(401).json({'message': 'unauthorized'})
       } else {
@@ -80,7 +80,7 @@ router.route('/museum/:museum_id')
 
   .patch((request, response) => {
 
-    user.findOne({}, function (err, user_) {
+    User.findOne({}, function (err, user_) {
       if (user_.session_id !== request.headers.authorization) {
         return response.status(401).json({'message': 'unauthorized'})
 
@@ -103,7 +103,7 @@ router.route('/museum/:museum_id')
 
   .delete((request, response) => {
 
-    user.findOne({}, function (err, user_) {
+    User.findOne({}, function (err, user_) {
       if (user_.session_id !== request.headers.authorization) {
         return response.status(401).json({'message': 'unauthorized'})
       } else {

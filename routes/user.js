@@ -1,7 +1,8 @@
 const express = require('express')
-const router = express.Router()
 
 const crtlAuth = require('../controllers/authentification')
+
+const router = express.Router()
 
 router.route('/login').post(crtlAuth.login)
 

@@ -2,7 +2,7 @@ const chai = require('chai')
 const chaiHttp = require('chai-http')
 const chaiShallowDeepEqual = require('chai-shallow-deep-equal')
 
-const Museum = require('../models/museum')
+const {Museum} = require('../models/museum')
 const mongoose = require('mongoose')
 const server = require('../server')
 const {authorization} = require('./fixtures/authorization')

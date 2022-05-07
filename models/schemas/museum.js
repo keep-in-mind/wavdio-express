@@ -1,11 +1,11 @@
-const mongoose = require('mongoose')
+const { Schema } = require('mongoose')
 
-const MuseumContent = require('./museum-content')
+const { museumContentSchema } = require('./museum-content')
 
-const Schema = mongoose.Schema
-
-module.exports = new Schema({
-  contents: [MuseumContent]
+const museumSchema = new Schema({
+  contents: [museumContentSchema]
 }, {
   strict: 'throw'
 })
+
+module.exports = { museumSchema }
