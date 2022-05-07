@@ -87,58 +87,55 @@ router.route('/exhibit/:exhibit_id')
     })
   })
 
-  .patch((request, response) => {
+  .patch(async (request, response) => {
 
-    user.findOne({}, function (err, user_) {
+    try {
+      const user_ = await user.findOne({})
+
       if (user_.session_id !== request.headers.authorization) {
         return response.status(401).json({'message': 'unauthorized'})
-      } else {
-        const body = request.body
-        let old_code = 0
-        let old_active = true
-        exhibit.findOne({_id: body._id}, (error, exhibit) => {
-          if (error) {
-            logger.error(error)
-            response.status(500).send(error)
-          } else {
-            old_code = exhibit.code
-            old_active = exhibit.active
-            delete body._id
-          }
-        }).then(
-          function () {
-            exhibit.find({
-              parent: body.parent, code: body.code, active: true
-            }, (error, exhibits) => {
-              if (error) {
-                console.log(error)
-                response.status(500).send(error)
-              } else if (
-                // Anderes Exponat existiert mit dem code, der geändert wurde
-                (exhibits.length > 0 && body.code !== old_code && body.active === true) ||
-                // Anderes Exponat existiert mit dem alten code, darf nicht auf active gesetzt werden
-                (exhibits.length > 0 && body.code === old_code && body.active === true && old_active === false)) {
-                response.status(500).send({'error_code': '13'})
-              } else {
-                exhibit.findOneAndUpdate({_id: request.params.exhibit_id}, body, (error, exhibit) => {
-                  if (error && error.name === 'ValidationError') {
-                    response.status(400).json({'message': error.message})
-                  } else if (error) {
-                    console.log(error)
-                    response.status(500).send(error)
-                  } else if (exhibit) {
-                    response.status(200).json(exhibit)
-                  } else {
-                    response.status(404).send()
-                  }
-                })
-              }
-            })
-          }).catch(function () {
-          console.log('Unbekannter Fehler')
-        })
       }
-    })
+
+      const body = request.body
+      let old_code = 0
+      let old_active = true
+
+      const exhibit_ = await exhibit.findOne({_id: body._id})
+
+      old_code = exhibit_.code
+      old_active = exhibit_.active
+      delete body._id
+
+      const exhibits = await exhibit.find({parent: body.parent, code: body.code, active: true})
+
+      if (
+        // Anderes Exponat existiert mit dem code, der geändert wurde
+        (exhibits.length > 0 && body.code !== old_code && body.active === true) ||
+        // Anderes Exponat existiert mit dem alten code, darf nicht auf active gesetzt werden
+        (exhibits.length > 0 && body.code === old_code && body.active === true && old_active === false)) {
+
+        response.status(500).send({'error_code': '13'})
+
+      } else {
+        const exhibit__ = await exhibit.findOneAndUpdate({_id: request.params.exhibit_id}, body)
+
+        if (exhibit__) {
+          response.status(200).json(exhibit__)
+        } else {
+          response.status(404).send()
+        }
+      }
+
+    } catch (error) {
+      console.error(error)
+
+      if (error && error.name === 'ValidationError') {
+        response.status(400).json({'message': error.message})
+
+      } else if (error) {
+        response.status(500).send(error)
+      }
+    }
   })
 
   .delete(async (request, response) => {
