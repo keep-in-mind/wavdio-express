@@ -1,197 +1,201 @@
-module.exports = {
-  monaLisa: {
-    parent: '',
-    parentModel: 'Exposition',
+const {deepFreeze} = require('../util')
 
-    active: true,
-    code: 100,
-    note: 'We should better secure this exhibit.',
+module.exports.exhibit111 = deepFreeze({
+  parent: '',
+  parentModel: 'Exposition',
 
-    likes: [{
-      timestamp: '2019-01-21T10:00:00.000Z'
-    }, {
-      timestamp: '2019-01-21T11:00:00.000Z'
-    }, {
-      timestamp: '2019-01-21T12:00:00.000Z'
-    }],
-    views: [{
-      timestamp: '2019-01-21T10:00:00.000Z'
-    }, {
-      timestamp: '2019-01-21T11:00:00.000Z'
-    }, {
-      timestamp: '2019-01-21T12:00:00.000Z'
-    }],
-    comments: [{
-      text: 'Comment 1',
-      timestamp: '2019-01-21T10:00:00.000Z'
-    }, {
-      text: 'Comment 2',
-      timestamp: '2019-01-21T11:00:00.000Z'
-    }, {
-      text: 'Comment 3',
-      timestamp: '2019-01-21T12:00:00.000Z'
-    }],
+  active: true,
+  code: 111,
+  note: 'Exhibit 111 Note',
 
-    contents: [{
+  views: [
+    {timestamp: '2000-01-01T10:00:00.000Z'},
+    {timestamp: '2000-01-01T11:00:00.000Z'},
+    {timestamp: '2000-01-01T12:00:00.000Z'}
+  ],
+
+  likes: [
+    {timestamp: '2000-01-01T10:00:00.000Z'},
+    {timestamp: '2000-01-01T11:00:00.000Z'},
+    {timestamp: '2000-01-01T12:00:00.000Z'}
+  ],
+
+  comments: [
+    {text: 'Exhibit 111 Comment 1', timestamp: '2000-01-01T10:00:00.000Z'},
+    {text: 'Exhibit 111 Comment 2', timestamp: '2000-01-01T11:00:00.000Z'},
+    {text: 'Exhibit 111 Comment 3', timestamp: '2000-01-01T12:00:00.000Z'}
+  ],
+
+  contents: [
+    {
       lang: 'en',
 
-      name: 'Mona Lisa',
-      info: 'One of the most popular artworks in the world',
+      name: 'Exhibit 111 EN',
+      info: 'Exhibit 111 EN Info',
 
-      images: [{
-        filename: 'mona_lisa_1_en.jpg',
-        alternativeText: 'Mona Lisa 1'
-      }, {
-        filename: 'mona_lisa_2_en.jpg',
-        alternativeText: 'Mona Lisa 2'
-      }],
-      audio: [{
-        filename: 'mona_lisa_en.mp3',
-        mimeType: 'audio/mpeg',
-        transcript: 'audio transcript'
-      }, {
-        filename: 'mona_lisa_en.wav',
-        mimeType: 'audio/wav',
-        transcript: 'audio transcript'
-      }],
-      video: [{
-        filename: 'mona_lisa_en.mp4',
-        mimeType: 'video/mp4',
-        transcript: 'video transcript'
-      }, {
-        filename: 'mona_lisa_en.ogg',
-        mimeType: 'video/ogg',
-        transcript: 'video transcript'
-      }]
-    }, {
+      images: [
+        {
+          filename: 'exhibit_111_en_image_1.jpg',
+          alternativeText: 'Exhibit 111 EN Image 1 Alt Text'
+        },
+        {
+          filename: 'exhibit_111_en_image_2.jpg',
+          alternativeText: 'Exhibit 111 EN Image 2 Alt Text'
+        }
+      ],
+
+      audio: [
+        {filename: 'exhibit_111_en_audio_1.mp3', mimeType: 'audio/mpeg'},
+        {filename: 'exhibit_111_en_audio_2.wav', mimeType: 'audio/wav'}
+      ],
+
+      video: [
+        {
+          filename: 'exhibit_111_en_video_1.mp4',
+          mimeType: 'video/mp4',
+          transcript: 'Exhibit 111 EN Video 1 Transcript'
+        },
+        {
+          filename: 'exhibit_111_en_video_2.ogg',
+          mimeType: 'video/ogg',
+          transcript: 'Exhibit 111 EN Video 2 Transcript'
+        }
+      ]
+    },
+    {
       lang: 'de',
 
-      name: 'Mona Lisa',
-      info: 'Eines der berühmtesten Kunstwerke der Welt',
+      name: 'Exhibit 111 DE',
+      info: 'Exhibit 111 DE Info',
 
-      images: [{
-        filename: 'mona_lisa_1_de.jpg',
-        alternativeText: 'Mona Lisa 1'
-      }, {
-        filename: 'mona_lisa_2_de.jpg',
-        alternativeText: 'Mona Lisa 2'
-      }],
-      audio: [{
-        filename: 'mona_lisa_de.mp3',
-        mimeType: 'audio/mpeg',
-        transcript: 'audio transcript'
-      }, {
-        filename: 'mona_lisa_de.wav',
-        mimeType: 'audio/wav',
-        transcript: 'audio transcript'
-      }],
-      video: [{
-        filename: 'mona_lisa_de.mp4',
-        mimeType: 'video/mp4',
-        transcript: 'video transcript'
-      }, {
-        filename: 'mona_lisa_de.ogg',
-        mimeType: 'video/ogg',
-        transcript: 'video transcript'
-      }]
-    }]
-  },
+      images: [
+        {
+          filename: 'exhibit_111_de_image_1.jpg',
+          alternativeText: 'Exhibit 111 DE Image 1 Alt Text'
+        },
+        {
+          filename: 'exhibit_111_de_image_2.jpg',
+          alternativeText: 'Exhibit 111 DE Image 2 Alt Text'
+        }
+      ],
 
-  thePersistenceOfMemory: {
-    parent: '',
-    parentModel: 'Exposition',
+      audio: [
+        {filename: 'exhibit_111_de_audio_1.mp3', mimeType: 'audio/mpeg'},
+        {filename: 'exhibit_111_de_audio_2.wav', mimeType: 'audio/wav'}
+      ],
 
-    active: true,
-    code: 101,
-    note: 'We should better secure this exhibit.',
+      video: [
+        {
+          filename: 'exhibit_111_de_video_1.mp4',
+          mimeType: 'video/mp4',
+          transcript: 'Exhibit 111 DE Video 1 Transcript'
+        },
+        {
+          filename: 'exhibit_111_de_video_2.ogg',
+          mimeType: 'video/ogg',
+          transcript: 'Exhibit 111 DE Video 2 Transcript'
+        }
+      ]
+    }
+  ]
+})
 
-    likes: [{
-      timestamp: '2019-01-21T10:00:00.000Z'
-    }, {
-      timestamp: '2019-01-21T11:00:00.000Z'
-    }, {
-      timestamp: '2019-01-21T12:00:00.000Z'
-    }],
-    views: [{
-      timestamp: '2019-01-21T10:00:00.000Z'
-    }, {
-      timestamp: '2019-01-21T11:00:00.000Z'
-    }, {
-      timestamp: '2019-01-21T12:00:00.000Z'
-    }],
-    comments: [{
-      text: 'Comment 1',
-      timestamp: '2019-01-21T10:00:00.000Z'
-    }, {
-      text: 'Comment 2',
-      timestamp: '2019-01-21T11:00:00.000Z'
-    }, {
-      text: 'Comment 3',
-      timestamp: '2019-01-21T12:00:00.000Z'
-    }],
+module.exports.exhibit112 = deepFreeze({
+  parent: '',
+  parentModel: 'Exposition',
 
-    contents: [{
+  active: true,
+  code: 112,
+  note: 'Exhibit 112 Note',
+
+  views: [
+    {timestamp: '2000-01-01T10:00:00.000Z'},
+    {timestamp: '2000-01-01T11:00:00.000Z'},
+    {timestamp: '2000-01-01T12:00:00.000Z'}
+  ],
+
+  likes: [
+    {timestamp: '2000-01-01T10:00:00.000Z'},
+    {timestamp: '2000-01-01T11:00:00.000Z'},
+    {timestamp: '2000-01-01T12:00:00.000Z'}
+  ],
+
+  comments: [
+    {text: 'Exhibit 112 Comment 1', timestamp: '2000-01-01T10:00:00.000Z'},
+    {text: 'Exhibit 112 Comment 2', timestamp: '2000-01-01T11:00:00.000Z'},
+    {text: 'Exhibit 112 Comment 3', timestamp: '2000-01-01T12:00:00.000Z'}
+  ],
+
+  contents: [
+    {
       lang: 'en',
 
-      name: 'The Persistence of Memory',
-      info: 'One of the most popular artworks in the world',
+      name: 'Exhibit 112 EN',
+      info: 'Exhibit 112 EN Info',
 
-      images: [{
-        filename: 'the_persistence_of_memory_1_en.jpg',
-        alternativeText: 'The Persistence of Memory 1'
-      }, {
-        filename: 'the_persistence_of_memory_2_en.jpg',
-        alternativeText: 'The Persistence of Memory 2'
-      }],
-      audio: [{
-        filename: 'the_persistence_of_memory_en.mp3',
-        mimeType: 'audio/mpeg',
-        transcript: 'audio transcript'
-      }, {
-        filename: 'the_persistence_of_memory_en.wav',
-        mimeType: 'audio/wav',
-        transcript: 'audio transcript'
-      }],
-      video: [{
-        filename: 'the_persistence_of_memory_en.mp4',
-        mimeType: 'video/mp4',
-        transcript: 'video transcript'
-      }, {
-        filename: 'the_persistence_of_memory_en.ogg',
-        mimeType: 'video/ogg',
-        transcript: 'video transcript'
-      }]
-    }, {
+      images: [
+        {
+          filename: 'exhibit_112_en_image_1.jpg',
+          alternativeText: 'Exhibit 112 EN Image 1 Alt Text'
+        },
+        {
+          filename: 'exhibit_112_en_image_2.jpg',
+          alternativeText: 'Exhibit 112 EN Image 2 Alt Text'
+        }
+      ],
+
+      audio: [
+        {filename: 'exhibit_112_en_audio_1.mp3', mimeType: 'audio/mpeg'},
+        {filename: 'exhibit_112_en_audio_2.wav', mimeType: 'audio/wav'}
+      ],
+
+      video: [
+        {
+          filename: 'exhibit_112_en_video_1.mp4',
+          mimeType: 'video/mp4',
+          transcript: 'Exhibit 112 EN Video 1 Transcript'
+        },
+        {
+          filename: 'exhibit_112_en_video_2.ogg',
+          mimeType: 'video/ogg',
+          transcript: 'Exhibit 112 EN Video 2 Transcript'
+        }
+      ]
+    },
+    {
       lang: 'de',
 
-      name: 'Die Beständigkeit der Erinnerung',
-      info: 'Eines der berühmtesten Kunstwerke der Welt',
+      name: 'Exhibit 112 DE',
+      info: 'Exhibit 112 DE Info',
 
-      images: [{
-        filename: 'the_persistence_of_memory_1_de.jpg',
-        alternativeText: 'Die Beständigkeit der Erinnerung 1'
-      }, {
-        filename: 'the_persistence_of_memory_2_de.jpg',
-        alternativeText: 'Die Beständigkeit der Erinnerung 2'
-      }],
-      audio: [{
-        filename: 'the_persistence_of_memory_de.mp3',
-        mimeType: 'audio/mpeg',
-        transcript: 'audio transcript'
-      }, {
-        filename: 'the_persistence_of_memory_de.wav',
-        mimeType: 'audio/wav',
-        transcript: 'audio transcript'
-      }],
-      video: [{
-        filename: 'the_persistence_of_memory_de.mp4',
-        mimeType: 'video/mp4',
-        transcript: 'video transcript'
-      }, {
-        filename: 'the_persistence_of_memory_de.ogg',
-        mimeType: 'video/ogg',
-        transcript: 'video transcript'
-      }]
-    }]
-  }
-}
+      images: [
+        {
+          filename: 'exhibit_112_de_image_1.jpg',
+          alternativeText: 'Exhibit 112 DE Image 1 Alt Text'
+        },
+        {
+          filename: 'exhibit_112_de_image_2.jpg',
+          alternativeText: 'Exhibit 112 DE Image 2 Alt Text'
+        }
+      ],
+
+      audio: [
+        {filename: 'exhibit_112_de_audio_1.mp3', mimeType: 'audio/mpeg'},
+        {filename: 'exhibit_112_de_audio_2.wav', mimeType: 'audio/wav'}
+      ],
+
+      video: [
+        {
+          filename: 'exhibit_112_de_video_1.mp4',
+          mimeType: 'video/mp4',
+          transcript: 'Exhibit 112 DE Video 1 Transcript'
+        },
+        {
+          filename: 'exhibit_112_de_video_2.ogg',
+          mimeType: 'video/ogg',
+          transcript: 'Exhibit 112 DE Video 2 Transcript'
+        }
+      ]
+    }
+  ]
+})

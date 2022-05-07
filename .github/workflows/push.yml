@@ -2,6 +2,22 @@ on: [ push ]
 
 jobs:
 
+  e2e_tests:
+    runs-on: ubuntu-20.04
+    steps:
+
+      - name: Checkout from GitHub
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Start MongoDB
+        run: docker run --publish "27017:27017" --detach mongo
+
+      - name: Run e2e tests
+        run: npm run test:e2e
+
   test_npm_start:
     runs-on: ubuntu-20.04
     steps:

@@ -2,29 +2,38 @@ const chai = require('chai')
 const chaiHttp = require('chai-http')
 const chaiShallowDeepEqual = require('chai-shallow-deep-equal')
 
-const server = require('../bin/server')
 const Infopage = require('../models/infopage')
-const infopages = require('./fixtures/infopages')
-const authorization = require('./fixtures/authorization')
+const mongoose = require('mongoose')
+const server = require('../server')
+const {authorization} = require('./fixtures/authorization')
+const {infopage1, infopage2} = require('./fixtures/infopages')
 
 chai.use(chaiHttp)
 chai.use(chaiShallowDeepEqual)
 
 const expect = chai.expect
 
-deepFreeze(infopages)
+describe('Infopages', () => {
 
-describe('Infopage', function () {
-  beforeEach(async function () {
-    await Infopage.deleteMany({})
+  before(async () => {
+    await mongoose.connect('mongodb://localhost:27017/wavdio-express')
   })
 
-  describe('GET /infopage', function () {
-    it('reading all infopages from an empty infopage collection should succeed', async function () {
+  afterEach(async () => {
+    await Infopage.deleteMany()
+  })
 
-      // GIVEN  the empty database
+  after(async () => {
+    await mongoose.disconnect()
+  })
 
-      // WHEN   reading all infopages
+  describe('GET /infopage', () => {
+
+    it('should return no infopages for the initial database', async () => {
+
+      // GIVEN  the initial database
+
+      // WHEN   getting all infopages
 
       const getResponse = await chai.request(server)
         .get('/api/v2/infopage')
@@ -36,208 +45,240 @@ describe('Infopage', function () {
       expect(getResponse.body).to.be.an('array').that.is.empty
     })
 
-    it('reading all infopages from a non-empty infopage collection should succeed', async function () {
+    it('should return all infopages for a filled database', async () => {
 
-      // GIVEN  a database with an existing infopage
+      // GIVEN  a database with infopages
 
-      const existingInfopage = infopages['about']
+      await Infopage.create(infopage1)
+      await Infopage.create(infopage2)
 
-      await Infopage.create(existingInfopage)
-
-      // WHEN   reading all infopages
+      // WHEN   getting all infopages
 
       const getResponse = await chai.request(server)
         .get('/api/v2/infopage')
 
       // THEN   the server should return an HTTP 200 OK
-      // AND    the JSON response should be an array containing the existing infopage
+      // AND    the JSON response should contain the infopages
 
       expect(getResponse).to.have.status(200)
-      expect(getResponse.body).to.be.an('array').of.length(1)
-      expect(getResponse.body[0]).to.shallowDeepEqual(existingInfopage)
+      expect(getResponse.body).to.be.an('array').with.lengthOf(2)
+      expect(getResponse.body[0]).to.shallowDeepEqual(infopage1)
+      expect(getResponse.body[1]).to.shallowDeepEqual(infopage2)
     })
   })
 
-  describe('POST /infopage', function () {
-    it('creating a complete infopage should succeed', async function () {
+  describe('POST /infopage', () => {
 
-      // GIVEN  the empty database
-      // AND    a new, complete infopage
+    it('should create an infopage', async () => {
 
-      const newInfopage = infopages['about']
-
-      // WHEN   creating the new infopage
+      // WHEN   posting an infopage
 
       const postResponse = await chai.request(server)
         .post('/api/v2/infopage')
         .set({'Authorization': authorization})
-        .send(newInfopage)
+        .send(infopage1)
+
+      // THEN   the server should return an HTTP 201 Created
+      // AND    the JSON response should contain the new infopage
+
+      expect(postResponse).to.have.status(201)
+      expect(postResponse.body).to.shallowDeepEqual(infopage1)
+
+      // THEN   the database should contain the new infopage
+
+      const infopages = await Infopage.find()
+      expect(infopages).to.be.an('array').with.lengthOf(1)
+      expect(infopages[0]).to.shallowDeepEqual(infopage1)
+    })
+
+    it('should fail without authorization', async () => {
+
+      // WHEN   posting an infopage without authorization
+
+      const postResponse = await chai.request(server)
+        .post('/api/v2/infopage')
+        .send(infopage1)
+
+      // THEN   the server should return an HTTP 401 Unauthorized
+      // AND    the JSON response shouldn't contain sensitive information
+
+      expect(postResponse).to.have.status(401)
+      expect(postResponse.body).to.deep.equal({message: 'unauthorized'})
+
+      // THEN   the database shouldn't contain the infopage
+
+      const infopages = await Infopage.find()
+      expect(infopages).to.be.an('array').that.is.empty
+    })
+
+    it('should fail when posting an infopage with a missing required property', async () => {
+
+      // WHEN   posting an infopage with a missing required property
+
+      const infopage1_ = {...infopage1}
+      delete infopage1_.lang
+
+      const postResponse = await chai.request(server)
+        .post('/api/v2/infopage')
+        .set({'Authorization': authorization})
+        .send(infopage1_)
+
+      // THEN   the server should return an HTTP 400 Bad Request
+      // AND    the database shouldn't contain the new infopage
+
+      expect(postResponse).to.have.status(400)
+
+      // THEN   the database shouldn't contain the infopage
+
+      const infopages = await Infopage.find()
+      expect(infopages).to.be.an('array').that.is.empty
+    })
+
+    it('should work when posting an infopage with a missing non-required property', async () => {
+
+      // WHEN   posting an infopage with a missing non-required property
+
+      const infopage1_ = {...infopage1}
+      delete infopage1_.text
+
+      const postResponse = await chai.request(server)
+        .post('/api/v2/infopage')
+        .set({'Authorization': authorization})
+        .send(infopage1_)
 
       // THEN   the server should return an HTTP 201 Created
       // AND    the JSON response should be the new infopage
-      // AND    the database should contain the new infopage
 
       expect(postResponse).to.have.status(201)
-      expect(postResponse.body).to.shallowDeepEqual(newInfopage)
+      expect(postResponse.body).to.shallowDeepEqual(infopage1_)
 
-      const dbInfopagesAfter = await Infopage.find()
-      expect(dbInfopagesAfter).to.be.an('array').of.length(1)
-      expect(dbInfopagesAfter[0]).to.shallowDeepEqual(newInfopage)
-    })
+      // THEN   the database should contain the infopage
 
-    it('creating an infopage with a missing, non-required property should succeed', async function () {
-
-      // GIVEN  the empty database
-      // AND    a new infopage with a missing, required property
-
-      const newInfopage = copy(infopages['about'])
-      delete newInfopage.text
-
-      // WHEN   trying to create the new infopage
-
-      const postResponse = await chai.request(server)
-        .post('/api/v2/infopage')
-        .set({'Authorization': authorization})
-        .send(newInfopage)
-
-      // THEN   the server should return an HTTP 500 Internal Server Error
-      // AND    the database shouldn't contain new the infopage
-
-      expect(postResponse).to.have.status(201)
-
-      const dbInfopagesAfter = await Infopage.find()
-      expect(dbInfopagesAfter).to.be.an('array').that.is.length.above(0)
+      const infopages = await Infopage.find()
+      expect(infopages).to.be.an('array').with.lengthOf(1)
+      expect(infopages[0]).to.shallowDeepEqual(infopage1_)
     })
   })
 
-  describe('GET /infopage/{{infopage_id}}', function () {
-    it('reading an existing infopage should succeed', async function () {
+  describe('GET /infopage/:infopageId', () => {
 
-      // GIVEN  a database with an existing infopage
+    it('should return the specified infopage', async () => {
 
-      const existingInfopage = infopages['about']
-      const dbExistingInfopage = await Infopage.create(existingInfopage)
-      const existingInfopageId = dbExistingInfopage._id
+      // GIVEN  a database with an infopage
 
-      // WHEN   reading the existing infopage
+      const infopage1Doc = await Infopage.create(infopage1)
+      const infopage1Id = infopage1Doc._id
 
-      const readResponse = await chai.request(server)
-        .get(`/api/v2/infopage/${existingInfopageId}`)
+      // WHEN   getting the infopage
+
+      const getResponse = await chai.request(server)
+        .get(`/api/v2/infopage/${infopage1Id}`)
 
       // THEN   the server should return an HTTP 200 OK
-      // AND    the JSON response should return the existing infopage
+      // AND    the JSON response should be the infopage
 
-      expect(readResponse).to.have.status(200)
-      expect(readResponse.body).to.shallowDeepEqual(existingInfopage)
+      expect(getResponse).to.have.status(200)
+      expect(getResponse.body).to.shallowDeepEqual(infopage1)
     })
 
-    it('reading a non-existing infopage should fail', async function () {
+    it('should fail for a non-existing infopage', async () => {
 
-      // GIVEN  the empty database
-      // AND    a non-existing ID
+      // WHEN   getting a non-existing infopage
 
       const nonExistingId = '012345678901234567890123'
 
-      // WHEN   trying to read the non-existing infopage
-
-      const readResponse = await chai.request(server)
+      const getResponse = await chai.request(server)
         .get(`/api/v2/infopage/${nonExistingId}`)
 
       // THEN   the server should return an HTTP 404 Not Found
 
-      expect(readResponse).to.have.status(404)
+      expect(getResponse).to.have.status(404)
     })
   })
 
-  describe('PUT /infopage/{{infopage_id}}', function () {
-    it('replacing an existing infopage should succeed', async function () {
+  describe('PUT /infopage/:infopageId', () => {
 
-      // GIVEN  a database with an existing infopage
-      // AND    a new infopage
+    it('should replace an existing infopage', async () => {
 
-      const existingInfopage = infopages['about']
-      const dbExistingInfopage = await Infopage.create(existingInfopage)
-      const existingInfopageId = dbExistingInfopage._id
+      // GIVEN  a database with an infopage
 
-      const newInfopage = infopages['help']
+      const infopage1Doc = await Infopage.create(infopage1)
+      const infopage1Id = infopage1Doc._id
 
-      // WHEN   replacing the existing infopage with the new one
+      // WHEN   replacing the existing infopage
 
       const putResponse = await chai.request(server)
-        .put(`/api/v2/infopage/${existingInfopageId}`)
+        .put(`/api/v2/infopage/${infopage1Id}`)
         .set({'Authorization': authorization})
-        .send(newInfopage)
+        .send(infopage2)
 
       // THEN   the server should return an HTTP 200
       // AND    the JSON response should contain the old infopage
-      // AND    the database should contain the new infopage
 
       expect(putResponse).to.have.status(200)
-      expect(putResponse.body).to.shallowDeepEqual(existingInfopage)
+      expect(putResponse.body).to.shallowDeepEqual(infopage1)
 
-      const dbInfopagesAfter = await Infopage.find()
-      expect(dbInfopagesAfter).to.be.an('array').of.length(1)
-      expect(dbInfopagesAfter[0]).to.shallowDeepEqual(newInfopage)
+      // THEN   the database should contain the new infopage
+
+      const infopages = await Infopage.find()
+      expect(infopages).to.be.an('array').with.lengthOf(1)
+      expect(infopages[0]).to.shallowDeepEqual(infopage2)
     })
 
-    it('replacing a non-existing infopage should fail', async function () {
+    it('should fail when replacing a non-existing infopage', async () => {
 
-      // GIVEN  the empty database
-      // AND    a non-existing ID
-      // AND    a new infopage
+      // WHEN   trying to replace a non-existing infopage
 
       const nonExistingId = '012345678901234567890123'
-
-      // WHEN   trying to replace the non-existing infopage with the new one
 
       const putResponse = await chai.request(server)
         .put(`/api/v2/infopage/${nonExistingId}`)
         .set({'Authorization': authorization})
+        .send(infopage1)
 
       // THEN   the server should return an HTTP 404 Not Found
-      // AND    the database shouldn't contain a infopage
 
       expect(putResponse).to.have.status(404)
 
-      const dbInfopagesAfter = await Infopage.find()
-      expect(dbInfopagesAfter).to.be.an('array').that.is.empty
+      // THEN   the database shouldn't have changed
+
+      const infopages = await Infopage.find()
+      expect(infopages).to.be.an('array').that.is.empty
     })
   })
 
-  describe('DELETE /infopage/{{infopage_id}}', function () {
-    it('deleting an existing infopage should succeed', async function () {
+  describe('DELETE /infopage/:infopageId', () => {
 
-      // GIVEN  a database with an existing infopage
+    it('should delete the specified infopage', async () => {
 
-      const existingInfopage = infopages['about']
-      const dbExistingInfopage = await Infopage.create(existingInfopage)
-      const existingInfopageId = dbExistingInfopage._id
+      // GIVEN  a database with an infopage
 
-      // WHEN   deleting the existing infopage
+      const infopage1Doc = await Infopage.create(infopage1)
+      const infopage1Id = infopage1Doc._id
+
+      // WHEN   deleting the infopage
 
       const deleteResponse = await chai.request(server)
-        .delete(`/api/v2/infopage/${existingInfopageId}`)
+        .delete(`/api/v2/infopage/${infopage1Id}`)
         .set({'Authorization': authorization})
 
       // THEN   the server should return an HTTP 200
-      // AND    the JSON response should contain the old infopage
-      // AND    the database should contain no infopages anymore
+      // AND    the JSON response should contain the deleted infopage
 
       expect(deleteResponse).to.have.status(200)
-      expect(deleteResponse.body).to.shallowDeepEqual(existingInfopage)
+      expect(deleteResponse.body).to.shallowDeepEqual(infopage1)
 
-      const dbInfopagesAfter = await Infopage.find()
-      expect(dbInfopagesAfter).to.be.an('array').that.is.empty
+      // THEN   the database shouldn't contain the deleted infopage anymore
+
+      const infopages = await Infopage.find()
+      expect(infopages).to.be.an('array').that.is.empty
     })
 
-    it('deleting a non-existing infopage should fail', async function () {
+    it('should fail when deleting a non-existing infopage', async () => {
 
-      // GIVEN  the empty database
-      // AND    a non-existing ID
+      // WHEN   deleting a non-existing infopage
 
       const nonExistingId = '012345678901234567890123'
-
-      // WHEN   trying to delete the non-existing infopage
 
       const deleteResponse = await chai.request(server)
         .delete(`/api/v2/infopage/${nonExistingId}`)
@@ -249,24 +290,3 @@ describe('Infopage', function () {
     })
   })
 })
-
-function deepFreeze (object) {
-
-  // Retrieve the property names defined on object
-  const propNames = Object.getOwnPropertyNames(object)
-
-  // Freeze properties before freezing self
-
-  for (let name of propNames) {
-    let value = object[name]
-
-    object[name] = value && typeof value === 'object' ?
-      deepFreeze(value) : value
-  }
-
-  return Object.freeze(object)
-}
-
-function copy (object) {
-  return JSON.parse(JSON.stringify(object))
-}

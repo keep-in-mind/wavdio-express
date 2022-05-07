@@ -2,33 +2,47 @@ const chai = require('chai')
 const chaiHttp = require('chai-http')
 const chaiShallowDeepEqual = require('chai-shallow-deep-equal')
 
-const server = require('../bin/server')
-const Museum = require('../models/museum')
 const Exposition = require('../models/exposition')
-const museums = require('./fixtures/museums')
-const expositions = require('./fixtures/expositions')
-const authorization = require('./fixtures/authorization')
+const Museum = require('../models/museum')
+const mongoose = require('mongoose')
+const server = require('../server')
+const {authorization} = require('./fixtures/authorization')
+const {exposition110, exposition120} = require('./fixtures/expositions')
+const {museum100} = require('./fixtures/museums')
 
 chai.use(chaiHttp)
 chai.use(chaiShallowDeepEqual)
 
 const expect = chai.expect
 
-deepFreeze(museums)
-deepFreeze(expositions)
+describe('Expositions', () => {
 
-describe('Exposition', function () {
-  beforeEach(async function () {
-    await Museum.deleteMany({})
-    await Exposition.deleteMany({})
+  let museum100Id
+
+  before(async () => {
+    await mongoose.connect('mongodb://localhost:27017/wavdio-express')
+
+    const mongoMuseum100 = await Museum.create(museum100)
+    museum100Id = mongoMuseum100._id.toString()
   })
 
-  describe('GET /exposition', function () {
-    it('reading all expositions from an empty exposition collection should succeed', async function () {
+  afterEach(async () => {
+    await Exposition.deleteMany()
+  })
 
-      // GIVEN  the empty database
+  after(async () => {
+    await Museum.findByIdAndDelete(museum100Id)
 
-      // WHEN   reading all expositions
+    await mongoose.disconnect()
+  })
+
+  describe('GET /exposition', () => {
+
+    it('should return no expositions for the initial database', async () => {
+
+      // GIVEN  the initial database
+
+      // WHEN   getting all expositions
 
       const getResponse = await chai.request(server)
         .get('/api/v2/exposition')
@@ -40,276 +54,261 @@ describe('Exposition', function () {
       expect(getResponse.body).to.be.an('array').that.is.empty
     })
 
-    it('reading all expositions from a non-empty exposition collection should succeed', async function () {
+    it('should return all expositions for a filled database', async () => {
 
-      // GIVEN  a database with an existing exposition
+      // GIVEN  a database with expositions
 
-      const existingMuseum = museums['louvre']
-      const dbExistingMuseum = await Museum.create(existingMuseum)
-      const existingMuseumId = dbExistingMuseum._id.toString()
+      const exposition110_ = {...exposition110, museum: museum100Id}
+      await Exposition.create(exposition110_)
 
-      const existingExposition = copy(expositions['bestOfLeonardoDaVinci'])
-      existingExposition.museum = existingMuseumId
-      await Exposition.create(existingExposition)
+      const exposition120_ = {...exposition120, museum: museum100Id}
+      await Exposition.create(exposition120_)
 
-      // WHEN   reading all expositions
+      // WHEN   getting all expositions
 
       const getResponse = await chai.request(server)
         .get('/api/v2/exposition')
 
       // THEN   the server should return an HTTP 200 OK
-      // AND    the JSON response should be an array containing the existing exposition
+      // AND    the JSON response should contain the expositions
 
       expect(getResponse).to.have.status(200)
-      expect(getResponse.body).to.be.an('array').of.length(1)
-      expect(getResponse.body[0]).to.shallowDeepEqual(existingExposition)
+      expect(getResponse.body).to.be.an('array').with.lengthOf(2)
+      expect(getResponse.body[0]).to.shallowDeepEqual(exposition110_)
+      expect(getResponse.body[1]).to.shallowDeepEqual(exposition120_)
     })
   })
 
-  describe('POST /exposition', function () {
-    it('creating a complete exposition should succeed', async function () {
+  describe('POST /exposition', () => {
+
+    it('should create an exposition', async () => {
 
       // GIVEN  a database with a museum
-      // AND    a new, complete exposition
 
-      const existingMuseum = museums['louvre']
-      const dbExistingMuseum = await Museum.create(existingMuseum)
-      const existingMuseumId = dbExistingMuseum._id.toString()
+      // WHEN   posting an exposition for the museum
 
-      const newExposition = copy(expositions['bestOfLeonardoDaVinci'])
-      newExposition.museum = existingMuseumId
-
-      // WHEN   creating the new exposition
+      const exposition110_ = {...exposition110, museum: museum100Id}
 
       const postResponse = await chai.request(server)
         .post('/api/v2/exposition')
         .set({'Authorization': authorization})
-        .send(newExposition)
+        .send(exposition110_)
+
+      // THEN   the server should return an HTTP 201 Created
+      // AND    the JSON response should contain the new exposition
+
+      expect(postResponse).to.have.status(201)
+      expect(postResponse.body).to.shallowDeepEqual(exposition110_)
+
+      // THEN   the database should contain the new exposition
+
+      const expositions = await Exposition.find()
+      expect(expositions).to.be.an('array').with.lengthOf(1)
+      // TODO: check content, check for super set not working because dates are stored differently
+      // expect(expositions[0]).to.shallowDeepEqual(exposition110_)
+    })
+
+    it('should fail without authorization', async () => {
+
+      // WHEN   posting an exposition without authorization
+
+      const exposition110_ = {...exposition110, museum: museum100Id}
+
+      const postResponse = await chai.request(server)
+        .post('/api/v2/exposition')
+        .send(exposition110_)
+
+      // THEN   the server should return an HTTP 401 Unauthorized
+      // AND    the JSON response shouldn't contain sensitive information
+
+      expect(postResponse).to.have.status(401)
+      expect(postResponse.body).to.deep.equal({message: 'unauthorized'})
+
+      // THEN   the database shouldn't contain the exposition
+
+      const expositions = await Exposition.find()
+      expect(expositions).to.be.an('array').that.is.empty
+    })
+
+    it('should fail when posting an exposition with a missing required property', async () => {
+
+      // WHEN   posting an exposition with a missing required property
+
+      const exposition110_ = {...exposition110, museum: museum100Id}
+      delete exposition110_.code
+
+      const postResponse = await chai.request(server)
+        .post('/api/v2/exposition')
+        .set({'Authorization': authorization})
+        .send(exposition110_)
+
+      // THEN   the server should return an HTTP 400 Bad Request
+      // AND    the database shouldn't contain the new exposition
+
+      expect(postResponse).to.have.status(400)
+
+      // THEN   the database shouldn't contain the exposition
+
+      const expositions = await Exposition.find()
+      expect(expositions).to.be.an('array').that.is.empty
+    })
+
+    it('should work when posting an exposition with a missing non-required property', async () => {
+
+      // WHEN   posting an exposition with a missing non-required property
+
+      const exposition110_ = {...exposition110, museum: museum100Id}
+      delete exposition110_.note
+
+      const postResponse = await chai.request(server)
+        .post('/api/v2/exposition')
+        .set({'Authorization': authorization})
+        .send(exposition110_)
 
       // THEN   the server should return an HTTP 201 Created
       // AND    the JSON response should be the new exposition
-      // AND    the database should contain the new exposition
 
       expect(postResponse).to.have.status(201)
-      expect(postResponse.body).to.shallowDeepEqual(newExposition)
+      expect(postResponse.body).to.shallowDeepEqual(exposition110_)
 
-      const dbExpositionsAfter = await Exposition.find()
-      expect(dbExpositionsAfter).to.be.an('array').of.length(1)
+      // THEN   the database should contain the exposition
+
+      const expositions = await Exposition.find()
+      expect(expositions).to.be.an('array').with.lengthOf(1)
       // TODO: check content, check for super set not working because dates are stored differently
-      // expect(dbExpositionsAfter[0]).to.shallowDeepEqual(newExposition);
-    })
-
-    it('creating an exposition with a missing, required property should fail', async function () {
-
-      // GIVEN  a database with a museum
-      // AND    a new exposition with a missing, required property: the museum
-
-      const existingMuseum = museums['louvre']
-      const dbExistingMuseum = await Museum.create(existingMuseum)
-      const existingMuseumId = dbExistingMuseum._id.toString()
-
-      const newExposition = copy(expositions['bestOfLeonardoDaVinci'])
-      newExposition.museum = existingMuseumId
-      delete newExposition.code
-
-      // WHEN   trying to create the new exposition
-
-      const postResponse = await chai.request(server)
-        .post('/api/v2/exposition')
-        .set({'Authorization': authorization})
-        .send(newExposition)
-
-      // THEN   the server should return an HTTP 500 Internal Server Error
-      // AND    the database shouldn't contain new the exposition
-
-      expect(postResponse).to.have.status(500)
-
-      const dbExpositionsAfter = await Exposition.find()
-      expect(dbExpositionsAfter).to.be.an('array').that.is.empty
-    })
-
-    it('creating an exposition with a missing, non-required property should succeed', async function () {
-
-      // GIVEN  a database with a museum
-      // AND    a new exposition with a missing, non-required property
-
-      const existingMuseum = museums['louvre']
-      const dbExistingMuseum = await Museum.create(existingMuseum)
-      const existingMuseumId = dbExistingMuseum._id.toString()
-
-      const newExposition = copy(expositions['bestOfLeonardoDaVinci'])
-      newExposition.museum = existingMuseumId
-      delete newExposition.note
-
-      // WHEN   creating the new exposition
-
-      const postResponse = await chai.request(server)
-        .post('/api/v2/exposition')
-        .set({'Authorization': authorization})
-        .send(newExposition)
-
-      // THEN   the server should return an HTTP 201 Created
-      // AND    the JSON response should be the new exposition
-      // AND    the database should contain the new exposition
-
-      expect(postResponse).to.have.status(201)
-      expect(postResponse.body).to.shallowDeepEqual(newExposition)
-
-      const dbExpositionsAfter = await Exposition.find()
-      expect(dbExpositionsAfter).to.be.an('array').of.length(1)
-      // TODO: check content, check for super set not working because dates are stored differently
-      // expect(dbExpositionsAfter[0]).to.shallowDeepEqual(newExposition);
+      // expect(expositions[0]).to.shallowDeepEqual(exposition110_)
     })
   })
 
-  describe('GET /exposition/{{exposition_id}}', function () {
-    it('reading an existing exposition should succeed', async function () {
+  describe('GET /exposition/:expositionId', () => {
 
-      // GIVEN  a database with an existing exposition
+    it('should return the specified exposition', async () => {
 
-      const existingMuseum = museums['louvre']
-      const dbExistingMuseum = await Museum.create(existingMuseum)
-      const existingMuseumId = dbExistingMuseum._id.toString()
+      // GIVEN  a database with an exposition
 
-      const existingExposition = copy(expositions['bestOfLeonardoDaVinci'])
-      existingExposition.museum = existingMuseumId
-      const dbExistingExposition = await Exposition.create(existingExposition)
-      const existingExpositionId = dbExistingExposition._id
+      const exposition110_ = {...exposition110, museum: museum100Id}
 
-      // WHEN   reading the existing exposition
+      const exposition110Doc = await Exposition.create(exposition110_)
+      const exposition110Id = exposition110Doc._id
 
-      const readResponse = await chai.request(server)
-        .get(`/api/v2/exposition/${existingExpositionId}`)
+      // WHEN   getting the exposition
+
+      const getResponse = await chai.request(server)
+        .get(`/api/v2/exposition/${exposition110Id}`)
 
       // THEN   the server should return an HTTP 200 OK
-      // AND    the JSON response should return the existing exposition
+      // AND    the JSON response should be the exposition
 
-      expect(readResponse).to.have.status(200)
-      expect(readResponse.body).to.shallowDeepEqual(existingExposition)
+      expect(getResponse).to.have.status(200)
+      expect(getResponse.body).to.shallowDeepEqual(exposition110_)
     })
 
-    it('reading a non-existing exposition should fail', async function () {
+    it('should fail for a non-existing exposition', async () => {
 
-      // GIVEN  the empty database
-      // AND    a non-existing ID
+      // WHEN   getting a non-existing exposition
 
       const nonExistingId = '012345678901234567890123'
 
-      // WHEN   trying to read the non-existing exposition
-
-      const readResponse = await chai.request(server)
+      const getResponse = await chai.request(server)
         .get(`/api/v2/exposition/${nonExistingId}`)
 
       // THEN   the server should return an HTTP 404 Not Found
 
-      expect(readResponse).to.have.status(404)
+      expect(getResponse).to.have.status(404)
     })
   })
 
-  describe('PUT /exposition/{{exposition_id}}', function () {
-    it('replacing an existing exposition should succeed', async function () {
+  describe('PUT /exposition/:expositionId', () => {
 
-      // GIVEN  a database with an existing exposition
-      // AND    a new exposition
+    it('should replace an existing exposition', async () => {
 
-      const existingMuseum = museums['louvre']
-      const dbExistingMuseum = await Museum.create(existingMuseum)
-      const existingMuseumId = dbExistingMuseum._id.toString()
+      // GIVEN  a database with an exposition
 
-      const existingExposition = copy(expositions['bestOfLeonardoDaVinci'])
-      existingExposition.museum = existingMuseumId
-      const dbExistingExposition = await Exposition.create(existingExposition)
-      const existingExpositionId = dbExistingExposition._id
+      const exposition110_ = {...exposition110, museum: museum100Id}
 
-      const newExposition = copy(expositions['bestOfSalvadorDali'])
-      newExposition.museum = existingMuseumId
+      const exposition110Doc = await Exposition.create(exposition110_)
+      const exposition110Id = exposition110Doc._id
 
-      // WHEN   replacing the existing exposition with the new one
+      // WHEN   replacing the existing exposition
+
+      const exposition120_ = {...exposition120, museum: museum100Id}
 
       const putResponse = await chai.request(server)
-        .put(`/api/v2/exposition/${existingExpositionId}`)
+        .put(`/api/v2/exposition/${exposition110Id}`)
         .set({'Authorization': authorization})
-        .send(newExposition)
+        .send(exposition120_)
 
       // THEN   the server should return an HTTP 200
       // AND    the JSON response should contain the old exposition
-      // AND    the database should contain the new exposition
 
       expect(putResponse).to.have.status(200)
-      expect(putResponse.body).to.shallowDeepEqual(existingExposition)
+      expect(putResponse.body).to.shallowDeepEqual(exposition110_)
 
-      const dbExpositionsAfter = await Exposition.find()
-      expect(dbExpositionsAfter).to.be.an('array').of.length(1)
+      // THEN   the database should contain the new exposition
+
+      const expositions = await Exposition.find()
+      expect(expositions).to.be.an('array').with.lengthOf(1)
       // TODO: check content, check for super set not working because dates are stored differently
-      // expect(dbExpositionsAfter[0]).to.shallowDeepEqual(newExposition);
+      // expect(expositions[0]).to.shallowDeepEqual(exposition120_)
     })
 
-    it('replacing a non-existing exposition should fail', async function () {
+    it('should fail when replacing a non-existing exposition', async () => {
 
-      // GIVEN  the empty database
-      // AND    a non-existing ID
-      // AND    a new exposition
+      // WHEN   trying to replace a non-existing exposition
 
       const nonExistingId = '012345678901234567890123'
-      const newExposition = copy(expositions['bestOfSalvadorDali'])
-      newExposition.museum = nonExistingId
-
-      // WHEN   trying to replace the non-existing exposition with the new one
+      const exposition110_ = {...exposition110, museum: museum100Id}
 
       const putResponse = await chai.request(server)
         .put(`/api/v2/exposition/${nonExistingId}`)
         .set({'Authorization': authorization})
-        .send(newExposition)
+        .send(exposition110_)
 
       // THEN   the server should return an HTTP 404 Not Found
-      // AND    the database shouldn't contain an exposition
 
       expect(putResponse).to.have.status(404)
 
-      const dbExpositionsAfter = await Exposition.find()
-      expect(dbExpositionsAfter).to.be.an('array').that.is.empty
+      // THEN   the database shouldn't have changed
+
+      const expositions = await Exposition.find()
+      expect(expositions).to.be.an('array').that.is.empty
     })
   })
 
-  describe('DELETE /exposition/{{exposition_id}}', function () {
-    it('deleting an existing exposition should succeed', async function () {
+  describe('DELETE /exposition/:expositionId', () => {
 
-      // GIVEN  a database with an existing exposition
+    it('should delete the specified exposition', async () => {
 
-      const existingMuseum = museums['louvre']
-      const dbExistingMuseum = await Museum.create(existingMuseum)
-      const existingMuseumId = dbExistingMuseum._id.toString()
+      // GIVEN  a database with an exposition
 
-      const existingExposition = copy(expositions['bestOfLeonardoDaVinci'])
-      existingExposition.museum = existingMuseumId
-      const dbExistingExposition = await Exposition.create(existingExposition)
-      const existingExpositionId = dbExistingExposition._id
+      const exposition110_ = {...exposition110, museum: museum100Id}
 
-      // WHEN   deleting the existing exposition
+      const exposition110Doc = await Exposition.create(exposition110_)
+      const exposition110Id = exposition110Doc._id
+
+      // WHEN   deleting the exposition
 
       const deleteResponse = await chai.request(server)
-        .delete(`/api/v2/exposition/${existingExpositionId}`)
+        .delete(`/api/v2/exposition/${exposition110Id}`)
         .set({'Authorization': authorization})
 
       // THEN   the server should return an HTTP 200
-      // AND    the JSON response should contain the old exposition
-      // AND    the database should contain no expositions anymore
+      // AND    the JSON response should contain the deleted exposition
 
       expect(deleteResponse).to.have.status(200)
-      expect(deleteResponse.body).to.shallowDeepEqual(existingExposition)
+      expect(deleteResponse.body).to.shallowDeepEqual(exposition110_)
 
-      const dbExpositionsAfter = await Exposition.find()
-      expect(dbExpositionsAfter).to.be.an('array').that.is.empty
+      // THEN   the database shouldn't contain the deleted exposition anymore
+
+      const expositions = await Exposition.find()
+      expect(expositions).to.be.an('array').that.is.empty
     })
 
-    it('deleting a non-existing exposition should fail', async function () {
+    it('should fail when deleting a non-existing exposition', async () => {
 
-      // GIVEN  the empty database
-      // AND    a non-existing ID
+      // WHEN   deleting a non-existing exposition
 
       const nonExistingId = '012345678901234567890123'
-
-      // WHEN   trying to delete the non-existing exposition
 
       const deleteResponse = await chai.request(server)
         .delete(`/api/v2/exposition/${nonExistingId}`)
@@ -321,24 +320,3 @@ describe('Exposition', function () {
     })
   })
 })
-
-function deepFreeze (object) {
-
-  // Retrieve the property names defined on object
-  const propNames = Object.getOwnPropertyNames(object)
-
-  // Freeze properties before freezing self
-
-  for (let name of propNames) {
-    let value = object[name]
-
-    object[name] = value && typeof value === 'object' ?
-      deepFreeze(value) : value
-  }
-
-  return Object.freeze(object)
-}
-
-function copy (object) {
-  return JSON.parse(JSON.stringify(object))
-}

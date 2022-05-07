@@ -2,269 +2,288 @@ const chai = require('chai')
 const chaiHttp = require('chai-http')
 const chaiShallowDeepEqual = require('chai-shallow-deep-equal')
 
-const server = require('../bin/server')
 const Museum = require('../models/museum')
-const museums = require('./fixtures/museums')
-const authorization = require('./fixtures/authorization')
+const mongoose = require('mongoose')
+const server = require('../server')
+const {authorization} = require('./fixtures/authorization')
+const {museum100, museum200} = require('./fixtures/museums')
 
 chai.use(chaiHttp)
 chai.use(chaiShallowDeepEqual)
 
 const expect = chai.expect
 
-deepFreeze(museums)
+describe('Museums', () => {
 
-describe('Museum', function () {
-  beforeEach(async function () {
+  let defaultMuseums
+
+  before(async () => {
+    await mongoose.connect('mongodb://localhost:27017/wavdio-express')
+
+    defaultMuseums = await Museum.find()
+  })
+
+  afterEach(async () => {
     await Museum.deleteMany({})
+    await Museum.insertMany(defaultMuseums)
   })
 
-  describe('GET /museum', function () {
-    it('reading all museums from an empty museum collection should succeed', async function () {
+  after(() => {
+    mongoose.disconnect()
+  })
 
-      // GIVEN  the empty database
+  describe('GET /museum', () => {
 
-      // WHEN   reading all museums
+    it('should return one museum for the initial database', async () => {
+
+      // GIVEN  the initial database
+
+      // WHEN   getting all museums
 
       const getResponse = await chai.request(server)
         .get('/api/v2/museum')
 
       // THEN   the server should return an HTTP 200 OK
-      // AND    the JSON response should be an empty array
+      // AND    the JSON response should contain the default museum
 
       expect(getResponse).to.have.status(200)
-      expect(getResponse.body).to.be.an('array').that.is.empty
+      expect(getResponse.body).to.be.an('array').with.lengthOf(1)
     })
 
-    it('reading all museums from a non-empty museum collection should succeed', async function () {
+    it('should return all museums for a filled database', async () => {
 
-      // GIVEN  a database with an existing museum
+      // GIVEN  a database with museums
 
-      const existingMuseum = museums['louvre']
+      await Museum.create(museum100)
+      await Museum.create(museum200)
 
-      await Museum.create(existingMuseum)
-
-      // WHEN   reading all museums
+      // WHEN   getting all museums
 
       const getResponse = await chai.request(server)
         .get('/api/v2/museum')
 
       // THEN   the server should return an HTTP 200 OK
-      // AND    the JSON response should be an array containing the existing museum
+      // AND    the JSON response should contain the existing museums
 
       expect(getResponse).to.have.status(200)
-      expect(getResponse.body).to.be.an('array').of.length(1)
-      expect(getResponse.body[0]).to.shallowDeepEqual(existingMuseum)
+      expect(getResponse.body).to.be.an('array').with.lengthOf(3)
+      expect(getResponse.body[1]).to.shallowDeepEqual(museum100)
+      expect(getResponse.body[2]).to.shallowDeepEqual(museum200)
     })
   })
 
-  describe('POST /museum', function () {
-    it('creating a complete museum should succeed', async function () {
+  describe('POST /museum', () => {
 
-      // GIVEN  the empty database
-      // AND    a new, complete museum
+    it('should create a museum', async () => {
 
-      const newMuseum = museums['louvre']
-
-      // WHEN   creating the new museum
+      // WHEN   posting a museum
 
       const postResponse = await chai.request(server)
         .post('/api/v2/museum')
         .set({'Authorization': authorization})
-        .send(newMuseum)
+        .send(museum100)
 
       // THEN   the server should return an HTTP 201 Created
       // AND    the JSON response should be the new museum
-      // AND    the database should contain the new museum
 
       expect(postResponse).to.have.status(201)
-      expect(postResponse.body).to.shallowDeepEqual(newMuseum)
+      expect(postResponse.body).to.shallowDeepEqual(museum100)
 
-      const dbMuseumsAfter = await Museum.find()
-      expect(dbMuseumsAfter).to.be.an('array').of.length(1)
-      expect(dbMuseumsAfter[0]).to.shallowDeepEqual(newMuseum)
+      // THEN   the database should contain the museum
+
+      const museums = await Museum.find()
+      expect(museums).to.be.an('array').with.lengthOf(2)
+      expect(museums[1]).to.shallowDeepEqual(museum100)
     })
 
-    it('creating a museum with a missing, required property should fail', async function () {
+    it('should fail without authorization', async () => {
 
-      // GIVEN  the empty database
-      // AND    a new museum with a missing, required property
+      // WHEN   posting a museum without authorization
 
-      const newMuseum = copy(museums['louvre'])
-      delete newMuseum.logo.filename
+      const postResponse = await chai.request(server)
+        .post('/api/v2/museum')
+        .send(museum100)
 
-      // WHEN   trying to create the new museum
+      // THEN   the server should return an HTTP 401 Unauthorized
+      // AND    the JSON response shouldn't contain sensitive information
+
+      expect(postResponse).to.have.status(401)
+      expect(postResponse.body).to.deep.equal({message: 'unauthorized'})
+
+      // THEN   the database shouldn't contain the museum
+
+      const museums = await Museum.find()
+      expect(museums).to.be.an('array').with.lengthOf(1)
+    })
+
+    it('should fail when posting a museum with a missing required property', async () => {
+
+      // WHEN   posting a museum with a missing required property
+
+      const museum100_ = JSON.parse(JSON.stringify(museum100))
+      delete museum100_.contents[0].lang
 
       const postResponse = await chai.request(server)
         .post('/api/v2/museum')
         .set({'Authorization': authorization})
-        .send(newMuseum)
+        .send(museum100_)
 
-      // THEN   the server should return an HTTP 500 Internal Server Error
-      // AND    the database shouldn't contain new the museum
+      // THEN   the server should return an HTTP 400 Bad Request
+      // AND    the database shouldn't contain the new museum
 
-      expect(postResponse).to.have.status(500)
+      expect(postResponse).to.have.status(400)
 
-      const dbMuseumsAfter = await Museum.find()
-      expect(dbMuseumsAfter).to.be.an('array').that.is.empty
+      // THEN   the database shouldn't contain the museum
+
+      const museums = await Museum.find()
+      expect(museums).to.be.an('array').with.lengthOf(1)
     })
 
-    it('creating a museum with a missing, non-required property should succeed', async function () {
+    it('should work when posting a museum with a missing non-required property', async () => {
 
-      // GIVEN  the empty database
-      // AND    a new museum with a missing, non-required property
+      // WHEN   posting a museum with a missing non-required property
 
-      const newMuseum = museums['louvre']
-      delete newMuseum.logo
-
-      // WHEN   creating the new museum
+      const museum100_ = {...museum100}
+      delete museum100_.contents[0].imprint
 
       const postResponse = await chai.request(server)
         .post('/api/v2/museum')
         .set({'Authorization': authorization})
-        .send(newMuseum)
+        .send(museum100_)
 
       // THEN   the server should return an HTTP 201 Created
       // AND    the JSON response should be the new museum
-      // AND    the database should contain the new museum
 
       expect(postResponse).to.have.status(201)
-      expect(postResponse.body).to.shallowDeepEqual(newMuseum)
+      expect(postResponse.body).to.shallowDeepEqual(museum100_)
 
-      const dbMuseumsAfter = await Museum.find()
-      expect(dbMuseumsAfter).to.be.an('array').of.length(1)
-      expect(dbMuseumsAfter[0]).to.shallowDeepEqual(newMuseum)
+      // THEN   the database should contain the museum
+
+      const museums = await Museum.find()
+      expect(museums).to.be.an('array').with.lengthOf(2)
+      expect(museums[1]).to.shallowDeepEqual(museum100_)
     })
   })
 
-  describe('GET /museum/{{museum_id}}', function () {
-    it('reading an existing museum should succeed', async function () {
+  describe('GET /museum/:museumId', () => {
 
-      // GIVEN  a database with an existing museum
+    it('should return the specified museum', async () => {
 
-      const existingMuseum = museums['louvre']
-      const dbExistingMuseum = await Museum.create(existingMuseum)
-      const existingMuseumId = dbExistingMuseum._id
+      // GIVEN  a database with a museum
 
-      // WHEN   reading the existing museum
+      const museum100Doc = await Museum.create(museum100)
+      const museum100Id = museum100Doc._id
 
-      const readResponse = await chai.request(server)
-        .get(`/api/v2/museum/${existingMuseumId}`)
+      // WHEN   getting the museum
+
+      const getResponse = await chai.request(server)
+        .get(`/api/v2/museum/${museum100Id}`)
 
       // THEN   the server should return an HTTP 200 OK
-      // AND    the JSON response should return the existing museum
+      // AND    the JSON response should be the requested museum
 
-      expect(readResponse).to.have.status(200)
-      expect(readResponse.body).to.shallowDeepEqual(existingMuseum)
+      expect(getResponse).to.have.status(200)
+      expect(getResponse.body).to.shallowDeepEqual(museum100)
     })
 
-    it('reading a non-existing museum should fail', async function () {
+    it('should fail for a non-existing museum', async () => {
 
-      // GIVEN  the empty database
-      // AND    a non-existing ID
+      // WHEN   getting a non-existing museum
 
       const nonExistingId = '012345678901234567890123'
 
-      // WHEN   trying to read the non-existing museum
-
-      const readResponse = await chai.request(server)
+      const getResponse = await chai.request(server)
         .get(`/api/v2/museum/${nonExistingId}`)
 
       // THEN   the server should return an HTTP 404 Not Found
 
-      expect(readResponse).to.have.status(404)
+      expect(getResponse).to.have.status(404)
     })
   })
 
-  describe('PUT /museum/{{museum_id}}', function () {
-    it('replacing an existing museum should succeed', async function () {
+  describe('PUT /museum/:museumId', () => {
 
-      // GIVEN  a database with an existing museum
-      // AND    a new museum
+    it('should replace an existing museum', async () => {
 
-      const existingMuseum = museums['louvre']
-      const dbExistingMuseum = await Museum.create(existingMuseum)
-      const existingMuseumId = dbExistingMuseum._id
+      // GIVEN  a database with a museum
 
-      const newMuseum = museums['germanMuseum']
+      const museum100Doc = await Museum.create(museum100)
+      const museum100Id = museum100Doc._id
 
-      // WHEN   replacing the existing museum with the new one
+      // WHEN   replacing the museum
 
       const putResponse = await chai.request(server)
-        .put(`/api/v2/museum/${existingMuseumId}`)
+        .put(`/api/v2/museum/${museum100Id}`)
         .set({'Authorization': authorization})
-        .send(newMuseum)
+        .send(museum200)
 
       // THEN   the server should return an HTTP 200
       // AND    the JSON response should contain the old museum
-      // AND    the database should contain the new museum
 
       expect(putResponse).to.have.status(200)
-      expect(putResponse.body).to.shallowDeepEqual(existingMuseum)
+      expect(putResponse.body).to.shallowDeepEqual(museum100)
 
-      const dbMuseumsAfter = await Museum.find()
-      expect(dbMuseumsAfter).to.be.an('array').of.length(1)
-      expect(dbMuseumsAfter[0]).to.shallowDeepEqual(newMuseum)
+      // THEN   the database should contain the new museum
+
+      const museums = await Museum.find()
+      expect(museums).to.be.an('array').with.lengthOf(2)
+      expect(museums[1]).to.shallowDeepEqual(museum200)
     })
 
-    it('replacing a non-existing museum should fail', async function () {
-
-      // GIVEN  the empty database
-      // AND    a non-existing ID
-      // AND    a new museum
-
-      const nonExistingId = '012345678901234567890123'
+    it('should fail when putting a non-existing museum', async () => {
 
       // WHEN   trying to replace the non-existing museum with the new one
+
+      const nonExistingId = '012345678901234567890123'
 
       const putResponse = await chai.request(server)
         .put(`/api/v2/museum/${nonExistingId}`)
         .set({'Authorization': authorization})
+        .send(museum200)
 
       // THEN   the server should return an HTTP 404 Not Found
-      // AND    the database shouldn't contain a museum
 
       expect(putResponse).to.have.status(404)
 
-      const dbMuseumsAfter = await Museum.find()
-      expect(dbMuseumsAfter).to.be.an('array').that.is.empty
+      // THEN   the database shouldn't have changed
+
+      const museums = await Museum.find()
+      expect(museums).to.be.an('array').with.lengthOf(1)
     })
   })
 
-  describe('DELETE /museum/{{museum_id}}', function () {
-    it('deleting an existing museum should succeed', async function () {
+  describe('DELETE /museum/:museumId', () => {
 
-      // GIVEN  a database with an existing museum
+    it('should delete the specified museum', async () => {
 
-      const existingMuseum = museums['louvre']
-      const dbExistingMuseum = await Museum.create(existingMuseum)
-      const existingMuseumId = dbExistingMuseum._id
+      // GIVEN  a database with a museum
 
-      // WHEN   deleting the existing museum
+      const museum100Doc = await Museum.create(museum100)
+      const museum100Id = museum100Doc._id
+
+      // WHEN   deleting the museum
 
       const deleteResponse = await chai.request(server)
-        .delete(`/api/v2/museum/${existingMuseumId}`)
+        .delete(`/api/v2/museum/${museum100Id}`)
         .set({'Authorization': authorization})
 
       // THEN   the server should return an HTTP 200
-      // AND    the JSON response should contain the old museum
-      // AND    the database should contain no museums anymore
+      // AND    the JSON response should contain the deleted museum
 
       expect(deleteResponse).to.have.status(200)
-      expect(deleteResponse.body).to.shallowDeepEqual(existingMuseum)
+      expect(deleteResponse.body).to.shallowDeepEqual(museum100)
 
-      const dbMuseumsAfter = await Museum.find()
-      expect(dbMuseumsAfter).to.be.an('array').that.is.empty
+      // THEN   the database shouldn't contain the deleted museum anymore
+
+      const museums = await Museum.find()
+      expect(museums).to.be.an('array').with.lengthOf(1)
     })
 
-    it('deleting a non-existing museum should fail', async function () {
+    it('should fail when deleting a non-existing museum', async () => {
 
-      // GIVEN  the empty database
-      // AND    a non-existing ID
+      // WHEN   deleting a non-existing museum
 
       const nonExistingId = '012345678901234567890123'
-
-      // WHEN   trying to delete the non-existing museum
 
       const deleteResponse = await chai.request(server)
         .delete(`/api/v2/museum/${nonExistingId}`)
@@ -276,24 +295,3 @@ describe('Museum', function () {
     })
   })
 })
-
-function deepFreeze (object) {
-
-  // Retrieve the property names defined on object
-  const propNames = Object.getOwnPropertyNames(object)
-
-  // Freeze properties before freezing self
-
-  for (let name of propNames) {
-    let value = object[name]
-
-    object[name] = value && typeof value === 'object' ?
-      deepFreeze(value) : value
-  }
-
-  return Object.freeze(object)
-}
-
-function copy (object) {
-  return JSON.parse(JSON.stringify(object))
-}

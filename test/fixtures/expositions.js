@@ -1,101 +1,93 @@
-module.exports = {
-  bestOfLeonardoDaVinci: {
-    museum: '',
+const {deepFreeze} = require('../util')
 
-    active: true,
-    code: 10,
-    note: 'We should better secure this exposition.',
+module.exports.exposition110 = deepFreeze({
+  museum: '',
 
-    logo: {
-      filename: 'best_of_leonardo_da_vinci.jpg',
-      alternativeText: 'Best of Leonardo Da Vinci'
-    },
+  active: true,
+  code: 110,
+  note: 'Exposition 110 Note',
 
-    likes: [{
-      timestamp: '2019-01-21T10:00:00.000Z'
-    }, {
-      timestamp: '2019-01-21T11:00:00.000Z'
-    }, {
-      timestamp: '2019-01-21T12:00:00.000Z'
-    }],
-    views: [{
-      timestamp: '2019-01-21T10:00:00.000Z'
-    }, {
-      timestamp: '2019-01-21T11:00:00.000Z'
-    }, {
-      timestamp: '2019-01-21T12:00:00.000Z'
-    }],
-    comments: [{
-      text: 'Comment 1',
-      timestamp: '2019-01-21T10:00:00.000Z'
-    }, {
-      text: 'Comment 2',
-      timestamp: '2019-01-21T11:00:00.000Z'
-    }, {
-      text: 'Comment 3',
-      timestamp: '2019-01-21T12:00:00.000Z'
-    }],
-
-    contents: [{
-      lang: 'en',
-
-      name: 'Best of Leonardo Da Vinci',
-      info: 'The most popular artworks of Lenoardo Da Vinci'
-    }, {
-      lang: 'de',
-
-      name: 'Best of Leonardo Da Vinci',
-      info: 'Die berühmtesten Kunstwerke von Lenoardo Da Vinci'
-    }]
+  logo: {
+    filename: 'exposition_110_logo.jpg',
+    alternativeText: 'Exposition 110 Alt Text'
   },
 
-  bestOfSalvadorDali: {
-    museum: '',
+  views: [
+    {timestamp: '2000-01-01T10:00:00.000Z'},
+    {timestamp: '2000-01-01T11:00:00.000Z'},
+    {timestamp: '2000-01-01T12:00:00.000Z'}
+  ],
 
-    active: true,
-    code: 11,
-    note: 'We should better secure this exposition.',
+  likes: [
+    {timestamp: '2000-01-01T10:00:00.000Z'},
+    {timestamp: '2000-01-01T11:00:00.000Z'},
+    {timestamp: '2000-01-01T12:00:00.000Z'}
+  ],
 
-    logo: {
-      filename: 'best_of_salvador_dali.jpg',
-      alternativeText: 'Best of Salvador Dali'
-    },
+  comments: [
+    {text: 'Exposition 110 Comment 1', timestamp: '2000-01-01T10:00:00.000Z'},
+    {text: 'Exposition 110 Comment 2', timestamp: '2000-01-01T11:00:00.000Z'},
+    {text: 'Exposition 110 Comment 3', timestamp: '2000-01-01T12:00:00.000Z'}
+  ],
 
-    likes: [{
-      timestamp: '2019-01-21T10:00:00.000Z'
-    }, {
-      timestamp: '2019-01-21T11:00:00.000Z'
-    }, {
-      timestamp: '2019-01-21T12:00:00.000Z'
-    }],
-    views: [{
-      timestamp: '2019-01-21T10:00:00.000Z'
-    }, {
-      timestamp: '2019-01-21T11:00:00.000Z'
-    }, {
-      timestamp: '2019-01-21T12:00:00.000Z'
-    }],
-    comments: [{
-      text: 'Comment 1',
-      timestamp: '2019-01-21T10:00:00.000Z'
-    }, {
-      text: 'Comment 2',
-      timestamp: '2019-01-21T11:00:00.000Z'
-    }, {
-      text: 'Comment 3',
-      timestamp: '2019-01-21T12:00:00.000Z'
-    }],
-
-    contents: [{
+  contents: [
+    {
       lang: 'en',
 
-      name: 'Best of Salvador Dali',
-      info: 'The most popular artworks of Salvador Dali'
-    }, {
+      name: 'Exposition 110 EN',
+      info: 'Exposition 110 EN Info'
+    },
+    {
       lang: 'de',
 
-      name: 'Best of Salvador Dali',
-      info: 'Die berühmtesten Kunstwerke von Salvador Dali'
-    }]
-  }
-}
+      name: 'Exposition 110 DE',
+      info: 'Exposition 110 DE Info'
+    }
+  ]
+})
+
+module.exports.exposition120 = deepFreeze({
+  museum: '',
+
+  active: true,
+  code: 120,
+  note: 'Exposition 120 Note',
+
+  logo: {
+    filename: 'exposition_120_logo.jpg',
+    alternativeText: 'Exposition 120 Alt Text'
+  },
+
+  views: [
+    {timestamp: '2000-01-01T10:00:00.000Z'},
+    {timestamp: '2000-01-01T11:00:00.000Z'},
+    {timestamp: '2000-01-01T12:00:00.000Z'}
+  ],
+
+  likes: [
+    {timestamp: '2000-01-01T10:00:00.000Z'},
+    {timestamp: '2000-01-01T11:00:00.000Z'},
+    {timestamp: '2000-01-01T12:00:00.000Z'}
+  ],
+
+  comments: [
+    {text: 'Exposition 120 Comment 1', timestamp: '2000-01-01T10:00:00.000Z'},
+    {text: 'Exposition 120 Comment 2', timestamp: '2000-01-01T11:00:00.000Z'},
+    {text: 'Exposition 120 Comment 3', timestamp: '2000-01-01T12:00:00.000Z'}
+  ],
+
+  contents: [
+    {
+      lang: 'en',
+
+      name: 'Exposition 120 EN',
+      info: 'Exposition 120 EN Info'
+    },
+    {
+      lang: 'de',
+
+      name: 'Exposition 120 DE',
+      info: 'Exposition 120 DE Info'
+    }
+  ]
+})

@@ -1,67 +1,119 @@
-module.exports = {
-  germanMuseum: {
-    logo: {
-      filename: 'german_museum.jpg',
-      alternativeText: 'German Museum'
-    },
+const {deepFreeze} = require('../util')
 
-    contents: [{
+module.exports.museum100 = deepFreeze({
+  contents: [
+    {
       lang: 'en',
 
-      name: 'German Museum',
-      welcomeText: 'Welcome to the German Museum!',
-      termsOfUse: 'terms of use...',
-      privacyTerms: 'privacy terms...',
+      name: 'Museum 100 EN',
+      info: 'Museum 100 EN Info',
+      welcomeText: 'Museum 100 EN Welcome Text',
+      termsOfUse: 'Museum 100 EN Terms of Use',
+      privacyTerms: 'Museum 100 EN Privacy Terms',
+      imprint: 'Museum 100 EN Imprint',
+
+      logo: {
+        filename: 'museum_100_en_logo.png',
+        alternativeText: 'Museum 100 EN Logo Alt Text'
+      },
+
+      image: {
+        filename: 'museum_100_en_image.jpg',
+        alternativeText: 'Museum 100 EN Image Alt Text'
+      },
 
       sitePlan: {
-        filename: 'site_plan_en.png',
-        alternativeText: 'Site Plan'
-      }
-    }, {
+        filename: 'museum_100_en_site_plan.jpg',
+        alternativeText: 'Museum 100 EN Site Plan Alt Text'
+      },
+
+      sitePlanText: 'Museum 100 EN Site Plan Text'
+    },
+    {
       lang: 'de',
 
-      name: 'Deutsches Museum',
-      welcomeText: 'Willkommen im Deutschen Museum!',
-      termsOfUse: 'Nutzungsbedingungen',
-      privacyTerms: 'Datenschutzrichtlinie',
+      name: 'Museum 100 DE',
+      info: 'Museum 100 DE Info',
+      welcomeText: 'Museum 100 DE Welcome Text',
+      termsOfUse: 'Museum 100 DE Terms of Use',
+      privacyTerms: 'Museum 100 DE Privacy Terms',
+      imprint: 'Museum 100 DE Imprint',
+
+      logo: {
+        filename: 'museum_100_de_logo.png',
+        alternativeText: 'Museum 100 DE Logo Alt Text'
+      },
+
+      image: {
+        filename: 'museum_100_de_image.jpg',
+        alternativeText: 'Museum 100 DE Image Alt Text'
+      },
 
       sitePlan: {
-        filename: 'site_plan_de.png',
-        alternativeText: 'Lageplan'
-      }
-    }]
-  },
+        filename: 'museum_100_de_site_plan.jpg',
+        alternativeText: 'Museum 100 DE Site Plan Alt Text'
+      },
 
-  louvre: {
-    logo: {
-      filename: 'louvre.jpg',
-      alternativeText: 'Louvre'
+      sitePlanText: 'Museum 100 DE Site Plan Text'
     },
+  ]
+})
 
-    contents: [{
+module.exports.museum200 = deepFreeze({
+  contents: [
+    {
       lang: 'en',
 
-      name: 'Louvre',
-      welcomeText: 'Welcome to the Louvre!',
-      termsOfUse: 'terms of use...',
-      privacyTerms: 'privacy terms...',
+      name: 'Museum 200 EN',
+      info: 'Museum 200 EN Info',
+      welcomeText: 'Museum 200 EN Welcome Text',
+      termsOfUse: 'Museum 200 EN Terms of Use',
+      privacyTerms: 'Museum 200 EN Privacy Terms',
+      imprint: 'Museum 200 EN Imprint',
+
+      logo: {
+        filename: 'museum_200_en_logo.png',
+        alternativeText: 'Museum 200 EN Logo Alt Text'
+      },
+
+      image: {
+        filename: 'museum_200_en_image.jpg',
+        alternativeText: 'Museum 200 EN Image Alt Text'
+      },
 
       sitePlan: {
-        filename: 'site_plan_en.png',
-        alternativeText: 'Site Plan'
-      }
-    }, {
+        filename: 'museum_200_en_site_plan.jpg',
+        alternativeText: 'Museum 200 EN Site Plan Alt Text'
+      },
+
+      sitePlanText: 'Museum 200 EN Site Plan Text'
+    },
+    {
       lang: 'de',
 
-      name: 'Louvre',
-      welcomeText: 'Willkommen im Louvre!',
-      termsOfUse: 'Nutzungsbedingungen',
-      privacyTerms: 'Datenschutzrichtlinie',
+      name: 'Museum 200 DE',
+      info: 'Museum 200 DE Info',
+      welcomeText: 'Museum 200 DE Welcome Text',
+      termsOfUse: 'Museum 200 DE Terms of Use',
+      privacyTerms: 'Museum 200 DE Privacy Terms',
+      imprint: 'Museum 200 DE Imprint',
+
+      logo: {
+        filename: 'museum_200_de_logo.png',
+        alternativeText: 'Museum 200 DE Logo Alt Text'
+      },
+
+      image: {
+        filename: 'museum_200_de_image.jpg',
+        alternativeText: 'Museum 200 DE Image Alt Text'
+      },
 
       sitePlan: {
-        filename: 'site_plan_de.png',
-        alternativeText: 'Lageplan'
-      }
-    }]
-  }
-}
+        filename: 'museum_200_de_site_plan.jpg',
+        alternativeText: 'Museum 200 DE Site Plan Alt Text'
+      },
+
+      sitePlanText: 'Museum 200 DE Site Plan Text'
+    },
+  ]
+})
