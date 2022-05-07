@@ -59,7 +59,7 @@ async function up (dbo) {
 
   /* Create exposition contents */
 
-  const expositions = await dbo.collection('expositions').find({}).toArray()
+  const expositions = await dbo.collection('expositions').find().toArray()
 
   for (let exposition of expositions) {
     const langs = ['de', 'en', 'es', 'fr']
@@ -81,7 +81,7 @@ async function up (dbo) {
 
   /* Create exhibit contents */
 
-  const exhibits = await dbo.collection('exhibits').find({}).toArray()
+  const exhibits = await dbo.collection('exhibits').find().toArray()
 
   for (let exhibit of exhibits) {
     const langs = ['de', 'en', 'es', 'fr']

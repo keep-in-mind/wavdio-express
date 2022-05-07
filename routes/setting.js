@@ -9,7 +9,7 @@ const router = express.Router()
 
 router.route('/setting').get(async (_request, response) => {
   try {
-    const settings = Setting.find()
+    const settings = await Setting.find()
 
     return response.status(200).json(settings)
 
@@ -23,29 +23,28 @@ router.route('/setting').get(async (_request, response) => {
 router.route('/setting').post(async (request, response) => {
   try {
     const authorization = request.headers.authorization
-    const body = request.body
+    const postSetting = request.body
 
     /// Check authorization
 
-    const user = await User.findOne({})
+    const user = await User.findOne()
 
     if (user.session_id !== authorization) {
       return response.status(401).json({ 'message': 'unauthorized' })
     }
 
-    Setting.create(body, (error, setting) => {
-      if (error && error.name === 'ValidationError') {
-        response.status(400).json({ 'message': error.message })
-      } else if (error) {
-        logger.log(error)
-        response.status(500).send(error)
-      } else {
-        response.status(201).json(setting)
-      }
-    })
+    /// Create setting
+
+    const createdSetting = await Setting.create(postSetting)
+
+    return response.status(201).json(createdSetting)
 
   } catch (error) {
     logger.error(error)
+
+    if (error.name === 'ValidationError') {
+      return response.status(400).json({ 'message': error.message })
+    }
 
     return response.status(500).send(error)
   }
@@ -81,7 +80,7 @@ router.route('/setting/:settingId').put(async (request, response) => {
 
     /// Check authorization
 
-    const user = await User.findOne({})
+    const user = await User.findOne()
 
     if (user.session_id !== authorization) {
       return response.status(401).json({ 'message': 'unauthorized' })
@@ -116,7 +115,7 @@ router.route('/setting/:settingId').patch(async (request, response) => {
 
     /// Check authorization
 
-    const user = await User.findOne({})
+    const user = await User.findOne()
 
     if (user.session_id !== authorization) {
       return response.status(401).json({ 'message': 'unauthorized' })
@@ -148,7 +147,7 @@ router.route('/setting/:settingId').delete(async (request, response) => {
 
     /// Check authorization
 
-    const user = await User.findOne({})
+    const user = await User.findOne()
 
     if (user.session_id !== authorization) {
       return response.status(401).json({ 'message': 'unauthorized' })

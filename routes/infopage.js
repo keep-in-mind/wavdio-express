@@ -9,7 +9,7 @@ const router = express.Router()
 
 router.route('/infopage').get(async (_request, response) => {
   try {
-    const infopages = Infopage.find()
+    const infopages = await Infopage.find()
 
     return response.status(200).json(infopages)
 
@@ -23,29 +23,28 @@ router.route('/infopage').get(async (_request, response) => {
 router.route('/infopage').post(async (request, response) => {
   try {
     const authorization = request.headers.authorization
-    const body = request.body
+    const postInfopage = request.body
 
     /// Check authorization
 
-    const user = await User.findOne({})
+    const user = await User.findOne()
 
     if (user.session_id !== authorization) {
       return response.status(401).json({ 'message': 'unauthorized' })
     }
 
-    Infopage.create(body, (error, infopage) => {
-      if (error && error.name === 'ValidationError') {
-        response.status(400).json({ 'message': error.message })
-      } else if (error) {
-        logger.log(error)
-        response.status(500).send(error)
-      } else {
-        response.status(201).json(infopage)
-      }
-    })
+    /// Create infopage
+
+    const createdInfopage = await Infopage.create(postInfopage)
+
+    return response.status(201).json(createdInfopage)
 
   } catch (error) {
     logger.error(error)
+
+    if (error.name === 'ValidationError') {
+      return response.status(400).json({ 'message': error.message })
+    }
 
     return response.status(500).send(error)
   }
@@ -81,7 +80,7 @@ router.route('/infopage/:infopageId').put(async (request, response) => {
 
     /// Check authorization
 
-    const user = await User.findOne({})
+    const user = await User.findOne()
 
     if (user.session_id !== authorization) {
       return response.status(401).json({ 'message': 'unauthorized' })
@@ -116,7 +115,7 @@ router.route('/infopage/:infopageId').patch(async (request, response) => {
 
     /// Check authorization
 
-    const user = await User.findOne({})
+    const user = await User.findOne()
 
     if (user.session_id !== authorization) {
       return response.status(401).json({ 'message': 'unauthorized' })
@@ -148,7 +147,7 @@ router.route('/infopage/:infopageId').delete(async (request, response) => {
 
     /// Check authorization
 
-    const user = await User.findOne({})
+    const user = await User.findOne()
 
     if (user.session_id !== authorization) {
       return response.status(401).json({ 'message': 'unauthorized' })

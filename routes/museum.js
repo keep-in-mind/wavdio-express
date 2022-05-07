@@ -9,7 +9,7 @@ const router = express.Router()
 
 router.route('/museum').get(async (_request, response) => {
   try {
-    const museums = Museum.find()
+    const museums = await Museum.find()
 
     return response.status(200).json(museums)
 
@@ -23,29 +23,28 @@ router.route('/museum').get(async (_request, response) => {
 router.route('/museum').post(async (request, response) => {
   try {
     const authorization = request.headers.authorization
-    const body = request.body
+    const postMuseum = request.body
 
     /// Check authorization
 
-    const user = await User.findOne({})
+    const user = await User.findOne()
 
     if (user.session_id !== authorization) {
       return response.status(401).json({ 'message': 'unauthorized' })
     }
 
-    Museum.create(body, (error, museum) => {
-      if (error && error.name === 'ValidationError') {
-        response.status(400).json({ 'message': error.message })
-      } else if (error) {
-        logger.log(error)
-        response.status(500).send(error)
-      } else {
-        response.status(201).json(museum)
-      }
-    })
+    /// Create museum
+
+    const createdMuseum = await Museum.create(postMuseum)
+
+    return response.status(201).json(createdMuseum)
 
   } catch (error) {
     logger.error(error)
+
+    if (error.name === 'ValidationError') {
+      return response.status(400).json({ 'message': error.message })
+    }
 
     return response.status(500).send(error)
   }
@@ -81,7 +80,7 @@ router.route('/museum/:museumId').put(async (request, response) => {
 
     /// Check authorization
 
-    const user = await User.findOne({})
+    const user = await User.findOne()
 
     if (user.session_id !== authorization) {
       return response.status(401).json({ 'message': 'unauthorized' })
@@ -116,7 +115,7 @@ router.route('/museum/:museumId').patch(async (request, response) => {
 
     /// Check authorization
 
-    const user = await User.findOne({})
+    const user = await User.findOne()
 
     if (user.session_id !== authorization) {
       return response.status(401).json({ 'message': 'unauthorized' })
@@ -148,7 +147,7 @@ router.route('/museum/:museumId').delete(async (request, response) => {
 
     /// Check authorization
 
-    const user = await User.findOne({})
+    const user = await User.findOne()
 
     if (user.session_id !== authorization) {
       return response.status(401).json({ 'message': 'unauthorized' })
