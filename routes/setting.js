@@ -31,20 +31,22 @@ router.route('/setting').post(async (request, response) => {
     const authorization = request.headers.authorization
     const body = request.body
 
-    User.findOne({}, function (err, user_) {
-      if (user_.session_id !== authorization) {
-        return response.status(401).json({ 'message': 'unauthorized' })
+    /// Check authorization
+
+    const user = await User.findOne({})
+
+    if (user.session_id !== authorization) {
+      return response.status(401).json({ 'message': 'unauthorized' })
+    }
+
+    Setting.create(body, (error, setting) => {
+      if (error && error.name === 'ValidationError') {
+        response.status(400).json({ 'message': error.message })
+      } else if (error) {
+        logger.log(error)
+        response.status(500).send(error)
       } else {
-        Setting.create(body, (error, setting) => {
-          if (error && error.name === 'ValidationError') {
-            response.status(400).json({ 'message': error.message })
-          } else if (error) {
-            logger.log(error)
-            response.status(500).send(error)
-          } else {
-            response.status(201).json(setting)
-          }
-        })
+        response.status(201).json(setting)
       }
     })
 
@@ -55,11 +57,11 @@ router.route('/setting').post(async (request, response) => {
   }
 })
 
-router.route('/setting/:setting_id').get(async (request, response) => {
+router.route('/setting/:settingId').get(async (request, response) => {
   try {
-    const settingId = request.params.setting_id
+    const settingId = request.params.settingId
 
-    Setting.findById(setting_id, (error, setting) => {
+    Setting.findById(settingId, (error, setting) => {
       if (error) {
         logger.error(error)
         response.status(500).send(error)
@@ -77,29 +79,31 @@ router.route('/setting/:setting_id').get(async (request, response) => {
   }
 })
 
-router.route('/setting/:setting_id').put(async (request, response) => {
+router.route('/setting/:settingId').put(async (request, response) => {
   try {
-    const settingId = request.params.setting_id
+    const settingId = request.params.settingId
     const authorization = request.headers.authorization
     const body = request.body
 
-    User.findOne({}, function (err, user_) {
-      if (user_.session_id !== authorization) {
-        return response.status(401).json({ 'message': 'unauthorized' })
+    /// Check authorization
+
+    const user = await User.findOne({})
+
+    if (user.session_id !== authorization) {
+      return response.status(401).json({ 'message': 'unauthorized' })
+    }
+
+    delete body._id
+    Setting.findOneAndUpdate({ _id: settingId }, body, (error, setting) => {
+      if (error && error.name === 'ValidationError') {
+        response.status(400).json({ 'message': error.message })
+      } else if (error) {
+        logger.log(error)
+        response.status(500).send(error)
+      } else if (setting) {
+        response.status(200).json(setting)
       } else {
-        delete body._id
-        Setting.findOneAndUpdate({ _id: setting_id }, body, (error, setting) => {
-          if (error && error.name === 'ValidationError') {
-            response.status(400).json({ 'message': error.message })
-          } else if (error) {
-            logger.log(error)
-            response.status(500).send(error)
-          } else if (setting) {
-            response.status(200).json(setting)
-          } else {
-            response.status(404).send()
-          }
-        })
+        response.status(404).send()
       }
     })
 
@@ -110,28 +114,29 @@ router.route('/setting/:setting_id').put(async (request, response) => {
   }
 })
 
-router.route('/setting/:setting_id').patch(async (request, response) => {
+router.route('/setting/:settingId').patch(async (request, response) => {
   try {
-    const settingId = request.params.setting_id
+    const settingId = request.params.settingId
     const authorization = request.headers.authorization
     const body = request.body
 
-    User.findOne({}, function (err, user_) {
-      if (user_.session_id !== authorization) {
-        return response.status(401).json({ 'message': 'unauthorized' })
+    /// Check authorization
 
+    const user = await User.findOne({})
+
+    if (user.session_id !== authorization) {
+      return response.status(401).json({ 'message': 'unauthorized' })
+    }
+
+    delete body._id
+    Setting.updateOne({ _id: settingId }, body, (error, setting) => {
+      if (error && error.name === 'ValidationError') {
+        response.status(400).json({ 'message': error.message })
+      } else if (error) {
+        logger.log(error)
+        response.status(500).send(error)
       } else {
-        delete body._id
-        Setting.updateOne({ _id: settingId }, body, (error, setting) => {
-          if (error && error.name === 'ValidationError') {
-            response.status(400).json({ 'message': error.message })
-          } else if (error) {
-            logger.log(error)
-            response.status(500).send(error)
-          } else {
-            response.status(200).json(setting)
-          }
-        })
+        response.status(200).json(setting)
       }
     })
 
@@ -142,25 +147,27 @@ router.route('/setting/:setting_id').patch(async (request, response) => {
   }
 })
 
-router.route('/setting/:setting_id').delete(async (request, response) => {
+router.route('/setting/:settingId').delete(async (request, response) => {
   try {
-    const settingId = request.params.setting_id
+    const settingId = request.params.settingId
     const authorization = request.headers.authorization
 
-    User.findOne({}, function (err, user_) {
-      if (user_.session_id !== authorization) {
-        return response.status(401).json({ 'message': 'unauthorized' })
+    /// Check authorization
+
+    const user = await User.findOne({})
+
+    if (user.session_id !== authorization) {
+      return response.status(401).json({ 'message': 'unauthorized' })
+    }
+
+    Setting.findOneAndRemove({ _id: settingId }, (error, setting) => {
+      if (error) {
+        logger.log(error)
+        response.status(500).send(error)
+      } else if (setting) {
+        response.status(200).json(setting)
       } else {
-        Setting.findOneAndRemove({ _id: settingId }, (error, setting) => {
-          if (error) {
-            logger.log(error)
-            response.status(500).send(error)
-          } else if (setting) {
-            response.status(200).json(setting)
-          } else {
-            response.status(404).send()
-          }
-        })
+        response.status(404).send()
       }
     })
 

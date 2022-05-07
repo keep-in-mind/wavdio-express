@@ -32,27 +32,29 @@ router.route('/exhibit').post(async (request, response) => {
     const authorization = request.headers.authorization
     const body = request.body
 
-    User.findOne({}, function (err, user_) {
-      if (user_.session_id !== authorization) {
-        return response.status(401).json({ 'message': 'unauthorized' })
+    /// Check authorization
+
+    const user = await User.findOne({})
+
+    if (user.session_id !== authorization) {
+      return response.status(401).json({ 'message': 'unauthorized' })
+    }
+
+    Exhibit.find({ parent: body.parent, code: body.code, active: true }, (error, exhibits) => {
+      if (error) {
+        logger.error(error)
+        response.status(500).send(error)
+      } else if (exhibits.length > 0 && body.active === true) {
+        response.status(500).send({ 'error_code': '13' })
       } else {
-        Exhibit.find({ parent: body.parent, code: body.code, active: true }, (error, exhibits) => {
-          if (error) {
-            logger.error(error)
+        Exhibit.create(body, (error, exhibit) => {
+          if (error && error.name === 'ValidationError') {
+            response.status(400).json({ 'message': error.message })
+          } else if (error) {
+            console.log(error)
             response.status(500).send(error)
-          } else if (exhibits.length > 0 && body.active === true) {
-            response.status(500).send({ 'error_code': '13' })
           } else {
-            Exhibit.create(body, (error, exhibit) => {
-              if (error && error.name === 'ValidationError') {
-                response.status(400).json({ 'message': error.message })
-              } else if (error) {
-                console.log(error)
-                response.status(500).send(error)
-              } else {
-                response.status(201).json(exhibit)
-              }
-            })
+            response.status(201).json(exhibit)
           }
         })
       }
@@ -65,9 +67,9 @@ router.route('/exhibit').post(async (request, response) => {
   }
 })
 
-router.route('/exhibit/:exhibit_id').get(async (request, response) => {
+router.route('/exhibit/:exhibitId').get(async (request, response) => {
   try {
-    const exhibitId = request.params.exhibit_id
+    const exhibitId = request.params.exhibitId
 
     Exhibit.findById(exhibitId, (error, exhibit) => {
       if (error) {
@@ -87,29 +89,31 @@ router.route('/exhibit/:exhibit_id').get(async (request, response) => {
   }
 })
 
-router.route('/exhibit/:exhibit_id').put(async (request, response) => {
+router.route('/exhibit/:exhibitId').put(async (request, response) => {
   try {
-    const exhibitId = request.params.exhibit_id
+    const exhibitId = request.params.exhibitId
     const authorization = request.headers.authorization
     const body = request.body
 
-    User.findOne({}, function (err, user_) {
-      if (user_.session_id !== authorization) {
-        return response.status(401).json({ 'message': 'unauthorized' })
+    /// Check authorization
+
+    const user = await User.findOne({})
+
+    if (user.session_id !== authorization) {
+      return response.status(401).json({ 'message': 'unauthorized' })
+    }
+
+    delete body._id
+    Exhibit.findOneAndUpdate({ _id: exhibitId }, body, (error, exhibit) => {
+      if (error && error.name === 'ValidationError') {
+        response.status(400).json({ 'message': error.message })
+      } else if (error) {
+        logger.error(error)
+        response.status(500).send(error)
+      } else if (exhibit) {
+        response.status(200).json(exhibit)
       } else {
-        delete body._id
-        Exhibit.findOneAndUpdate({ _id: exhibitId }, body, (error, exhibit) => {
-          if (error && error.name === 'ValidationError') {
-            response.status(400).json({ 'message': error.message })
-          } else if (error) {
-            logger.error(error)
-            response.status(500).send(error)
-          } else if (exhibit) {
-            response.status(200).json(exhibit)
-          } else {
-            response.status(404).send()
-          }
-        })
+        response.status(404).send()
       }
     })
 
@@ -120,9 +124,9 @@ router.route('/exhibit/:exhibit_id').put(async (request, response) => {
   }
 })
 
-router.route('/exhibit/:exhibit_id').patch(async (request, response) => {
+router.route('/exhibit/:exhibitId').patch(async (request, response) => {
   try {
-    const exhibitId = request.params.exhibit_id
+    const exhibitId = request.params.exhibitId
     const authorization = request.headers.authorization
     const body = request.body
 
@@ -177,18 +181,17 @@ router.route('/exhibit/:exhibit_id').patch(async (request, response) => {
   }
 })
 
-router.route('/exhibit/:exhibit_id').delete(async (request, response) => {
+router.route('/exhibit/:exhibitId').delete(async (request, response) => {
   try {
-    const exhibitId = request.params.exhibit_id
+    const exhibitId = request.params.exhibitId
     const authorization = request.headers.authorization
 
-    /* Authenticate */
+    /// Check authorization
 
-    const u = await User.findOne({})
+    const user = await User.findOne({})
 
-    if (u.session_id !== authorization) {
-      response.status(401).json({ 'message': 'unauthorized' })
-      return
+    if (user.session_id !== authorization) {
+      return response.status(401).json({ 'message': 'unauthorized' })
     }
 
     /* Remove from DB. Invalid ID -> 404 Not Found */
@@ -213,9 +216,9 @@ router.route('/exhibit/:exhibit_id').delete(async (request, response) => {
   }
 })
 
-router.route('/exhibit/:exhibit_id/like').post(async (request, response) => {
+router.route('/exhibit/:exhibitId/like').post(async (request, response) => {
   try {
-    const exhibitId = request.params.exhibit_id
+    const exhibitId = request.params.exhibitId
     const body = request.body
 
     Exhibit.findByIdAndUpdate(exhibitId, { $push: { likes: body } }, { new: true }, (error, exhibit) => {
@@ -238,10 +241,10 @@ router.route('/exhibit/:exhibit_id/like').post(async (request, response) => {
   }
 })
 
-router.route('/exhibit/:exhibit_id/like/:like_id').delete(async (request, response) => {
+router.route('/exhibit/:exhibitId/like/:likeId').delete(async (request, response) => {
   try {
-    const exhibitId = request.params.exhibit_id
-    const likeId = request.params.like_id
+    const exhibitId = request.params.exhibitId
+    const likeId = request.params.likeId
 
     Exhibit.findByIdAndUpdate(exhibitId, { $pull: { likes: { _id: likeId } } }, { new: true }, (error, exhibit) => {
       if (error && error.name === 'ValidationError') {
@@ -263,9 +266,9 @@ router.route('/exhibit/:exhibit_id/like/:like_id').delete(async (request, respon
   }
 })
 
-router.route('/exhibit/:exhibit_id/comment_like').patch(async (request, response) => {
+router.route('/exhibit/:exhibitId/comment_like').patch(async (request, response) => {
   try {
-    const exhibitId = request.params.exhibit_id
+    const exhibitId = request.params.exhibitId
     const body = request.body
 
     Exhibit.findByIdAndUpdate(exhibitId, {
