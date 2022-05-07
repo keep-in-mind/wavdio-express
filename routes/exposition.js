@@ -9,103 +9,137 @@ const { User } = require('../models/user')
 
 const router = express.Router()
 
-router.route('/exposition').get((request, response) => {
+router.route('/exposition').get(async (request, response) => {
+  try {
 
-  Exposition.find((error, expositions) => {
-    if (error) {
-      logger.error(error)
-      response.status(500).send(error)
-    } else {
-      response.status(200).json(expositions)
-    }
-  })
+    Exposition.find((error, expositions) => {
+      if (error) {
+        logger.error(error)
+        response.status(500).send(error)
+      } else {
+        response.status(200).json(expositions)
+      }
+    })
+
+  } catch (error) {
+    logger.error(error)
+
+    return response.status(500).send(error)
+  }
 })
 
-router.route('/exposition').post((request, response) => {
+router.route('/exposition').post(async (request, response) => {
+  try {
 
-  User.findOne({}, function (err, user_) {
-    if (user_.session_id !== request.headers.authorization) {
-      return response.status(401).json({ 'message': 'unauthorized' })
-    } else {
-      Exposition.create(request.body, (error, exposition) => {
-        if (error && error.name === 'ValidationError') {
-          response.status(400).json({ 'message': error.message })
-        } else if (error) {
-          console.error(error)
-          response.status(500).send(error)
-        } else {
-          response.status(201).json(exposition)
-        }
-      })
-    }
-  })
+    User.findOne({}, function (err, user_) {
+      if (user_.session_id !== request.headers.authorization) {
+        return response.status(401).json({ 'message': 'unauthorized' })
+      } else {
+        Exposition.create(request.body, (error, exposition) => {
+          if (error && error.name === 'ValidationError') {
+            response.status(400).json({ 'message': error.message })
+          } else if (error) {
+            console.error(error)
+            response.status(500).send(error)
+          } else {
+            response.status(201).json(exposition)
+          }
+        })
+      }
+    })
+
+  } catch (error) {
+    logger.error(error)
+
+    return response.status(500).send(error)
+  }
 })
 
-router.route('/exposition/:exposition_id').get((request, response) => {
+router.route('/exposition/:exposition_id').get(async (request, response) => {
+  try {
 
-  Exposition.findById(request.params.exposition_id, (error, exposition) => {
-    if (error) {
-      logger.error(error)
-      response.status(500).send(error)
-    } else if (exposition) {
-      response.status(200).json(exposition)
-    } else {
-      response.status(404).send()
-    }
-  })
+    Exposition.findById(request.params.exposition_id, (error, exposition) => {
+      if (error) {
+        logger.error(error)
+        response.status(500).send(error)
+      } else if (exposition) {
+        response.status(200).json(exposition)
+      } else {
+        response.status(404).send()
+      }
+    })
+
+  } catch (error) {
+    logger.error(error)
+
+    return response.status(500).send(error)
+  }
 })
 
-router.route('/exposition/:exposition_id').put((request, response) => {
+router.route('/exposition/:exposition_id').put(async (request, response) => {
+  try {
 
-  User.findOne({}, function (err, user_) {
-    if (user_.session_id !== request.headers.authorization) {
-      return response.status(401).json({ 'message': 'unauthorized' })
-    } else {
-      const body = request.body
-      delete body._id
-      Exposition.findOneAndUpdate({ _id: request.params.exposition_id }, body, (error, exposition) => {
-        if (error && error.name === 'ValidationError') {
-          response.status(400).json({ 'message': error.message })
-        } else if (error) {
-          logger.error(error)
-          response.status(500).send(error)
-        } else if (exposition) {
-          response.status(200).json(exposition)
-        } else {
-          response.status(404).send()
-        }
-      })
-    }
-  })
+    User.findOne({}, function (err, user_) {
+      if (user_.session_id !== request.headers.authorization) {
+        return response.status(401).json({ 'message': 'unauthorized' })
+      } else {
+        const body = request.body
+        delete body._id
+        Exposition.findOneAndUpdate({ _id: request.params.exposition_id }, body, (error, exposition) => {
+          if (error && error.name === 'ValidationError') {
+            response.status(400).json({ 'message': error.message })
+          } else if (error) {
+            logger.error(error)
+            response.status(500).send(error)
+          } else if (exposition) {
+            response.status(200).json(exposition)
+          } else {
+            response.status(404).send()
+          }
+        })
+      }
+    })
+
+  } catch (error) {
+    logger.error(error)
+
+    return response.status(500).send(error)
+  }
 })
 
-router.route('/exposition/:exposition_id').patch((request, response) => {
+router.route('/exposition/:exposition_id').patch(async (request, response) => {
+  try {
 
-  User.findOne({}, function (err, user_) {
-    if (user_.session_id !== request.headers.authorization) {
-      return response.status(401).json({ 'message': 'unauthorized' })
-    } else {
-      const body = request.body
-      delete body._id
-      Exposition.updateOne({ _id: request.params.exposition_id }, body, (error, exposition) => {
-        if (error && error.name === 'ValidationError') {
-          response.status(400).json({ 'message': error.message })
-        } else if (error) {
-          logger.error(error)
-          response.status(500).send(error)
-        } else {
-          response.status(200).json(exposition)
-        }
-      })
-    }
-  })
+    User.findOne({}, function (err, user_) {
+      if (user_.session_id !== request.headers.authorization) {
+        return response.status(401).json({ 'message': 'unauthorized' })
+      } else {
+        const body = request.body
+        delete body._id
+        Exposition.updateOne({ _id: request.params.exposition_id }, body, (error, exposition) => {
+          if (error && error.name === 'ValidationError') {
+            response.status(400).json({ 'message': error.message })
+          } else if (error) {
+            logger.error(error)
+            response.status(500).send(error)
+          } else {
+            response.status(200).json(exposition)
+          }
+        })
+      }
+    })
+
+  } catch (error) {
+    logger.error(error)
+
+    return response.status(500).send(error)
+  }
 })
 
 router.route('/exposition/:exposition_id').delete(async (request, response) => {
-
-  const expositionId = request.params.exposition_id
-
   try {
+
+    const expositionId = request.params.exposition_id
 
     /* Authenticate */
 
@@ -142,51 +176,66 @@ router.route('/exposition/:exposition_id').delete(async (request, response) => {
 
   } catch (error) {
     logger.error(error)
-    response.status(500).send(error)
+
+    return response.status(500).send(error)
   }
 })
 
-router.route('/exposition/:exposition_id/like').post((request, response) => {
+router.route('/exposition/:exposition_id/like').post(async (request, response) => {
+  try {
 
-  const expositionId = request.params.exposition_id
-  const like = request.body
+    const expositionId = request.params.exposition_id
+    const like = request.body
 
-  Exposition.findByIdAndUpdate(expositionId, { $push: { likes: like } }, { new: true }, (error, exposition) => {
-    if (error && error.name === 'ValidationError') {
-      response.status(400).json({ 'message': error.message })
-    } else if (error) {
-      logger.log(error)
-      response.status(500).send(error)
-    } else if (exposition) {
-      response.status(200).json(exposition)
-    } else {
-      response.status(404).send()
-    }
-  })
+    Exposition.findByIdAndUpdate(expositionId, { $push: { likes: like } }, { new: true }, (error, exposition) => {
+      if (error && error.name === 'ValidationError') {
+        response.status(400).json({ 'message': error.message })
+      } else if (error) {
+        logger.log(error)
+        response.status(500).send(error)
+      } else if (exposition) {
+        response.status(200).json(exposition)
+      } else {
+        response.status(404).send()
+      }
+    })
+
+  } catch (error) {
+    logger.error(error)
+
+    return response.status(500).send(error)
+  }
 })
 
-router.route('/exposition/:exposition_id/like/:like_id').delete((request, response) => {
+router.route('/exposition/:exposition_id/like/:like_id').delete(async (request, response) => {
+  try {
 
-  const expositionId = request.params.exposition_id
-  const likeId = request.params.like_id
+    const expositionId = request.params.exposition_id
+    const likeId = request.params.like_id
 
-  Exposition.findByIdAndUpdate(expositionId, { $pull: { likes: { _id: likeId } } }, { new: true }, (error, exposition) => {
-    if (error && error.name === 'ValidationError') {
-      response.status(400).json({ 'message': error.message })
-    } else if (error) {
-      logger.log(error)
-      response.status(500).send(error)
-    } else if (exposition) {
-      response.status(200).send(exposition)
-    } else {
-      response.status(404).send()
-    }
-  })
+    Exposition.findByIdAndUpdate(expositionId, { $pull: { likes: { _id: likeId } } }, { new: true }, (error, exposition) => {
+      if (error && error.name === 'ValidationError') {
+        response.status(400).json({ 'message': error.message })
+      } else if (error) {
+        logger.log(error)
+        response.status(500).send(error)
+      } else if (exposition) {
+        response.status(200).send(exposition)
+      } else {
+        response.status(404).send()
+      }
+    })
+
+  } catch (error) {
+    logger.error(error)
+
+    return response.status(500).send(error)
+  }
 })
 
-router.route('/exposition/:exposition_id/comment_like')
+router.route('/exposition/:exposition_id/comment_like').patch(async (request, response) => {
+  try {
 
-  .patch((request, response) => {
     const expositionId = request.params.exposition_id
     const body = request.body
     Exposition.findByIdAndUpdate(expositionId, {
@@ -203,6 +252,12 @@ router.route('/exposition/:exposition_id/comment_like')
         response.status(404).send()
       }
     })
-  })
+
+  } catch (error) {
+    logger.error(error)
+
+    return response.status(500).send(error)
+  }
+})
 
 module.exports = router

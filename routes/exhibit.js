@@ -8,104 +8,140 @@ const { User } = require('../models/user')
 
 const router = express.Router()
 
-router.route('/exhibit').get((request, response) => {
+router.route('/exhibit').get(async (request, response) => {
+  try {
 
-  Exhibit.find((error, exhibits) => {
-    if (error) {
-      logger.error(error)
-      response.status(500).send(error)
-    } else {
-      response.status(200).json(exhibits)
-    }
-  })
+    Exhibit.find((error, exhibits) => {
+      if (error) {
+        logger.error(error)
+        response.status(500).send(error)
+      } else {
+        response.status(200).json(exhibits)
+      }
+    })
+
+  } catch (error) {
+    logger.error(error)
+
+    return response.status(500).send(error)
+  }
 })
 
-router.route('/exhibit').post((request, response) => {
+router.route('/exhibit').post(async (request, response) => {
+  try {
 
-  User.findOne({}, function (err, user_) {
-    if (user_.session_id !== request.headers.authorization) {
-      return response.status(401).json({ 'message': 'unauthorized' })
-    } else {
-      const body = request.body
-      Exhibit.find({ parent: body.parent, code: body.code, active: true }, (error, exhibits) => {
-        if (error) {
-          logger.error(error)
-          response.status(500).send(error)
-        } else if (exhibits.length > 0 && body.active === true) {
-          response.status(500).send({ 'error_code': '13' })
-        } else {
-          Exhibit.create(request.body, (error, exhibit) => {
-            if (error && error.name === 'ValidationError') {
-              response.status(400).json({ 'message': error.message })
-            } else if (error) {
-              console.log(error)
-              response.status(500).send(error)
-            } else {
-              response.status(201).json(exhibit)
-            }
-          })
-        }
-      })
-    }
-  })
+    User.findOne({}, function (err, user_) {
+      if (user_.session_id !== request.headers.authorization) {
+        return response.status(401).json({ 'message': 'unauthorized' })
+      } else {
+        const body = request.body
+        Exhibit.find({ parent: body.parent, code: body.code, active: true }, (error, exhibits) => {
+          if (error) {
+            logger.error(error)
+            response.status(500).send(error)
+          } else if (exhibits.length > 0 && body.active === true) {
+            response.status(500).send({ 'error_code': '13' })
+          } else {
+            Exhibit.create(request.body, (error, exhibit) => {
+              if (error && error.name === 'ValidationError') {
+                response.status(400).json({ 'message': error.message })
+              } else if (error) {
+                console.log(error)
+                response.status(500).send(error)
+              } else {
+                response.status(201).json(exhibit)
+              }
+            })
+          }
+        })
+      }
+    })
+
+  } catch (error) {
+    logger.error(error)
+
+    return response.status(500).send(error)
+  }
 })
 
-router.route('/exhibit/:exhibit_id').get((request, response) => {
+router.route('/exhibit/:exhibit_id').get(async (request, response) => {
+  try {
 
-  Exhibit.findById(request.params.exhibit_id, (error, exhibit) => {
-    if (error) {
-      logger.error(error)
-      response.status(500).send(error)
-    } else if (exhibit) {
-      response.status(200).json(exhibit)
-    } else {
-      response.status(404).send()
-    }
-  })
+    Exhibit.findById(request.params.exhibit_id, (error, exhibit) => {
+      if (error) {
+        logger.error(error)
+        response.status(500).send(error)
+      } else if (exhibit) {
+        response.status(200).json(exhibit)
+      } else {
+        response.status(404).send()
+      }
+    })
+
+  } catch (error) {
+    logger.error(error)
+
+    return response.status(500).send(error)
+  }
 })
 
-router.route('/exhibit/:exhibit_id').put((request, response) => {
+router.route('/exhibit/:exhibit_id').put(async (request, response) => {
+  try {
 
-  User.findOne({}, function (err, user_) {
-    if (user_.session_id !== request.headers.authorization) {
-      return response.status(401).json({ 'message': 'unauthorized' })
-    } else {
-      const body = request.body
-      delete body._id
-      Exhibit.findOneAndUpdate({ _id: request.params.exhibit_id }, body, (error, exhibit) => {
-        if (error && error.name === 'ValidationError') {
-          response.status(400).json({ 'message': error.message })
-        } else if (error) {
-          logger.error(error)
-          response.status(500).send(error)
-        } else if (exhibit) {
-          response.status(200).json(exhibit)
-        } else {
-          response.status(404).send()
-        }
-      })
-    }
-  })
+    User.findOne({}, function (err, user_) {
+      if (user_.session_id !== request.headers.authorization) {
+        return response.status(401).json({ 'message': 'unauthorized' })
+      } else {
+        const body = request.body
+        delete body._id
+        Exhibit.findOneAndUpdate({ _id: request.params.exhibit_id }, body, (error, exhibit) => {
+          if (error && error.name === 'ValidationError') {
+            response.status(400).json({ 'message': error.message })
+          } else if (error) {
+            logger.error(error)
+            response.status(500).send(error)
+          } else if (exhibit) {
+            response.status(200).json(exhibit)
+          } else {
+            response.status(404).send()
+          }
+        })
+      }
+    })
+
+  } catch (error) {
+    logger.error(error)
+
+    return response.status(500).send(error)
+  }
 })
 
 router.route('/exhibit/:exhibit_id').patch(async (request, response) => {
-
   try {
-    const user_ = await User.findOne({})
+    const exhibit_id = request.params.exhibit_id
+    const authorization = request.headers.authorization
+    const body = request.body
 
-    if (user_.session_id !== request.headers.authorization) {
+    /// Check authorization
+
+    const user = await User.findOne({})
+
+    if (user.session_id !== authorization) {
       return response.status(401).json({ 'message': 'unauthorized' })
     }
 
-    const body = request.body
-    let old_code = 0
-    let old_active = true
+    /// Check if exhibit exists
 
-    const exhibit_ = await Exhibit.findOne({ _id: body._id })
+    const exhibit = await Exhibit.findOne({ _id: body._id })
 
-    old_code = exhibit_.code
-    old_active = exhibit_.active
-    delete body._id
+    if (!exhibit) {
+      return response.status(404)
+    }
+
+    /// Check if updated exhibit's code already in use
+
+    const old_code = exhibit.code
+    const old_active = exhibit.active
 
     const exhibits = await Exhibit.find({ parent: body.parent, code: body.code, active: true })
 
@@ -115,35 +151,32 @@ router.route('/exhibit/:exhibit_id').patch(async (request, response) => {
       // Anderes Exponat existiert mit dem alten code, darf nicht auf active gesetzt werden
       (exhibits.length > 0 && body.code === old_code && body.active === true && old_active === false)) {
 
-      response.status(500).send({ 'error_code': '13' })
-
-    } else {
-      const exhibit__ = await Exhibit.findOneAndUpdate({ _id: request.params.exhibit_id }, body)
-
-      if (exhibit__) {
-        response.status(200).json(exhibit__)
-      } else {
-        response.status(404).send()
-      }
+      return response.status(500).json({ 'error_code': '13' })
     }
+
+    /// Update and return exhibit
+
+    delete body._id
+
+    const updatedExhibit = await Exhibit.findOneAndUpdate({ _id: exhibit_id }, body)
+
+    return response.status(200).json(updatedExhibit)
 
   } catch (error) {
-    console.error(error)
+    logger.error(error)
 
     if (error && error.name === 'ValidationError') {
-      response.status(400).json({ 'message': error.message })
-
-    } else if (error) {
-      response.status(500).send(error)
+      return response.status(400).json({ 'message': error.message })
     }
+
+    return response.status(500).send(error)
   }
 })
 
 router.route('/exhibit/:exhibit_id').delete(async (request, response) => {
-
-  const exhibitId = request.params.exhibit_id
-
   try {
+
+    const exhibitId = request.params.exhibit_id
 
     /* Authenticate */
 
@@ -171,49 +204,64 @@ router.route('/exhibit/:exhibit_id').delete(async (request, response) => {
 
   } catch (error) {
     logger.error(error)
-    response.status(500).send(error)
+
+    return response.status(500).send(error)
   }
 })
 
-router.route('/exhibit/:exhibit_id/like').post((request, response) => {
-  const exhibitId = request.params.exhibit_id
-  const like = request.body
+router.route('/exhibit/:exhibit_id/like').post(async (request, response) => {
+  try {
+    const exhibitId = request.params.exhibit_id
+    const like = request.body
 
-  Exhibit.findByIdAndUpdate(exhibitId, { $push: { likes: like } }, { new: true }, (error, exhibit) => {
-    if (error && error.name === 'ValidationError') {
-      response.status(400).json({ 'message': error.message })
-    } else if (error) {
-      logger.log(error)
-      response.status(500).send(error)
-    } else if (exhibit) {
-      response.status(200).json(exhibit)
-    } else {
-      response.status(404).send()
-    }
-  })
+    Exhibit.findByIdAndUpdate(exhibitId, { $push: { likes: like } }, { new: true }, (error, exhibit) => {
+      if (error && error.name === 'ValidationError') {
+        response.status(400).json({ 'message': error.message })
+      } else if (error) {
+        logger.log(error)
+        response.status(500).send(error)
+      } else if (exhibit) {
+        response.status(200).json(exhibit)
+      } else {
+        response.status(404).send()
+      }
+    })
+
+  } catch (error) {
+    logger.error(error)
+
+    return response.status(500).send(error)
+  }
 })
 
-router.route('/exhibit/:exhibit_id/like/:like_id').delete((request, response) => {
-  const exhibitId = request.params.exhibit_id
-  const likeId = request.params.like_id
+router.route('/exhibit/:exhibit_id/like/:like_id').delete(async (request, response) => {
+  try {
+    const exhibitId = request.params.exhibit_id
+    const likeId = request.params.like_id
 
-  Exhibit.findByIdAndUpdate(exhibitId, { $pull: { likes: { _id: likeId } } }, { new: true }, (error, exhibit) => {
-    if (error && error.name === 'ValidationError') {
-      response.status(400).json({ 'message': error.message })
-    } else if (error) {
-      logger.log(error)
-      response.status(500).send(error)
-    } else if (exhibit) {
-      response.status(200).send(exhibit)
-    } else {
-      response.status(404).send()
-    }
-  })
+    Exhibit.findByIdAndUpdate(exhibitId, { $pull: { likes: { _id: likeId } } }, { new: true }, (error, exhibit) => {
+      if (error && error.name === 'ValidationError') {
+        response.status(400).json({ 'message': error.message })
+      } else if (error) {
+        logger.log(error)
+        response.status(500).send(error)
+      } else if (exhibit) {
+        response.status(200).send(exhibit)
+      } else {
+        response.status(404).send()
+      }
+    })
+
+  } catch (error) {
+    logger.error(error)
+
+    return response.status(500).send(error)
+  }
 })
 
-router.route('/exhibit/:exhibit_id/comment_like')
+router.route('/exhibit/:exhibit_id/comment_like').patch(async (request, response) => {
+  try {
 
-  .patch((request, response) => {
     const exhibitId = request.params.exhibit_id
     const body = request.body
     Exhibit.findByIdAndUpdate(exhibitId, {
@@ -230,6 +278,12 @@ router.route('/exhibit/:exhibit_id/comment_like')
         response.status(404).send()
       }
     })
-  })
+
+  } catch (error) {
+    logger.error(error)
+
+    return response.status(500).send(error)
+  }
+})
 
 module.exports = router

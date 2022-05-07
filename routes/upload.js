@@ -9,35 +9,50 @@ const router = express.Router()
 router.use(fileUpload({ createParentPath: true }))
 
 router.post('/:_id', (request, response) => {
+  try {
 
-  if (Object.keys(request.files).length === 0) {
-    return response.status(400).send('No files were uploaded.')
-  }
-
-  const _id = request.params._id
-  const file = request.files.file
-
-  file.mv(`uploads/${_id}/${file.name}`, error => {
-    if (error) {
-      logger.error(error)
-      return response.status(500).send(error)
+    if (Object.keys(request.files).length === 0) {
+      return response.status(400).send('No files were uploaded.')
     }
 
-    response.status(201).send()
-  })
+    const _id = request.params._id
+    const file = request.files.file
+
+    file.mv(`uploads/${_id}/${file.name}`, error => {
+      if (error) {
+        logger.error(error)
+        return response.status(500).send(error)
+      }
+
+      response.status(201).send()
+    })
+
+  } catch (error) {
+    logger.error(error)
+
+    return response.status(500).send(error)
+  }
 })
 
 router.delete('/:_id/:file_name', (request, response) => {
-  const _id = request.params._id
-  const file_name = request.params.file_name
+  try {
 
-  fs.unlink(`uploads/${_id}/${file_name}`, (error) => {
-    if (error) {
-      return response.status(500).send(error)
-    }
+    const _id = request.params._id
+    const file_name = request.params.file_name
 
-    response.status(200).send()
-  })
+    fs.unlink(`uploads/${_id}/${file_name}`, (error) => {
+      if (error) {
+        return response.status(500).send(error)
+      }
+
+      response.status(200).send()
+    })
+
+  } catch (error) {
+    logger.error(error)
+
+    return response.status(500).send(error)
+  }
 })
 
 module.exports = router
