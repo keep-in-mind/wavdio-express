@@ -9,12 +9,12 @@ router.use(fileUpload({ createParentPath: true }))
 
 router.route('/logs').post(async (request, response) => {
   try {
+    const body = request.body
 
-    const message = request.body
-    if (message.level < 4) {
-      logger.info(message)
+    if (body.level < 4) {
+      logger.info(body)
     } else {
-      logger.error(message)
+      logger.error(body)
     }
 
     response.status(201).send()

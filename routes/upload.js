@@ -10,15 +10,16 @@ router.use(fileUpload({ createParentPath: true }))
 
 router.post('/:_id', (request, response) => {
   try {
+    const id = request.params._id
+    const files = request.files
 
     if (Object.keys(request.files).length === 0) {
       return response.status(400).send('No files were uploaded.')
     }
 
-    const _id = request.params._id
-    const file = request.files.file
+    const file = files.file
 
-    file.mv(`uploads/${_id}/${file.name}`, error => {
+    file.mv(`uploads/${id}/${file.name}`, error => {
       if (error) {
         logger.error(error)
         return response.status(500).send(error)
@@ -36,11 +37,10 @@ router.post('/:_id', (request, response) => {
 
 router.delete('/:_id/:file_name', (request, response) => {
   try {
+    const id = request.params._id
+    const fileName = request.params.file_name
 
-    const _id = request.params._id
-    const file_name = request.params.file_name
-
-    fs.unlink(`uploads/${_id}/${file_name}`, (error) => {
+    fs.unlink(`uploads/${id}/${fileName}`, (error) => {
       if (error) {
         return response.status(500).send(error)
       }

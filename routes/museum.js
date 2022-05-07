@@ -28,12 +28,14 @@ router.route('/museum').get(async (request, response) => {
 
 router.route('/museum').post(async (request, response) => {
   try {
+    const authorization = request.headers.authorization
+    const body = request.body
 
     User.findOne({}, function (err, user_) {
-      if (user_.session_id !== request.headers.authorization) {
+      if (user_.session_id !== authorization) {
         return response.status(401).json({ 'message': 'unauthorized' })
       } else {
-        Museum.create(request.body, (error, museum) => {
+        Museum.create(body, (error, museum) => {
           if (error && error.name === 'ValidationError') {
             response.status(400).json({ 'message': error.message })
           } else if (error) {
@@ -55,8 +57,9 @@ router.route('/museum').post(async (request, response) => {
 
 router.route('/museum/:museum_id').get(async (request, response) => {
   try {
+    const museumId = request.params.museum_id
 
-    Museum.findById(request.params.museum_id, (error, museum) => {
+    Museum.findById(museumId, (error, museum) => {
       if (error) {
         logger.error(error)
         response.status(500).send(error)
@@ -76,14 +79,16 @@ router.route('/museum/:museum_id').get(async (request, response) => {
 
 router.route('/museum/:museum_id').put(async (request, response) => {
   try {
+    const museumId = request.params.museum_id
+    const authorization = request.headers.authorization
+    const body = request.body
 
     User.findOne({}, function (err, user_) {
-      if (user_.session_id !== request.headers.authorization) {
+      if (user_.session_id !== authorization) {
         return response.status(401).json({ 'message': 'unauthorized' })
       } else {
-        const body = request.body
         delete body._id
-        Museum.findOneAndUpdate({ _id: request.params.museum_id }, body, (error, museum) => {
+        Museum.findOneAndUpdate({ _id: museumId }, body, (error, museum) => {
           if (error && error.name === 'ValidationError') {
             response.status(400).json({ 'message': error.message })
           } else if (error) {
@@ -107,15 +112,17 @@ router.route('/museum/:museum_id').put(async (request, response) => {
 
 router.route('/museum/:museum_id').patch(async (request, response) => {
   try {
+    const museumId = request.params.museum_id
+    const authorization = request.headers.authorization
+    const body = request.body
 
     User.findOne({}, function (err, user_) {
-      if (user_.session_id !== request.headers.authorization) {
+      if (user_.session_id !== authorization) {
         return response.status(401).json({ 'message': 'unauthorized' })
 
       } else {
-        const body = request.body
         delete body._id
-        Museum.updateOne({ _id: request.params.museum_id }, body, (error, museum) => {
+        Museum.updateOne({ _id: museumId }, body, (error, museum) => {
           if (error && error.name === 'ValidationError') {
             response.status(400).json({ 'message': error.message })
           } else if (error) {
@@ -137,12 +144,14 @@ router.route('/museum/:museum_id').patch(async (request, response) => {
 
 router.route('/museum/:museum_id').delete(async (request, response) => {
   try {
+    const museumId = request.params.museum_id
+    const authorization = request.headers.authorization
 
     User.findOne({}, function (err, user_) {
-      if (user_.session_id !== request.headers.authorization) {
+      if (user_.session_id !== authorization) {
         return response.status(401).json({ 'message': 'unauthorized' })
       } else {
-        Museum.findOneAndRemove({ _id: request.params.museum_id }, (error, museum) => {
+        Museum.findOneAndRemove({ _id: museumId }, (error, museum) => {
           if (error) {
             logger.log(error)
             response.status(500).send(error)

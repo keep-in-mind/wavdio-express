@@ -28,12 +28,14 @@ router.route('/infopage').get(async (request, response) => {
 
 router.route('/infopage').post(async (request, response) => {
   try {
+    const authorization = request.headers.authorization
+    const body = request.body
 
     User.findOne({}, function (err, user_) {
-      if (user_.session_id !== request.headers.authorization) {
+      if (user_.session_id !== authorization) {
         return response.status(401).json({ 'message': 'unauthorized' })
       } else {
-        Infopage.create(request.body, (error, infopage) => {
+        Infopage.create(body, (error, infopage) => {
           if (error && error.name === 'ValidationError') {
             response.status(400).json({ 'message': error.message })
           } else if (error) {
@@ -55,8 +57,9 @@ router.route('/infopage').post(async (request, response) => {
 
 router.route('/infopage/:infopage_id').get(async (request, response) => {
   try {
+    const infopageId = request.params.expositionId
 
-    Infopage.findById(request.params.infopage_id, (error, infopage) => {
+    Infopage.findById(infopageId, (error, infopage) => {
       if (error) {
         logger.error(error)
         response.status(500).send(error)
@@ -76,14 +79,16 @@ router.route('/infopage/:infopage_id').get(async (request, response) => {
 
 router.route('/infopage/:infopage_id').put(async (request, response) => {
   try {
+    const infopageId = request.params.expositionId
+    const authorization = request.headers.authorization
+    const body = request.body
 
     User.findOne({}, function (err, user_) {
-      if (user_.session_id !== request.headers.authorization) {
+      if (user_.session_id !== authorization) {
         return response.status(401).json({ 'message': 'unauthorized' })
       } else {
-        const body = request.body
         delete body._id
-        Infopage.findOneAndUpdate({ _id: request.params.infopage_id }, body, (error, infopage) => {
+        Infopage.findOneAndUpdate({ _id: infopageId }, body, (error, infopage) => {
           if (error && error.name === 'ValidationError') {
             response.status(400).json({ 'message': error.message })
           } else if (error) {
@@ -107,15 +112,17 @@ router.route('/infopage/:infopage_id').put(async (request, response) => {
 
 router.route('/infopage/:infopage_id').patch(async (request, response) => {
   try {
+    const infopageId = request.params.expositionId
+    const authorization = request.headers.authorization
+    const body = request.body
 
     User.findOne({}, function (err, user_) {
-      if (user_.session_id !== request.headers.authorization) {
+      if (user_.session_id !== authorization) {
         return response.status(401).json({ 'message': 'unauthorized' })
 
       } else {
-        const body = request.body
         delete body._id
-        Infopage.updateOne({ _id: request.params.infopage_id }, body, (error, infopage) => {
+        Infopage.updateOne({ _id: infopageId }, body, (error, infopage) => {
           if (error && error.name === 'ValidationError') {
             response.status(400).json({ 'message': error.message })
           } else if (error) {
@@ -137,12 +144,14 @@ router.route('/infopage/:infopage_id').patch(async (request, response) => {
 
 router.route('/infopage/:infopage_id').delete(async (request, response) => {
   try {
+    const infopageId = request.params.expositionId
+    const authorization = request.headers.authorization
 
     User.findOne({}, function (err, user_) {
-      if (user_.session_id !== request.headers.authorization) {
+      if (user_.session_id !== authorization) {
         return response.status(401).json({ 'message': 'unauthorized' })
       } else {
-        Infopage.findOneAndRemove({ _id: request.params.infopage_id }, (error, infopage) => {
+        Infopage.findOneAndRemove({ _id: infopageId }, (error, infopage) => {
           if (error) {
             logger.error(error)
             response.status(500).send(error)

@@ -8,10 +8,11 @@ const router = express.Router()
 
 router.route('/login').post(function (request, response) {
     try {
+        const body = request.body
 
         User.findOne({}, function (err, _user) {
             if (err) return response.status(404).json(err)
-            if (!_user.validPassword(request.body.username, request.body.password)) {
+            if (!_user.validPassword(body.username, body.password)) {
                 response.status(401).json({ 'message': 'Wrong crendentails' })
             } else {
                 _user.setSession()
@@ -32,12 +33,13 @@ router.route('/login').post(function (request, response) {
 
 router.route('/register').post(function (request, response) {
     try {
+        const body = request.body
 
         const user = new User()
 
-        user.username = request.body.username
+        user.username = body.username
 
-        user.setPassword(request.body.password)
+        user.setPassword(body.password)
 
         user.setSession()
 
@@ -57,11 +59,13 @@ router.route('/register').post(function (request, response) {
 
 router.route('/update').post(function (request, response) {
     try {
+        const body = request.body
+
         User.findOne({}, function (err, user) {
             if (err) return response.status(404).json(err)
-            if (user.validPassword(request.body.username, request.body.password)) {
-                user.username = request.body.newUsername
-                user.setPassword(request.body.newPassword)
+            if (user.validPassword(body.username, body.password)) {
+                user.username = body.newUsername
+                user.setPassword(body.newPassword)
                 user.setSession()
             } else {
                 response.status(404).json({ 'message': 'Wrong Data' })

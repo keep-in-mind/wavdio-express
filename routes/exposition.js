@@ -30,12 +30,14 @@ router.route('/exposition').get(async (request, response) => {
 
 router.route('/exposition').post(async (request, response) => {
   try {
+    const authorization = request.headers.authorization
+    const body = request.body
 
     User.findOne({}, function (err, user_) {
-      if (user_.session_id !== request.headers.authorization) {
+      if (user_.session_id !== authorization) {
         return response.status(401).json({ 'message': 'unauthorized' })
       } else {
-        Exposition.create(request.body, (error, exposition) => {
+        Exposition.create(body, (error, exposition) => {
           if (error && error.name === 'ValidationError') {
             response.status(400).json({ 'message': error.message })
           } else if (error) {
@@ -57,8 +59,9 @@ router.route('/exposition').post(async (request, response) => {
 
 router.route('/exposition/:exposition_id').get(async (request, response) => {
   try {
+    const expositionId = request.params.expositionId
 
-    Exposition.findById(request.params.exposition_id, (error, exposition) => {
+    Exposition.findById(expositionId, (error, exposition) => {
       if (error) {
         logger.error(error)
         response.status(500).send(error)
@@ -78,14 +81,16 @@ router.route('/exposition/:exposition_id').get(async (request, response) => {
 
 router.route('/exposition/:exposition_id').put(async (request, response) => {
   try {
+    const expositionId = request.params.expositionId
+    const authorization = request.headers.authorization
+    const body = request.body
 
     User.findOne({}, function (err, user_) {
-      if (user_.session_id !== request.headers.authorization) {
+      if (user_.session_id !== authorization) {
         return response.status(401).json({ 'message': 'unauthorized' })
       } else {
-        const body = request.body
         delete body._id
-        Exposition.findOneAndUpdate({ _id: request.params.exposition_id }, body, (error, exposition) => {
+        Exposition.findOneAndUpdate({ _id: expositionId }, body, (error, exposition) => {
           if (error && error.name === 'ValidationError') {
             response.status(400).json({ 'message': error.message })
           } else if (error) {
@@ -109,14 +114,16 @@ router.route('/exposition/:exposition_id').put(async (request, response) => {
 
 router.route('/exposition/:exposition_id').patch(async (request, response) => {
   try {
+    const expositionId = request.params.expositionId
+    const authorization = request.headers.authorization
+    const body = request.body
 
     User.findOne({}, function (err, user_) {
-      if (user_.session_id !== request.headers.authorization) {
+      if (user_.session_id !== authorization) {
         return response.status(401).json({ 'message': 'unauthorized' })
       } else {
-        const body = request.body
         delete body._id
-        Exposition.updateOne({ _id: request.params.exposition_id }, body, (error, exposition) => {
+        Exposition.updateOne({ _id: expositionId }, body, (error, exposition) => {
           if (error && error.name === 'ValidationError') {
             response.status(400).json({ 'message': error.message })
           } else if (error) {
@@ -138,14 +145,14 @@ router.route('/exposition/:exposition_id').patch(async (request, response) => {
 
 router.route('/exposition/:exposition_id').delete(async (request, response) => {
   try {
-
-    const expositionId = request.params.exposition_id
+    const expositionId = request.params.expositionId
+    const authorization = request.headers.authorization
 
     /* Authenticate */
 
     const u = await User.findOne({})
 
-    if (u.session_id !== request.headers.authorization) {
+    if (u.session_id !== authorization) {
       response.status(401).json({ 'message': 'unauthorized' })
       return
     }
@@ -183,11 +190,10 @@ router.route('/exposition/:exposition_id').delete(async (request, response) => {
 
 router.route('/exposition/:exposition_id/like').post(async (request, response) => {
   try {
+    const expositionId = request.params.expositionId
+    const body = request.body
 
-    const expositionId = request.params.exposition_id
-    const like = request.body
-
-    Exposition.findByIdAndUpdate(expositionId, { $push: { likes: like } }, { new: true }, (error, exposition) => {
+    Exposition.findByIdAndUpdate(expositionId, { $push: { likes: body } }, { new: true }, (error, exposition) => {
       if (error && error.name === 'ValidationError') {
         response.status(400).json({ 'message': error.message })
       } else if (error) {
@@ -209,7 +215,6 @@ router.route('/exposition/:exposition_id/like').post(async (request, response) =
 
 router.route('/exposition/:exposition_id/like/:like_id').delete(async (request, response) => {
   try {
-
     const expositionId = request.params.exposition_id
     const likeId = request.params.like_id
 
@@ -235,9 +240,9 @@ router.route('/exposition/:exposition_id/like/:like_id').delete(async (request, 
 
 router.route('/exposition/:exposition_id/comment_like').patch(async (request, response) => {
   try {
-
-    const expositionId = request.params.exposition_id
+    const expositionId = request.params.expositionId
     const body = request.body
+
     Exposition.findByIdAndUpdate(expositionId, {
       comments: body.comments, likes: body.likes
     }, (error, exposition) => {
