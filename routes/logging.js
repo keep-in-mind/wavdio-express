@@ -17,7 +17,7 @@ router.route('/logs').post(async (request, response) => {
       logger.error(logPost)
     }
 
-    response.status(201).send()
+    return response.status(201).send()
 
   } catch (error) {
     logger.error(error)
@@ -26,4 +26,4 @@ router.route('/logs').post(async (request, response) => {
   }
 })
 
-module.exports = router
+module.exports = { router }

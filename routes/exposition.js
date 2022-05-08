@@ -255,4 +255,4 @@ router.route('/exposition/:expositionId/comment_like').patch(async (request, res
   }
 })
 
-module.exports = router
+module.exports = { router }

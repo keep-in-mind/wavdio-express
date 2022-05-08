@@ -1,7 +1,8 @@
-const {createLogger, format, transports} = require('winston')
-const {combine, timestamp, printf} = format
+const { createLogger, format, transports } = require('winston')
 
-const myFormat = printf(({level, message, timestamp}) => {
+const { combine, timestamp, printf } = format
+
+const myFormat = printf(({ level, message, timestamp }) => {
   return `${timestamp}  -  [${level}]: ${message}`
 })
 

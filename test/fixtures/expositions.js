@@ -1,6 +1,6 @@
-const {deepFreeze} = require('../util')
+const { deepFreeze } = require('../util')
 
-module.exports.exposition110 = deepFreeze({
+const exposition110 = deepFreeze({
   museum: '',
 
   active: true,
@@ -13,21 +13,21 @@ module.exports.exposition110 = deepFreeze({
   },
 
   views: [
-    {timestamp: '2000-01-01T10:00:00.000Z'},
-    {timestamp: '2000-01-01T11:00:00.000Z'},
-    {timestamp: '2000-01-01T12:00:00.000Z'}
+    { timestamp: '2000-01-01T10:00:00.000Z' },
+    { timestamp: '2000-01-01T11:00:00.000Z' },
+    { timestamp: '2000-01-01T12:00:00.000Z' }
   ],
 
   likes: [
-    {timestamp: '2000-01-01T10:00:00.000Z'},
-    {timestamp: '2000-01-01T11:00:00.000Z'},
-    {timestamp: '2000-01-01T12:00:00.000Z'}
+    { timestamp: '2000-01-01T10:00:00.000Z' },
+    { timestamp: '2000-01-01T11:00:00.000Z' },
+    { timestamp: '2000-01-01T12:00:00.000Z' }
   ],
 
   comments: [
-    {text: 'Exposition 110 Comment 1', timestamp: '2000-01-01T10:00:00.000Z'},
-    {text: 'Exposition 110 Comment 2', timestamp: '2000-01-01T11:00:00.000Z'},
-    {text: 'Exposition 110 Comment 3', timestamp: '2000-01-01T12:00:00.000Z'}
+    { text: 'Exposition 110 Comment 1', timestamp: '2000-01-01T10:00:00.000Z' },
+    { text: 'Exposition 110 Comment 2', timestamp: '2000-01-01T11:00:00.000Z' },
+    { text: 'Exposition 110 Comment 3', timestamp: '2000-01-01T12:00:00.000Z' }
   ],
 
   contents: [
@@ -46,7 +46,7 @@ module.exports.exposition110 = deepFreeze({
   ]
 })
 
-module.exports.exposition120 = deepFreeze({
+const exposition120 = deepFreeze({
   museum: '',
 
   active: true,
@@ -59,21 +59,21 @@ module.exports.exposition120 = deepFreeze({
   },
 
   views: [
-    {timestamp: '2000-01-01T10:00:00.000Z'},
-    {timestamp: '2000-01-01T11:00:00.000Z'},
-    {timestamp: '2000-01-01T12:00:00.000Z'}
+    { timestamp: '2000-01-01T10:00:00.000Z' },
+    { timestamp: '2000-01-01T11:00:00.000Z' },
+    { timestamp: '2000-01-01T12:00:00.000Z' }
   ],
 
   likes: [
-    {timestamp: '2000-01-01T10:00:00.000Z'},
-    {timestamp: '2000-01-01T11:00:00.000Z'},
-    {timestamp: '2000-01-01T12:00:00.000Z'}
+    { timestamp: '2000-01-01T10:00:00.000Z' },
+    { timestamp: '2000-01-01T11:00:00.000Z' },
+    { timestamp: '2000-01-01T12:00:00.000Z' }
   ],
 
   comments: [
-    {text: 'Exposition 120 Comment 1', timestamp: '2000-01-01T10:00:00.000Z'},
-    {text: 'Exposition 120 Comment 2', timestamp: '2000-01-01T11:00:00.000Z'},
-    {text: 'Exposition 120 Comment 3', timestamp: '2000-01-01T12:00:00.000Z'}
+    { text: 'Exposition 120 Comment 1', timestamp: '2000-01-01T10:00:00.000Z' },
+    { text: 'Exposition 120 Comment 2', timestamp: '2000-01-01T11:00:00.000Z' },
+    { text: 'Exposition 120 Comment 3', timestamp: '2000-01-01T12:00:00.000Z' }
   ],
 
   contents: [
@@ -91,3 +91,5 @@ module.exports.exposition120 = deepFreeze({
     }
   ]
 })
+
+module.exports = { exposition110, exposition120 }

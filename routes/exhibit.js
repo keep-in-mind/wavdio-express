@@ -284,4 +284,4 @@ router.route('/exhibit/:exhibitId/comment_like').patch(async (request, response)
   }
 })
 
-module.exports = router
+module.exports = { router }

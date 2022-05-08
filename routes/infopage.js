@@ -163,4 +163,4 @@ router.route('/infopage/:infopageId').delete(async (request, response) => {
   }
 })
 
-module.exports = router
+module.exports = { router }

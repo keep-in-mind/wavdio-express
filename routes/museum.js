@@ -163,4 +163,4 @@ router.route('/museum/:museumId').delete(async (request, response) => {
   }
 })
 
-module.exports = router
+module.exports = { router }

@@ -13,9 +13,13 @@ router.post('/:_id', (request, response) => {
     const id = request.params._id
     const files = request.files
 
+    /// Check if request contains files
+
     if (Object.keys(request.files).length === 0) {
       return response.status(400).send('No files were uploaded.')
     }
+
+    /// Save file
 
     const file = files.file
 
@@ -40,6 +44,8 @@ router.delete('/:_id/:file_name', (request, response) => {
     const id = request.params._id
     const fileName = request.params.file_name
 
+    /// Delete file
+
     fs.unlink(`uploads/${id}/${fileName}`, (error) => {
       if (error) {
         return response.status(500).send(error)
@@ -55,4 +61,4 @@ router.delete('/:_id/:file_name', (request, response) => {
   }
 })
 
-module.exports = router
+module.exports = { router }

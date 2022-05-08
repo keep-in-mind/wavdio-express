@@ -1,12 +1,12 @@
 const chai = require('chai')
 const chaiHttp = require('chai-http')
 const chaiShallowDeepEqual = require('chai-shallow-deep-equal')
-
-const {Museum} = require('../models/museum')
 const mongoose = require('mongoose')
+
 const server = require('../server')
-const {authorization} = require('./fixtures/authorization')
-const {museum100, museum200} = require('./fixtures/museums')
+const { Museum } = require('../models/museum')
+const { authorization } = require('./fixtures/authorization')
+const { museum100, museum200 } = require('./fixtures/museums')
 
 chai.use(chaiHttp)
 chai.use(chaiShallowDeepEqual)
@@ -80,7 +80,7 @@ describe('Museums', () => {
 
       const postResponse = await chai.request(server)
         .post('/api/v2/museum')
-        .set({'Authorization': authorization})
+        .set({ 'Authorization': authorization })
         .send(museum100)
 
       // THEN   the server should return an HTTP 201 Created
@@ -108,7 +108,7 @@ describe('Museums', () => {
       // AND    the JSON response shouldn't contain sensitive information
 
       expect(postResponse).to.have.status(401)
-      expect(postResponse.body).to.deep.equal({message: 'unauthorized'})
+      expect(postResponse.body).to.deep.equal({ message: 'unauthorized' })
 
       // THEN   the database shouldn't contain the museum
 
@@ -125,7 +125,7 @@ describe('Museums', () => {
 
       const postResponse = await chai.request(server)
         .post('/api/v2/museum')
-        .set({'Authorization': authorization})
+        .set({ 'Authorization': authorization })
         .send(museum100_)
 
       // THEN   the server should return an HTTP 400 Bad Request
@@ -143,12 +143,12 @@ describe('Museums', () => {
 
       // WHEN   posting a museum with a missing non-required property
 
-      const museum100_ = {...museum100}
+      const museum100_ = { ...museum100 }
       delete museum100_.contents[0].imprint
 
       const postResponse = await chai.request(server)
         .post('/api/v2/museum')
-        .set({'Authorization': authorization})
+        .set({ 'Authorization': authorization })
         .send(museum100_)
 
       // THEN   the server should return an HTTP 201 Created
@@ -214,7 +214,7 @@ describe('Museums', () => {
 
       const putResponse = await chai.request(server)
         .put(`/api/v2/museum/${museum100Id}`)
-        .set({'Authorization': authorization})
+        .set({ 'Authorization': authorization })
         .send(museum200)
 
       // THEN   the server should return an HTTP 200
@@ -238,7 +238,7 @@ describe('Museums', () => {
 
       const putResponse = await chai.request(server)
         .put(`/api/v2/museum/${nonExistingId}`)
-        .set({'Authorization': authorization})
+        .set({ 'Authorization': authorization })
         .send(museum200)
 
       // THEN   the server should return an HTTP 404 Not Found
@@ -265,7 +265,7 @@ describe('Museums', () => {
 
       const deleteResponse = await chai.request(server)
         .delete(`/api/v2/museum/${museum100Id}`)
-        .set({'Authorization': authorization})
+        .set({ 'Authorization': authorization })
 
       // THEN   the server should return an HTTP 200
       // AND    the JSON response should contain the deleted museum
@@ -287,7 +287,7 @@ describe('Museums', () => {
 
       const deleteResponse = await chai.request(server)
         .delete(`/api/v2/museum/${nonExistingId}`)
-        .set({'Authorization': authorization})
+        .set({ 'Authorization': authorization })
 
       // THEN   the server should return an HTTP 404 Not Found
 

@@ -163,4 +163,4 @@ router.route('/setting/:settingId').delete(async (request, response) => {
   }
 })
 
-module.exports = router
+module.exports = { router }

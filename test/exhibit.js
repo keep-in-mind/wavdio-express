@@ -1,16 +1,16 @@
 const chai = require('chai')
 const chaiHttp = require('chai-http')
 const chaiShallowDeepEqual = require('chai-shallow-deep-equal')
-
-const {Exhibit} = require('../models/exhibit')
-const {Exposition} = require('../models/exposition')
-const {Museum} = require('../models/museum')
 const mongoose = require('mongoose')
+
 const server = require('../server')
-const {authorization} = require('./fixtures/authorization')
-const {exhibit111, exhibit112} = require('./fixtures/exhibits')
-const {exposition110} = require('./fixtures/expositions')
-const {museum100} = require('./fixtures/museums')
+const { Exhibit } = require('../models/exhibit')
+const { Exposition } = require('../models/exposition')
+const { Museum } = require('../models/museum')
+const { authorization } = require('./fixtures/authorization')
+const { exhibit111, exhibit112 } = require('./fixtures/exhibits')
+const { exposition110 } = require('./fixtures/expositions')
+const { museum100 } = require('./fixtures/museums')
 
 chai.use(chaiHttp)
 chai.use(chaiShallowDeepEqual)
@@ -28,7 +28,7 @@ describe('Exhibits', () => {
     const mongoMuseum100 = await Museum.create(museum100)
     museum100Id = mongoMuseum100._id.toString()
 
-    const newExposition110 = {...exposition110, museum: museum100Id}
+    const newExposition110 = { ...exposition110, museum: museum100Id }
     const mongoExposition110 = await Exposition.create(newExposition110)
     exposition110Id = mongoExposition110._id.toString()
   })
@@ -66,10 +66,10 @@ describe('Exhibits', () => {
 
       // GIVEN  a database with exhibits
 
-      const exhibit111_ = {...exhibit111, parent: exposition110Id}
+      const exhibit111_ = { ...exhibit111, parent: exposition110Id }
       await Exhibit.create(exhibit111_)
 
-      const exhibit112_ = {...exhibit112, parent: exposition110Id}
+      const exhibit112_ = { ...exhibit112, parent: exposition110Id }
       await Exhibit.create(exhibit112_)
 
       // WHEN   getting all exhibits
@@ -95,11 +95,11 @@ describe('Exhibits', () => {
 
       // WHEN   posting an exhibit for the exposition
 
-      const exhibit111_ = {...exhibit111, parent: exposition110Id}
+      const exhibit111_ = { ...exhibit111, parent: exposition110Id }
 
       const postResponse = await chai.request(server)
         .post('/api/v2/exhibit')
-        .set({'Authorization': authorization})
+        .set({ 'Authorization': authorization })
         .send(exhibit111_)
 
       // THEN   the server should return an HTTP 201 Created
@@ -120,7 +120,7 @@ describe('Exhibits', () => {
 
       // WHEN   posting an exhibit without authorization
 
-      const exhibit111_ = {...exhibit111, parent: exposition110Id}
+      const exhibit111_ = { ...exhibit111, parent: exposition110Id }
 
       const postResponse = await chai.request(server)
         .post('/api/v2/exhibit')
@@ -130,7 +130,7 @@ describe('Exhibits', () => {
       // AND    the JSON response shouldn't contain sensitive information
 
       expect(postResponse).to.have.status(401)
-      expect(postResponse.body).to.deep.equal({message: 'unauthorized'})
+      expect(postResponse.body).to.deep.equal({ message: 'unauthorized' })
 
       // THEN   the database shouldn't contain the exhibit
 
@@ -142,12 +142,12 @@ describe('Exhibits', () => {
 
       // WHEN   posting an exhibit with a missing required property
 
-      const exhibit111_ = {...exhibit111, parent: exposition110Id}
+      const exhibit111_ = { ...exhibit111, parent: exposition110Id }
       delete exhibit111_.code
 
       const postResponse = await chai.request(server)
         .post('/api/v2/exhibit')
-        .set({'Authorization': authorization})
+        .set({ 'Authorization': authorization })
         .send(exhibit111_)
 
       // THEN   the server should return an HTTP 400 Bad Request
@@ -165,12 +165,12 @@ describe('Exhibits', () => {
 
       // WHEN   posting an exhibit with a missing non-required property
 
-      const exhibit111_ = {...exhibit111, parent: exposition110Id}
+      const exhibit111_ = { ...exhibit111, parent: exposition110Id }
       delete exhibit111_.note
 
       const postResponse = await chai.request(server)
         .post('/api/v2/exhibit')
-        .set({'Authorization': authorization})
+        .set({ 'Authorization': authorization })
         .send(exhibit111_)
 
       // THEN   the server should return an HTTP 201 Created
@@ -194,7 +194,7 @@ describe('Exhibits', () => {
 
       // GIVEN  a database with an exhibit
 
-      const exhibit111_ = {...exhibit111, parent: exposition110Id}
+      const exhibit111_ = { ...exhibit111, parent: exposition110Id }
 
       const exhibit111Doc = await Exhibit.create(exhibit111_)
       const exhibit111Id = exhibit111Doc._id
@@ -232,18 +232,18 @@ describe('Exhibits', () => {
 
       // GIVEN  a database with an exhibit
 
-      const exhibit111_ = {...exhibit111, parent: exposition110Id}
+      const exhibit111_ = { ...exhibit111, parent: exposition110Id }
 
       const exhibit111Doc = await Exhibit.create(exhibit111_)
       const exhibit111Id = exhibit111Doc._id
 
       // WHEN   replacing the existing exhibit
 
-      const exhibit112_ = {...exhibit112, parent: exposition110Id}
+      const exhibit112_ = { ...exhibit112, parent: exposition110Id }
 
       const putResponse = await chai.request(server)
         .put(`/api/v2/exhibit/${exhibit111Id}`)
-        .set({'Authorization': authorization})
+        .set({ 'Authorization': authorization })
         .send(exhibit112_)
 
       // THEN   the server should return an HTTP 200
@@ -265,11 +265,11 @@ describe('Exhibits', () => {
       // WHEN   trying to replace a non-existing exhibit
 
       const nonExistingId = '012345678901234567890123'
-      const exhibit111_ = {...exhibit111, parent: exposition110Id}
+      const exhibit111_ = { ...exhibit111, parent: exposition110Id }
 
       const putResponse = await chai.request(server)
         .put(`/api/v2/exhibit/${nonExistingId}`)
-        .set({'Authorization': authorization})
+        .set({ 'Authorization': authorization })
         .send(exhibit111_)
 
       // THEN   the server should return an HTTP 404 Not Found
@@ -289,7 +289,7 @@ describe('Exhibits', () => {
 
       // GIVEN  a database with an exhibit
 
-      const exhibit111_ = {...exhibit111, parent: exposition110Id}
+      const exhibit111_ = { ...exhibit111, parent: exposition110Id }
 
       const exhibit111Doc = await Exhibit.create(exhibit111_)
       const exhibit111Id = exhibit111Doc._id
@@ -298,7 +298,7 @@ describe('Exhibits', () => {
 
       const deleteResponse = await chai.request(server)
         .delete(`/api/v2/exhibit/${exhibit111Id}`)
-        .set({'Authorization': authorization})
+        .set({ 'Authorization': authorization })
 
       // THEN   the server should return an HTTP 200
       // AND    the JSON response should contain the deleted exhibit
@@ -320,7 +320,7 @@ describe('Exhibits', () => {
 
       const deleteResponse = await chai.request(server)
         .delete(`/api/v2/exhibit/${nonExistingId}`)
-        .set({'Authorization': authorization})
+        .set({ 'Authorization': authorization })
 
       // THEN   the server should return an HTTP 404 Not Found
 

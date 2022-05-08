@@ -3,18 +3,18 @@ const morgan = require('morgan')
 const path = require('path')
 const rotatingFileStream = require('rotating-file-stream')
 
-const exhibitRouter = require('./routes/exhibit')
-const expositionRouter = require('./routes/exposition')
-const infopageRouter = require('./routes/infopage')
-const loggingRouter = require('./routes/logging')
-const museumRouter = require('./routes/museum')
-const settingRouter = require('./routes/setting')
-const uploadRouter = require('./routes/upload')
-const userRouter = require('./routes/user')
+const { router: exhibitRouter } = require('./routes/exhibit')
+const { router: expositionRouter } = require('./routes/exposition')
+const { router: infopageRouter } = require('./routes/infopage')
+const { router: loggingRouter } = require('./routes/logging')
+const { router: museumRouter } = require('./routes/museum')
+const { router: settingRouter } = require('./routes/setting')
+const { router: uploadRouter } = require('./routes/upload')
+const { router: userRouter } = require('./routes/user')
 
 const app = express()
 
-app.use(express.urlencoded({extended: true}))
+app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 
 app.use('/api/v2', exhibitRouter)
@@ -28,8 +28,8 @@ app.use('/upload', uploadRouter)
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
 
-app.get('/', (req, res) =>
-  res.status(200).send('Server is up'))
+app.get('/', (_request, response) =>
+  response.status(200).send('Serving wavdio-express 3.1.2'))
 
 //
 // Set up logging
@@ -48,6 +48,6 @@ const stream = rotatingFileStream.createStream('express.log', {
   path: 'logs'
 })
 
-app.use(morgan(format, {stream}))
+app.use(morgan(format, { stream }))
 
 module.exports = app
