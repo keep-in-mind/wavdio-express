@@ -23,7 +23,7 @@ router.route('/setting').get(async (_request, response) => {
 router.route('/setting').post(async (request, response) => {
   try {
     const authorization = request.headers.authorization
-    const postSetting = request.body
+    const settingPost = request.body
 
     /// Check authorization
 
@@ -35,7 +35,7 @@ router.route('/setting').post(async (request, response) => {
 
     /// Create setting
 
-    const createdSetting = await Setting.create(postSetting)
+    const createdSetting = await Setting.create(settingPost)
 
     return response.status(201).json(createdSetting)
 
@@ -75,7 +75,7 @@ router.route('/setting/:settingId').put(async (request, response) => {
   try {
     const settingId = request.params.settingId
     const authorization = request.headers.authorization
-    const body = request.body
+    const settingPut = request.body
 
     /// Check authorization
 
@@ -85,19 +85,17 @@ router.route('/setting/:settingId').put(async (request, response) => {
       return response.status(401).json({ 'message': 'unauthorized' })
     }
 
-    delete body._id
-    Setting.findOneAndUpdate({ _id: settingId }, body, (error, setting) => {
-      if (error && error.name === 'ValidationError') {
-        response.status(400).json({ 'message': error.message })
-      } else if (error) {
-        logger.log(error)
-        response.status(500).send(error)
-      } else if (setting) {
-        response.status(200).json(setting)
-      } else {
-        response.status(404).send()
-      }
-    })
+    /// Try to update setting an return it
+
+    delete settingPut._id
+
+    const updatedSetting = await Setting.findOneAndUpdate({ _id: settingId }, settingPut)
+
+    if (!updatedSetting) {
+      return response.status(404).send()
+    }
+
+    return response.status(200).json(updatedSetting)
 
   } catch (error) {
     logger.error(error)
@@ -110,7 +108,7 @@ router.route('/setting/:settingId').patch(async (request, response) => {
   try {
     const settingId = request.params.settingId
     const authorization = request.headers.authorization
-    const body = request.body
+    const settingPatch = request.body
 
     /// Check authorization
 
@@ -120,17 +118,13 @@ router.route('/setting/:settingId').patch(async (request, response) => {
       return response.status(401).json({ 'message': 'unauthorized' })
     }
 
-    delete body._id
-    Setting.updateOne({ _id: settingId }, body, (error, setting) => {
-      if (error && error.name === 'ValidationError') {
-        response.status(400).json({ 'message': error.message })
-      } else if (error) {
-        logger.log(error)
-        response.status(500).send(error)
-      } else {
-        response.status(200).json(setting)
-      }
-    })
+    /// Update and return setting
+
+    delete settingPatch._id
+
+    const updatedSetting = await Setting.findOneAndUpdate({ _id: settingId }, settingPatch)
+
+    return response.status(200).json(updatedSetting)
 
   } catch (error) {
     logger.error(error)
@@ -152,16 +146,15 @@ router.route('/setting/:settingId').delete(async (request, response) => {
       return response.status(401).json({ 'message': 'unauthorized' })
     }
 
-    Setting.findOneAndRemove({ _id: settingId }, (error, setting) => {
-      if (error) {
-        logger.log(error)
-        response.status(500).send(error)
-      } else if (setting) {
-        response.status(200).json(setting)
-      } else {
-        response.status(404).send()
-      }
-    })
+    /// Remove setting from database
+
+    const setting = await Setting.findByIdAndRemove(settingId)
+
+    if (!setting) {
+      return response.status(404).send()
+    }
+
+    return response.status(200).json(setting)
 
   } catch (error) {
     logger.error(error)

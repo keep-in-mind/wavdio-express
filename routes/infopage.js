@@ -23,7 +23,7 @@ router.route('/infopage').get(async (_request, response) => {
 router.route('/infopage').post(async (request, response) => {
   try {
     const authorization = request.headers.authorization
-    const postInfopage = request.body
+    const infopagePost = request.body
 
     /// Check authorization
 
@@ -35,7 +35,7 @@ router.route('/infopage').post(async (request, response) => {
 
     /// Create infopage
 
-    const createdInfopage = await Infopage.create(postInfopage)
+    const createdInfopage = await Infopage.create(infopagePost)
 
     return response.status(201).json(createdInfopage)
 
@@ -75,7 +75,7 @@ router.route('/infopage/:infopageId').put(async (request, response) => {
   try {
     const infopageId = request.params.infopageId
     const authorization = request.headers.authorization
-    const body = request.body
+    const infopagePut = request.body
 
     /// Check authorization
 
@@ -85,19 +85,17 @@ router.route('/infopage/:infopageId').put(async (request, response) => {
       return response.status(401).json({ 'message': 'unauthorized' })
     }
 
-    delete body._id
-    Infopage.findOneAndUpdate({ _id: infopageId }, body, (error, infopage) => {
-      if (error && error.name === 'ValidationError') {
-        response.status(400).json({ 'message': error.message })
-      } else if (error) {
-        logger.log(error)
-        response.status(500).send(error)
-      } else if (infopage) {
-        response.status(200).json(infopage)
-      } else {
-        response.status(404).send()
-      }
-    })
+    /// Try to update infopage an return it
+
+    delete infopagePut._id
+
+    const updatedInfopage = await Infopage.findOneAndUpdate({ _id: infopageId }, infopagePut)
+
+    if (!updatedInfopage) {
+      return response.status(404).send()
+    }
+
+    return response.status(200).json(updatedInfopage)
 
   } catch (error) {
     logger.error(error)
@@ -110,7 +108,7 @@ router.route('/infopage/:infopageId').patch(async (request, response) => {
   try {
     const infopageId = request.params.infopageId
     const authorization = request.headers.authorization
-    const body = request.body
+    const infopagePatch = request.body
 
     /// Check authorization
 
@@ -120,17 +118,13 @@ router.route('/infopage/:infopageId').patch(async (request, response) => {
       return response.status(401).json({ 'message': 'unauthorized' })
     }
 
-    delete body._id
-    Infopage.updateOne({ _id: infopageId }, body, (error, infopage) => {
-      if (error && error.name === 'ValidationError') {
-        response.status(400).json({ 'message': error.message })
-      } else if (error) {
-        logger.log(error)
-        response.status(500).send(error)
-      } else {
-        response.status(200).json(infopage)
-      }
-    })
+    /// Update and return infopage
+
+    delete infopagePatch._id
+
+    const updatedInfopage = await Infopage.findOneAndUpdate({ _id: infopageId }, infopagePatch)
+
+    return response.status(200).json(updatedInfopage)
 
   } catch (error) {
     logger.error(error)
@@ -152,16 +146,15 @@ router.route('/infopage/:infopageId').delete(async (request, response) => {
       return response.status(401).json({ 'message': 'unauthorized' })
     }
 
-    Infopage.findOneAndRemove({ _id: infopageId }, (error, infopage) => {
-      if (error) {
-        logger.error(error)
-        response.status(500).send(error)
-      } else if (infopage) {
-        response.status(200).json(infopage)
-      } else {
-        response.status(404).send()
-      }
-    })
+    /// Remove infopage from database
+
+    const infopage = await Infopage.findByIdAndRemove(infopageId)
+
+    if (!infopage) {
+      return response.status(404).send()
+    }
+
+    return response.status(200).json(infopage)
 
   } catch (error) {
     logger.error(error)
