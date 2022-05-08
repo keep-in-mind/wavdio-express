@@ -1,11 +1,10 @@
 const express = require('express')
 const rimraf = require('rimraf')
 
-const logger = require('../logging')
-
 const { Exhibit } = require('../models/exhibit')
 const { Exposition } = require('../models/exposition')
 const { User } = require('../models/user')
+const { logger } = require('../logging')
 
 const router = express.Router()
 

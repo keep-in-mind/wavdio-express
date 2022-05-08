@@ -5,7 +5,7 @@ const commandLineUsage = require('command-line-usage')
 const mongoose = require('mongoose')
 
 const migrate = require('../migrate')
-const server = require('../server')
+const { server } = require('../server')
 
 const options = commandLineArgs([
   { name: 'db-uri', type: String },

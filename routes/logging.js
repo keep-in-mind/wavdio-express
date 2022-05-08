@@ -1,7 +1,7 @@
 const express = require('express')
 const fileUpload = require('express-fileupload')
 
-const logger = require('../logging')
+const { logger } = require('../logging')
 
 const router = express.Router()
 

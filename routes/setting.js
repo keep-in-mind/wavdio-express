@@ -1,9 +1,8 @@
 const express = require('express')
 
-const logger = require('../logging')
-
 const { Setting } = require('../models/setting')
 const { User } = require('../models/user')
+const { logger } = require('../logging')
 
 const router = express.Router()
 

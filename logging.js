@@ -38,4 +38,4 @@ const logger = createLogger({
   exitOnError: false, // do not exit on handled exceptions
 })
 
-module.exports = logger
+module.exports = { logger }
