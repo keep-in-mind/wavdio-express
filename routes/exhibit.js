@@ -111,7 +111,7 @@ router.route('/exhibit/:exhibitId').put(async (request, response) => {
 
     if (error && error.name === 'ValidationError') {
       response.status(400).json({ 'message': error.message })
-    } 
+    }
 
     return response.status(500).send(error)
   }
@@ -211,21 +211,22 @@ router.route('/exhibit/:exhibitId/like').post(async (request, response) => {
     const exhibitId = request.params.exhibitId
     const likePost = request.body
 
-    Exhibit.findByIdAndUpdate(exhibitId, { $push: { likes: likePost } }, { new: true }, (error, exhibit) => {
-      if (error && error.name === 'ValidationError') {
-        response.status(400).json({ 'message': error.message })
-      } else if (error) {
-        logger.log(error)
-        response.status(500).send(error)
-      } else if (exhibit) {
-        response.status(200).json(exhibit)
-      } else {
-        response.status(404).send()
-      }
-    })
+    /// Add like to exhibit
+
+    const exhibit = await Exhibit.findByIdAndUpdate(exhibitId, { $push: { likes: likePost } }, { new: true })
+
+    if (!exhibit) {
+      return response.status(404).send()
+    }
+
+    return response.status(200).json(exhibit)
 
   } catch (error) {
     logger.error(error)
+
+    if (error.name === 'ValidationError') {
+      response.status(400).json({ 'message': error.message })
+    }
 
     return response.status(500).send(error)
   }
@@ -236,21 +237,22 @@ router.route('/exhibit/:exhibitId/like/:likeId').delete(async (request, response
     const exhibitId = request.params.exhibitId
     const likeId = request.params.likeId
 
-    Exhibit.findByIdAndUpdate(exhibitId, { $pull: { likes: { _id: likeId } } }, { new: true }, (error, exhibit) => {
-      if (error && error.name === 'ValidationError') {
-        response.status(400).json({ 'message': error.message })
-      } else if (error) {
-        logger.log(error)
-        response.status(500).send(error)
-      } else if (exhibit) {
-        response.status(200).send(exhibit)
-      } else {
-        response.status(404).send()
-      }
-    })
+    /// Remove like from exhibit
+
+    const exhibit = await Exhibit.findByIdAndUpdate(exhibitId, { $pull: { likes: { _id: likeId } } }, { new: true })
+
+    if (!exhibit) {
+      return response.status(404).send()
+    }
+
+    return response.status(200).json(exhibit)
 
   } catch (error) {
     logger.error(error)
+
+    if (error.name === 'ValidationError') {
+      response.status(400).json({ 'message': error.message })
+    }
 
     return response.status(500).send(error)
   }
@@ -261,23 +263,22 @@ router.route('/exhibit/:exhibitId/comment_like').patch(async (request, response)
     const exhibitId = request.params.exhibitId
     const commentLikePatch = request.body
 
-    Exhibit.findByIdAndUpdate(exhibitId, {
-      comments: commentLikePatch.comments, likes: commentLikePatch.likes
-    }, (error, exhibit) => {
-      if (error && error.name === 'ValidationError') {
-        response.status(400).json({ 'message': error.message })
-      } else if (error) {
-        logger.log(error)
-        response.status(500).send(error)
-      } else if (exhibit) {
-        response.status(200).json(exhibit)
-      } else {
-        response.status(404).send()
-      }
-    })
+    /// Update exhibit's comments and likes
+
+    const exhibit = Exhibit.findByIdAndUpdate(exhibitId, { comments: commentLikePatch.comments, likes: commentLikePatch.likes })
+
+    if (!exhibit) {
+      return response.status(404).send()
+    }
+
+    return response.status(200).json(exhibit)
 
   } catch (error) {
     logger.error(error)
+
+    if (error.name === 'ValidationError') {
+      response.status(400).json({ 'message': error.message })
+    }
 
     return response.status(500).send(error)
   }
