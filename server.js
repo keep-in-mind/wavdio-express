@@ -29,7 +29,7 @@ server.use('/upload', uploadRouter)
 server.use('/uploads', express.static(path.join(__dirname, 'uploads')))
 
 server.get('/', (_request, response) =>
-  response.status(200).send('Serving wavdio-express 3.1.2'))
+  response.status(200).send('Serving wavdio-express 3.1.3'))
 
 //
 // Set up logging
