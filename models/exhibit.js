@@ -1,5 +1,7 @@
-const mongoose = require('mongoose')
+const { model } = require('mongoose')
 
-const Exhibit = require('./schemas/exhibit')
+const { exhibitSchema } = require('./schemas/exhibit')
 
-module.exports = mongoose.model('Exhibit', Exhibit)
+const Exhibit = model('Exhibit', exhibitSchema)
+
+module.exports = { Exhibit }

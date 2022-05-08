@@ -1,15 +1,14 @@
-const mongoose = require('mongoose')
 const crypto = require('crypto')
 const jwt = require('jsonwebtoken')
 
-const Schema = mongoose.Schema
+const { Schema, model } = require('mongoose')
 
 const schema = new Schema({
-  username: {type: String},
-  hash: {type: String}, // hash value
-  salt: {type: String},
-  session_id: {type: String},
-  session_timeout: {type: Date}
+  username: { type: String },
+  hash: { type: String }, // hash value
+  salt: { type: String },
+  session_id: { type: String },
+  session_timeout: { type: Date }
 })
 
 schema.methods.setPassword = function (password) {
@@ -40,6 +39,6 @@ schema.methods.generateJwt = function () {
   }, 'MY_SECRET') // DO NOT KEEP YOUR SECRET IN THE CODE!
 }
 
-module.exports = mongoose.model('User', schema)
+const User = model('User', schema)
 
-mongoose.model('User', schema)
+module.exports = { User }

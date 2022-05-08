@@ -1,5 +1,7 @@
-const mongoose = require('mongoose')
+const { model } = require('mongoose')
 
-const Setting = require('./schemas/setting')
+const { settingSchema } = require('./schemas/setting')
 
-module.exports = mongoose.model('Setting', Setting)
+const Setting = model('Setting', settingSchema)
+
+module.exports = { Setting }

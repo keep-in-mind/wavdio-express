@@ -1,17 +1,17 @@
-const mongoose = require('mongoose')
+const { Schema } = require('mongoose')
 
-const Schema = mongoose.Schema
-
-module.exports = new Schema({
+const settingSchema = new Schema({
   activeLangs: {
     type: {
-      de: {type: Boolean, required: true},
-      en: {type: Boolean, required: true},
-      es: {type: Boolean, required: true},
-      fr: {type: Boolean, required: true}
+      de: { type: Boolean, required: true },
+      en: { type: Boolean, required: true },
+      es: { type: Boolean, required: true },
+      fr: { type: Boolean, required: true }
     },
     required: true
   }
 }, {
   strict: 'throw'
 })
+
+module.exports = { settingSchema }

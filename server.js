@@ -3,33 +3,33 @@ const morgan = require('morgan')
 const path = require('path')
 const rotatingFileStream = require('rotating-file-stream')
 
-const exhibitRouter = require('./routes/exhibit')
-const expositionRouter = require('./routes/exposition')
-const infopageRouter = require('./routes/infopage')
-const loggingRouter = require('./routes/logging')
-const museumRouter = require('./routes/museum')
-const settingRouter = require('./routes/setting')
-const uploadRouter = require('./routes/upload')
-const userRouter = require('./routes/user')
+const { router: exhibitRouter } = require('./routes/exhibit')
+const { router: expositionRouter } = require('./routes/exposition')
+const { router: infopageRouter } = require('./routes/infopage')
+const { router: loggingRouter } = require('./routes/logging')
+const { router: museumRouter } = require('./routes/museum')
+const { router: settingRouter } = require('./routes/setting')
+const { router: uploadRouter } = require('./routes/upload')
+const { router: userRouter } = require('./routes/user')
 
-const app = express()
+const server = express()
 
-app.use(express.urlencoded({extended: true}))
-app.use(express.json())
+server.use(express.urlencoded({ extended: true }))
+server.use(express.json())
 
-app.use('/api/v2', exhibitRouter)
-app.use('/api/v2', expositionRouter)
-app.use('/api/v2', infopageRouter)
-app.use('/api/v2', loggingRouter)
-app.use('/api/v2', museumRouter)
-app.use('/api/v2', settingRouter)
-app.use('/api/v2', userRouter)
-app.use('/upload', uploadRouter)
+server.use('/api/v2', exhibitRouter)
+server.use('/api/v2', expositionRouter)
+server.use('/api/v2', infopageRouter)
+server.use('/api/v2', loggingRouter)
+server.use('/api/v2', museumRouter)
+server.use('/api/v2', settingRouter)
+server.use('/api/v2', userRouter)
+server.use('/upload', uploadRouter)
 
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
+server.use('/uploads', express.static(path.join(__dirname, 'uploads')))
 
-app.get('/', (req, res) =>
-  res.status(200).send('Server is up'))
+server.get('/', (_request, response) =>
+  response.status(200).send('Serving wavdio-express 3.1.3'))
 
 //
 // Set up logging
@@ -48,6 +48,6 @@ const stream = rotatingFileStream.createStream('express.log', {
   path: 'logs'
 })
 
-app.use(morgan(format, {stream}))
+server.use(morgan(format, { stream }))
 
-module.exports = app
+module.exports = { server }

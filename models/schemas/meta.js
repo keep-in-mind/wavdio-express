@@ -1,8 +1,6 @@
-const mongoose = require('mongoose')
+const { Schema } = require('mongoose')
 
-const Schema = mongoose.Schema
-
-module.exports = new Schema({
+const metaSchema = new Schema({
   version: {
     type: Number,
     required: true
@@ -10,3 +8,5 @@ module.exports = new Schema({
 }, {
   strict: 'throw'
 })
+
+module.exports = { metaSchema }

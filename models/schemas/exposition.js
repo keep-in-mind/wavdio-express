@@ -1,27 +1,27 @@
-const mongoose = require('mongoose')
+const { Schema } = require('mongoose')
 
-const Image = require('./image')
-const View = require('./view')
-const Like = require('./like')
-const Comment = require('./comment')
-const ExpositionContent = require('./exposition-content')
+const { commentSchema } = require('./comment')
+const { expositionContentSchema } = require('./exposition-content')
+const { imageSchema } = require('./image')
+const { likeSchema } = require('./like')
+const { viewSchema } = require('./view')
 
-const Schema = mongoose.Schema
+const expositionSchema = new Schema({
+  museum: { type: Schema.Types.ObjectId, ref: 'Museum', required: true },
 
-module.exports = new Schema({
-  museum: {type: mongoose.Schema.Types.ObjectId, ref: 'Museum', required: true},
+  active: { type: Boolean, required: true },
+  code: { type: Number, required: true },
+  note: { type: String, required: false },
 
-  active: {type: Boolean, required: true},
-  code: {type: Number, required: true},
-  note: {type: String, required: false},
+  logo: { type: imageSchema, required: false },
 
-  logo: {type: Image, required: false},
+  views: [viewSchema],
+  likes: [likeSchema],
+  comments: [commentSchema],
 
-  views: [View],
-  likes: [Like],
-  comments: [Comment],
-
-  contents: [ExpositionContent]
+  contents: [expositionContentSchema]
 }, {
   strict: 'throw'
 })
+
+module.exports = { expositionSchema }

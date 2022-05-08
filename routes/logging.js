@@ -1,19 +1,29 @@
-const fileUpload = require('express-fileupload')
 const express = require('express')
+const fileUpload = require('express-fileupload')
+
+const { logger } = require('../logging')
+
 const router = express.Router()
-const logger = require('../logging')
 
-router.use(fileUpload({createParentPath: true}))
+router.use(fileUpload({ createParentPath: true }))
 
-router.route('/logs').post((request, response) => {
-  const message = request.body
-  if (message.level < 4) {
-    logger.info(message)
-  } else {
-    logger.error(message)
+router.route('/logs').post(async (request, response) => {
+  try {
+    const logPost = request.body
+
+    if (logPost.level < 4) {
+      logger.info(logPost)
+    } else {
+      logger.error(logPost)
+    }
+
+    return response.status(201).send()
+
+  } catch (error) {
+    logger.error(error)
+
+    return response.status(500).send(error)
   }
-
-  response.status(201).send()
 })
 
-module.exports = router
+module.exports = { router }

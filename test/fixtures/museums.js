@@ -1,6 +1,6 @@
-const {deepFreeze} = require('../util')
+const { deepFreeze } = require('../util')
 
-module.exports.museum100 = deepFreeze({
+const museum100 = deepFreeze({
   contents: [
     {
       lang: 'en',
@@ -59,7 +59,7 @@ module.exports.museum100 = deepFreeze({
   ]
 })
 
-module.exports.museum200 = deepFreeze({
+const museum200 = deepFreeze({
   contents: [
     {
       lang: 'en',
@@ -117,3 +117,5 @@ module.exports.museum200 = deepFreeze({
     },
   ]
 })
+
+module.exports = { museum100, museum200 }

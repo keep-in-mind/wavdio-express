@@ -2,15 +2,15 @@
 
 const commandLineArgs = require('command-line-args')
 const commandLineUsage = require('command-line-usage')
-
-const server = require('../server')
-const migrate = require('../migrate')
 const mongoose = require('mongoose')
 
+const migrate = require('../migrate')
+const { server } = require('../server')
+
 const options = commandLineArgs([
-  {name: 'db-uri', type: String},
-  {name: 'help', type: Boolean},
-  {name: 'port', type: Number}
+  { name: 'db-uri', type: String },
+  { name: 'help', type: Boolean },
+  { name: 'port', type: Number }
 ])
 
 if (options['help']) {

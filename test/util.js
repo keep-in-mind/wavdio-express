@@ -1,4 +1,4 @@
-module.exports.deepFreeze = function deepFreeze (object) {
+const deepFreeze = function deepFreeze(object) {
   const propNames = Object.getOwnPropertyNames(object)
 
   // Freeze properties before freezing self
@@ -9,3 +9,5 @@ module.exports.deepFreeze = function deepFreeze (object) {
 
   return Object.freeze(object)
 }
+
+module.exports = { deepFreeze }

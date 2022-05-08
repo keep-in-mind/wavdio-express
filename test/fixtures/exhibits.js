@@ -1,6 +1,6 @@
-const {deepFreeze} = require('../util')
+const { deepFreeze } = require('../util')
 
-module.exports.exhibit111 = deepFreeze({
+const exhibit111 = deepFreeze({
   parent: '',
   parentModel: 'Exposition',
 
@@ -9,21 +9,21 @@ module.exports.exhibit111 = deepFreeze({
   note: 'Exhibit 111 Note',
 
   views: [
-    {timestamp: '2000-01-01T10:00:00.000Z'},
-    {timestamp: '2000-01-01T11:00:00.000Z'},
-    {timestamp: '2000-01-01T12:00:00.000Z'}
+    { timestamp: '2000-01-01T10:00:00.000Z' },
+    { timestamp: '2000-01-01T11:00:00.000Z' },
+    { timestamp: '2000-01-01T12:00:00.000Z' }
   ],
 
   likes: [
-    {timestamp: '2000-01-01T10:00:00.000Z'},
-    {timestamp: '2000-01-01T11:00:00.000Z'},
-    {timestamp: '2000-01-01T12:00:00.000Z'}
+    { timestamp: '2000-01-01T10:00:00.000Z' },
+    { timestamp: '2000-01-01T11:00:00.000Z' },
+    { timestamp: '2000-01-01T12:00:00.000Z' }
   ],
 
   comments: [
-    {text: 'Exhibit 111 Comment 1', timestamp: '2000-01-01T10:00:00.000Z'},
-    {text: 'Exhibit 111 Comment 2', timestamp: '2000-01-01T11:00:00.000Z'},
-    {text: 'Exhibit 111 Comment 3', timestamp: '2000-01-01T12:00:00.000Z'}
+    { text: 'Exhibit 111 Comment 1', timestamp: '2000-01-01T10:00:00.000Z' },
+    { text: 'Exhibit 111 Comment 2', timestamp: '2000-01-01T11:00:00.000Z' },
+    { text: 'Exhibit 111 Comment 3', timestamp: '2000-01-01T12:00:00.000Z' }
   ],
 
   contents: [
@@ -45,8 +45,8 @@ module.exports.exhibit111 = deepFreeze({
       ],
 
       audio: [
-        {filename: 'exhibit_111_en_audio_1.mp3', mimeType: 'audio/mpeg'},
-        {filename: 'exhibit_111_en_audio_2.wav', mimeType: 'audio/wav'}
+        { filename: 'exhibit_111_en_audio_1.mp3', mimeType: 'audio/mpeg' },
+        { filename: 'exhibit_111_en_audio_2.wav', mimeType: 'audio/wav' }
       ],
 
       video: [
@@ -80,8 +80,8 @@ module.exports.exhibit111 = deepFreeze({
       ],
 
       audio: [
-        {filename: 'exhibit_111_de_audio_1.mp3', mimeType: 'audio/mpeg'},
-        {filename: 'exhibit_111_de_audio_2.wav', mimeType: 'audio/wav'}
+        { filename: 'exhibit_111_de_audio_1.mp3', mimeType: 'audio/mpeg' },
+        { filename: 'exhibit_111_de_audio_2.wav', mimeType: 'audio/wav' }
       ],
 
       video: [
@@ -100,7 +100,7 @@ module.exports.exhibit111 = deepFreeze({
   ]
 })
 
-module.exports.exhibit112 = deepFreeze({
+const exhibit112 = deepFreeze({
   parent: '',
   parentModel: 'Exposition',
 
@@ -109,21 +109,21 @@ module.exports.exhibit112 = deepFreeze({
   note: 'Exhibit 112 Note',
 
   views: [
-    {timestamp: '2000-01-01T10:00:00.000Z'},
-    {timestamp: '2000-01-01T11:00:00.000Z'},
-    {timestamp: '2000-01-01T12:00:00.000Z'}
+    { timestamp: '2000-01-01T10:00:00.000Z' },
+    { timestamp: '2000-01-01T11:00:00.000Z' },
+    { timestamp: '2000-01-01T12:00:00.000Z' }
   ],
 
   likes: [
-    {timestamp: '2000-01-01T10:00:00.000Z'},
-    {timestamp: '2000-01-01T11:00:00.000Z'},
-    {timestamp: '2000-01-01T12:00:00.000Z'}
+    { timestamp: '2000-01-01T10:00:00.000Z' },
+    { timestamp: '2000-01-01T11:00:00.000Z' },
+    { timestamp: '2000-01-01T12:00:00.000Z' }
   ],
 
   comments: [
-    {text: 'Exhibit 112 Comment 1', timestamp: '2000-01-01T10:00:00.000Z'},
-    {text: 'Exhibit 112 Comment 2', timestamp: '2000-01-01T11:00:00.000Z'},
-    {text: 'Exhibit 112 Comment 3', timestamp: '2000-01-01T12:00:00.000Z'}
+    { text: 'Exhibit 112 Comment 1', timestamp: '2000-01-01T10:00:00.000Z' },
+    { text: 'Exhibit 112 Comment 2', timestamp: '2000-01-01T11:00:00.000Z' },
+    { text: 'Exhibit 112 Comment 3', timestamp: '2000-01-01T12:00:00.000Z' }
   ],
 
   contents: [
@@ -145,8 +145,8 @@ module.exports.exhibit112 = deepFreeze({
       ],
 
       audio: [
-        {filename: 'exhibit_112_en_audio_1.mp3', mimeType: 'audio/mpeg'},
-        {filename: 'exhibit_112_en_audio_2.wav', mimeType: 'audio/wav'}
+        { filename: 'exhibit_112_en_audio_1.mp3', mimeType: 'audio/mpeg' },
+        { filename: 'exhibit_112_en_audio_2.wav', mimeType: 'audio/wav' }
       ],
 
       video: [
@@ -180,8 +180,8 @@ module.exports.exhibit112 = deepFreeze({
       ],
 
       audio: [
-        {filename: 'exhibit_112_de_audio_1.mp3', mimeType: 'audio/mpeg'},
-        {filename: 'exhibit_112_de_audio_2.wav', mimeType: 'audio/wav'}
+        { filename: 'exhibit_112_de_audio_1.mp3', mimeType: 'audio/mpeg' },
+        { filename: 'exhibit_112_de_audio_2.wav', mimeType: 'audio/wav' }
       ],
 
       video: [
@@ -199,3 +199,5 @@ module.exports.exhibit112 = deepFreeze({
     }
   ]
 })
+
+module.exports = { exhibit111, exhibit112 }

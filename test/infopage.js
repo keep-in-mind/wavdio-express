@@ -1,12 +1,12 @@
 const chai = require('chai')
 const chaiHttp = require('chai-http')
 const chaiShallowDeepEqual = require('chai-shallow-deep-equal')
-
-const Infopage = require('../models/infopage')
 const mongoose = require('mongoose')
-const server = require('../server')
-const {authorization} = require('./fixtures/authorization')
-const {infopage1, infopage2} = require('./fixtures/infopages')
+
+const { Infopage } = require('../models/infopage')
+const { authorization } = require('./fixtures/authorization')
+const { infopage1, infopage2 } = require('./fixtures/infopages')
+const { server } = require('../server')
 
 chai.use(chaiHttp)
 chai.use(chaiShallowDeepEqual)
@@ -75,7 +75,7 @@ describe('Infopages', () => {
 
       const postResponse = await chai.request(server)
         .post('/api/v2/infopage')
-        .set({'Authorization': authorization})
+        .set({ 'Authorization': authorization })
         .send(infopage1)
 
       // THEN   the server should return an HTTP 201 Created
@@ -103,7 +103,7 @@ describe('Infopages', () => {
       // AND    the JSON response shouldn't contain sensitive information
 
       expect(postResponse).to.have.status(401)
-      expect(postResponse.body).to.deep.equal({message: 'unauthorized'})
+      expect(postResponse.body).to.deep.equal({ message: 'unauthorized' })
 
       // THEN   the database shouldn't contain the infopage
 
@@ -115,12 +115,12 @@ describe('Infopages', () => {
 
       // WHEN   posting an infopage with a missing required property
 
-      const infopage1_ = {...infopage1}
+      const infopage1_ = { ...infopage1 }
       delete infopage1_.lang
 
       const postResponse = await chai.request(server)
         .post('/api/v2/infopage')
-        .set({'Authorization': authorization})
+        .set({ 'Authorization': authorization })
         .send(infopage1_)
 
       // THEN   the server should return an HTTP 400 Bad Request
@@ -138,12 +138,12 @@ describe('Infopages', () => {
 
       // WHEN   posting an infopage with a missing non-required property
 
-      const infopage1_ = {...infopage1}
+      const infopage1_ = { ...infopage1 }
       delete infopage1_.text
 
       const postResponse = await chai.request(server)
         .post('/api/v2/infopage')
-        .set({'Authorization': authorization})
+        .set({ 'Authorization': authorization })
         .send(infopage1_)
 
       // THEN   the server should return an HTTP 201 Created
@@ -209,7 +209,7 @@ describe('Infopages', () => {
 
       const putResponse = await chai.request(server)
         .put(`/api/v2/infopage/${infopage1Id}`)
-        .set({'Authorization': authorization})
+        .set({ 'Authorization': authorization })
         .send(infopage2)
 
       // THEN   the server should return an HTTP 200
@@ -233,7 +233,7 @@ describe('Infopages', () => {
 
       const putResponse = await chai.request(server)
         .put(`/api/v2/infopage/${nonExistingId}`)
-        .set({'Authorization': authorization})
+        .set({ 'Authorization': authorization })
         .send(infopage1)
 
       // THEN   the server should return an HTTP 404 Not Found
@@ -260,7 +260,7 @@ describe('Infopages', () => {
 
       const deleteResponse = await chai.request(server)
         .delete(`/api/v2/infopage/${infopage1Id}`)
-        .set({'Authorization': authorization})
+        .set({ 'Authorization': authorization })
 
       // THEN   the server should return an HTTP 200
       // AND    the JSON response should contain the deleted infopage
@@ -282,7 +282,7 @@ describe('Infopages', () => {
 
       const deleteResponse = await chai.request(server)
         .delete(`/api/v2/infopage/${nonExistingId}`)
-        .set({'Authorization': authorization})
+        .set({ 'Authorization': authorization })
 
       // THEN   the server should return an HTTP 404 Not Found
 
